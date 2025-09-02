@@ -114,7 +114,7 @@ const finishedGames = allGames.filter(game => game.status === "finished");
               {liveGames.length}
             </span>
           </div>
-          <div class="bg-primary/5 rounded-lg overflow-hidden border">
+          <div class="space-y-2">
             {liveGames.map((game) => (
               <GameCard game={game} type="live" showBorder={false} />
             ))}
@@ -125,11 +125,11 @@ const finishedGames = allGames.filter(game => game.status === "finished");
       <section>
         <div class="flex items-center space-x-2 mb-3">
           <h2 class="text-lg font-semibold text-foreground">Today's Games</h2>
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border border-gray-200 text-gray-700">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
             {todaysGames.length} games
           </span>
         </div>
-        <div class="bg-muted/20 rounded-lg overflow-hidden border">
+        <div class="space-y-2">
           {todaysGames.map((game) => (
             <GameCard game={game} type="upcoming" showBorder={false} />
           ))}
@@ -139,11 +139,11 @@ const finishedGames = allGames.filter(game => game.status === "finished");
       <section>
         <div class="flex items-center space-x-2 mb-3">
           <h2 class="text-lg font-semibold text-foreground">Recent Results</h2>
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border border-gray-200 text-gray-700">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
             {finishedGames.length} results
           </span>
         </div>
-        <div class="bg-muted/10 rounded-lg overflow-hidden border">
+        <div class="space-y-2">
           {finishedGames.map((game) => (
             <GameCard game={game} type="recent" showBorder={false} />
           ))}

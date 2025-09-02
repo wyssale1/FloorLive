@@ -122,11 +122,11 @@ const recentGames = [
       <section>
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-sm font-semibold text-foreground">Recent</h3>
-          <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium border border-gray-200 text-gray-700 h-5">
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground h-5">
             {recentGames.length} results
           </span>
         </div>
-        <div class="bg-muted/20 rounded-lg overflow-hidden">
+        <div class="space-y-2">
           {recentGames.map((game) => (
             <GameCard game={game} type="recent" showBorder={false} />
           ))}
