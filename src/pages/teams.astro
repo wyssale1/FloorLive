@@ -1,0 +1,232 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/astro/Header.astro';
+
+// Mock teams data
+const teams = [
+  {
+    id: "zsc-lions",
+    name: "ZSC Lions",
+    league: "NLA",
+    logo: "/zsc-lions-logo.png",
+    wins: 12,
+    losses: 3,
+    draws: 2,
+    points: 38,
+    goalsFor: 45,
+    goalsAgainst: 28
+  },
+  {
+    id: "hc-davos",
+    name: "HC Davos",
+    league: "NLA",
+    logo: "/hc-davos-logo.png",
+    wins: 11,
+    losses: 4,
+    draws: 2,
+    points: 35,
+    goalsFor: 42,
+    goalsAgainst: 31
+  },
+  {
+    id: "floorball-koniz",
+    name: "Floorball Köniz",
+    league: "NLA",
+    logo: "/floorball-k-niz-logo.png",
+    wins: 10,
+    losses: 5,
+    draws: 2,
+    points: 32,
+    goalsFor: 38,
+    goalsAgainst: 29
+  },
+  {
+    id: "uhc-alligator-malans",
+    name: "UHC Alligator Malans",
+    league: "NLA",
+    logo: "/uhc-alligator-malans-logo.png",
+    wins: 9,
+    losses: 6,
+    draws: 2,
+    points: 29,
+    goalsFor: 35,
+    goalsAgainst: 33
+  },
+  {
+    id: "unihockey-basel-regio",
+    name: "Unihockey Basel Regio",
+    league: "NLA",
+    logo: "/unihockey-basel-regio-logo.png",
+    wins: 8,
+    losses: 7,
+    draws: 2,
+    points: 26,
+    goalsFor: 32,
+    goalsAgainst: 35
+  },
+  {
+    id: "sv-wiler-ersigen",
+    name: "SV Wiler-Ersigen",
+    league: "NLA",
+    logo: "/sv-wiler-ersigen-logo.png",
+    wins: 7,
+    losses: 8,
+    draws: 2,
+    points: 23,
+    goalsFor: 29,
+    goalsAgainst: 36
+  },
+  {
+    id: "uhc-thun",
+    name: "UHC Thun",
+    league: "NLB",
+    logo: "/uhc-thun-logo.png",
+    wins: 10,
+    losses: 3,
+    draws: 1,
+    points: 31,
+    goalsFor: 48,
+    goalsAgainst: 22
+  },
+  {
+    id: "floorball-thurgau",
+    name: "Floorball Thurgau",
+    league: "NLB",
+    logo: "/floorball-thurgau-logo.png",
+    wins: 9,
+    losses: 4,
+    draws: 1,
+    points: 28,
+    goalsFor: 41,
+    goalsAgainst: 25
+  },
+  {
+    id: "grasshopper-club",
+    name: "Grasshopper Club",
+    league: "NLA",
+    logo: "/grasshopper-club-logo.png",
+    wins: 6,
+    losses: 9,
+    draws: 2,
+    points: 20,
+    goalsFor: 28,
+    goalsAgainst: 41
+  },
+  {
+    id: "uhc-dietlikon",
+    name: "UHC Dietlikon",
+    league: "NLA",
+    logo: "/uhc-dietlikon-logo.png",
+    wins: 5,
+    losses: 10,
+    draws: 2,
+    points: 17,
+    goalsFor: 25,
+    goalsAgainst: 43
+  }
+];
+
+const nlaTeams = teams.filter(team => team.league === "NLA");
+const nlbTeams = teams.filter(team => team.league === "NLB");
+---
+
+<BaseLayout title="Teams - Unihockey Live Tracker">
+  <div class="min-h-screen bg-background">
+    <Header />
+
+    <main class="container mx-auto px-4 py-6 space-y-8">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-foreground">Teams</h1>
+        <div class="flex items-center space-x-2">
+          <span class="text-sm text-muted-foreground">Season 2023/24</span>
+        </div>
+      </div>
+
+      <!-- NLA Teams -->
+      <section>
+        <div class="flex items-center space-x-2 mb-4">
+          <h2 class="text-xl font-semibold text-foreground">National League A (NLA)</h2>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+            {nlaTeams.length} teams
+          </span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {nlaTeams.map((team) => (
+            <a href={`/teams/${team.id}`} class="group">
+              <div class="bg-card rounded-lg border p-6 hover:shadow-md transition-all duration-200 group-hover:border-primary/50">
+                <div class="flex items-center space-x-4 mb-4">
+                  <img src={team.logo || "/placeholder.svg"} alt={team.name} class="w-12 h-12 rounded-full" />
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                      {team.name}
+                    </h3>
+                    <p class="text-sm text-muted-foreground">{team.league}</p>
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div class="text-2xl font-bold text-primary">{team.points}</div>
+                    <div class="text-xs text-muted-foreground">Points</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-foreground">{team.wins}</div>
+                    <div class="text-xs text-muted-foreground">Wins</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-muted-foreground">{team.goalsFor}:{team.goalsAgainst}</div>
+                    <div class="text-xs text-muted-foreground">Goals</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- NLB Teams -->
+      <section>
+        <div class="flex items-center space-x-2 mb-4">
+          <h2 class="text-xl font-semibold text-foreground">National League B (NLB)</h2>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+            {nlbTeams.length} teams
+          </span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {nlbTeams.map((team) => (
+            <a href={`/teams/${team.id}`} class="group">
+              <div class="bg-card rounded-lg border p-6 hover:shadow-md transition-all duration-200 group-hover:border-primary/50">
+                <div class="flex items-center space-x-4 mb-4">
+                  <img src={team.logo || "/placeholder.svg"} alt={team.name} class="w-12 h-12 rounded-full" />
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                      {team.name}
+                    </h3>
+                    <p class="text-sm text-muted-foreground">{team.league}</p>
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div class="text-2xl font-bold text-primary">{team.points}</div>
+                    <div class="text-xs text-muted-foreground">Points</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-foreground">{team.wins}</div>
+                    <div class="text-xs text-muted-foreground">Wins</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-muted-foreground">{team.goalsFor}:{team.goalsAgainst}</div>
+                    <div class="text-xs text-muted-foreground">Goals</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+  </div>
+</BaseLayout>

@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/astro/Header.astro';
+import GameCard from '../components/astro/GameCard.astro';
+import { DashboardControls } from '../components/react/DashboardControls.tsx';
+
+// Mock data for demonstration
+const liveGames = [
+  {
+    id: 1,
+    homeTeam: "ZSC Lions",
+    awayTeam: "HC Davos",
+    homeScore: 2,
+    awayScore: 1,
+    period: "2nd Period",
+    timeRemaining: "12:34",
+    league: "NLA",
+    homeLogo: "/zsc-lions-logo.png",
+    awayLogo: "/hc-davos-logo.png",
+  },
+  {
+    id: 2,
+    homeTeam: "Floorball Köniz",
+    awayTeam: "UHC Alligator Malans",
+    homeScore: 0,
+    awayScore: 3,
+    period: "3rd Period",
+    timeRemaining: "05:22",
+    league: "NLA",
+    homeLogo: "/floorball-k-niz-logo.png",
+    awayLogo: "/uhc-alligator-malans-logo.png",
+  },
+];
+
+const todaysGames = [
+  {
+    id: 3,
+    homeTeam: "Unihockey Basel Regio",
+    awayTeam: "SV Wiler-Ersigen",
+    startTime: "19:30",
+    venue: "Sporthalle Basel",
+    league: "NLA",
+    homeLogo: "/unihockey-basel-regio-logo.png",
+    awayLogo: "/sv-wiler-ersigen-logo.png",
+  },
+  {
+    id: 4,
+    homeTeam: "UHC Thun",
+    awayTeam: "Floorball Thurgau",
+    startTime: "20:00",
+    venue: "Grabenhalle Thun",
+    league: "NLB",
+    homeLogo: "/uhc-thun-logo.png",
+    awayLogo: "/floorball-thurgau-logo.png",
+  },
+];
+
+const recentGames = [
+  {
+    id: 5,
+    homeTeam: "Grasshopper Club",
+    awayTeam: "UHC Dietlikon",
+    homeScore: 4,
+    awayScore: 2,
+    date: "Yesterday",
+    league: "NLA",
+    homeLogo: "/grasshopper-club-logo.png",
+    awayLogo: "/uhc-dietlikon-logo.png",
+  },
+];
+---
+
+<BaseLayout title="Unihockey Live Tracker">
+  <div class="min-h-screen bg-background">
+    <Header />
+    
+    <!-- Dynamic controls as React Island -->
+    <DashboardControls client:load />
+
+    <main class="container mx-auto px-3 py-3 space-y-4">
+      {liveGames.length > 0 && (
+        <section>
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center space-x-2">
+              <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <h3 class="text-sm font-semibold text-foreground">Live</h3>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary-foreground h-5">
+                {liveGames.length}
+              </span>
+            </div>
+            <a href="/games">
+              <button class="text-xs h-6 px-2 text-muted-foreground hover:text-foreground transition-colors flex items-center">
+                All
+                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </a>
+          </div>
+          <div class="bg-primary/5 rounded-lg overflow-hidden">
+            {liveGames.map((game) => (
+              <GameCard game={game} type="live" showBorder={false} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section>
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-semibold text-foreground">Today</h3>
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium border border-gray-200 text-gray-700 h-5">
+            {todaysGames.length} games
+          </span>
+        </div>
+        <div class="bg-muted/30 rounded-lg overflow-hidden">
+          {todaysGames.map((game) => (
+            <GameCard game={game} type="upcoming" showBorder={false} />
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-semibold text-foreground">Recent</h3>
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium border border-gray-200 text-gray-700 h-5">
+            {recentGames.length} results
+          </span>
+        </div>
+        <div class="bg-muted/20 rounded-lg overflow-hidden">
+          {recentGames.map((game) => (
+            <GameCard game={game} type="recent" showBorder={false} />
+          ))}
+        </div>
+      </section>
+    </main>
+  </div>
+</BaseLayout>

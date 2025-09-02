@@ -1,0 +1,328 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/astro/Header.astro';
+
+// Mock standings data
+const nlaStandings = [
+  {
+    position: 1,
+    team: "ZSC Lions",
+    slug: "zsc-lions",
+    logo: "/zsc-lions-logo.png",
+    games: 17,
+    wins: 12,
+    losses: 3,
+    draws: 2,
+    points: 38,
+    goalsFor: 45,
+    goalsAgainst: 28,
+    goalDifference: 17
+  },
+  {
+    position: 2,
+    team: "HC Davos",
+    slug: "hc-davos",
+    logo: "/hc-davos-logo.png",
+    games: 17,
+    wins: 11,
+    losses: 4,
+    draws: 2,
+    points: 35,
+    goalsFor: 42,
+    goalsAgainst: 31,
+    goalDifference: 11
+  },
+  {
+    position: 3,
+    team: "Floorball Köniz",
+    slug: "floorball-koniz",
+    logo: "/floorball-k-niz-logo.png",
+    games: 17,
+    wins: 10,
+    losses: 5,
+    draws: 2,
+    points: 32,
+    goalsFor: 38,
+    goalsAgainst: 29,
+    goalDifference: 9
+  },
+  {
+    position: 4,
+    team: "UHC Alligator Malans",
+    slug: "uhc-alligator-malans",
+    logo: "/uhc-alligator-malans-logo.png",
+    games: 17,
+    wins: 9,
+    losses: 6,
+    draws: 2,
+    points: 29,
+    goalsFor: 35,
+    goalsAgainst: 33,
+    goalDifference: 2
+  },
+  {
+    position: 5,
+    team: "Unihockey Basel Regio",
+    slug: "unihockey-basel-regio",
+    logo: "/unihockey-basel-regio-logo.png",
+    games: 17,
+    wins: 8,
+    losses: 7,
+    draws: 2,
+    points: 26,
+    goalsFor: 32,
+    goalsAgainst: 35,
+    goalDifference: -3
+  },
+  {
+    position: 6,
+    team: "SV Wiler-Ersigen",
+    slug: "sv-wiler-ersigen",
+    logo: "/sv-wiler-ersigen-logo.png",
+    games: 17,
+    wins: 7,
+    losses: 8,
+    draws: 2,
+    points: 23,
+    goalsFor: 29,
+    goalsAgainst: 36,
+    goalDifference: -7
+  },
+  {
+    position: 7,
+    team: "Grasshopper Club",
+    slug: "grasshopper-club",
+    logo: "/grasshopper-club-logo.png",
+    games: 17,
+    wins: 6,
+    losses: 9,
+    draws: 2,
+    points: 20,
+    goalsFor: 28,
+    goalsAgainst: 41,
+    goalDifference: -13
+  },
+  {
+    position: 8,
+    team: "UHC Dietlikon",
+    slug: "uhc-dietlikon",
+    logo: "/uhc-dietlikon-logo.png",
+    games: 17,
+    wins: 5,
+    losses: 10,
+    draws: 2,
+    points: 17,
+    goalsFor: 25,
+    goalsAgainst: 43,
+    goalDifference: -18
+  }
+];
+
+const nlbStandings = [
+  {
+    position: 1,
+    team: "UHC Thun",
+    slug: "uhc-thun",
+    logo: "/uhc-thun-logo.png",
+    games: 14,
+    wins: 10,
+    losses: 3,
+    draws: 1,
+    points: 31,
+    goalsFor: 48,
+    goalsAgainst: 22,
+    goalDifference: 26
+  },
+  {
+    position: 2,
+    team: "Floorball Thurgau",
+    slug: "floorball-thurgau",
+    logo: "/floorball-thurgau-logo.png",
+    games: 14,
+    wins: 9,
+    losses: 4,
+    draws: 1,
+    points: 28,
+    goalsFor: 41,
+    goalsAgainst: 25,
+    goalDifference: 16
+  }
+];
+
+function getPositionColor(position: number, league: string) {
+  if (league === "NLA") {
+    if (position <= 6) return "text-green-600"; // Playoff positions
+    if (position <= 10) return "text-yellow-600"; // Pre-playoff
+    return "text-red-600"; // Relegation
+  } else {
+    if (position <= 2) return "text-green-600"; // Promotion
+    if (position <= 4) return "text-blue-600"; // Playoff
+    return "text-gray-600"; // Safe
+  }
+}
+---
+
+<BaseLayout title="Standings - Unihockey Live Tracker">
+  <div class="min-h-screen bg-background">
+    <Header />
+
+    <main class="container mx-auto px-4 py-6 space-y-8">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-foreground">League Standings</h1>
+        <div class="text-sm text-muted-foreground">Season 2023/24</div>
+      </div>
+
+      <!-- NLA Standings -->
+      <section>
+        <div class="flex items-center space-x-2 mb-4">
+          <h2 class="text-xl font-semibold text-foreground">National League A (NLA)</h2>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+            {nlaStandings.length} teams
+          </span>
+        </div>
+
+        <div class="bg-card rounded-lg border overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-muted/20 border-b">
+                <tr class="text-left">
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground">#</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground">Team</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">GP</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">W</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">L</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">D</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">PTS</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">GF</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">GA</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">+/-</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nlaStandings.map((team, index) => (
+                  <tr class={`border-b hover:bg-muted/10 transition-colors ${index < nlaStandings.length - 1 ? 'border-b' : ''}`}>
+                    <td class="px-4 py-4">
+                      <span class={`font-bold text-lg ${getPositionColor(team.position, "NLA")}`}>
+                        {team.position}
+                      </span>
+                    </td>
+                    <td class="px-4 py-4">
+                      <a href={`/teams/${team.slug}`} class="flex items-center space-x-3 hover:text-primary transition-colors">
+                        <img src={team.logo || "/placeholder.svg"} alt={team.team} class="w-8 h-8 rounded-full" />
+                        <span class="font-medium">{team.team}</span>
+                      </a>
+                    </td>
+                    <td class="px-4 py-4 text-center text-sm">{team.games}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium text-green-600">{team.wins}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium text-red-600">{team.losses}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium text-yellow-600">{team.draws}</td>
+                    <td class="px-4 py-4 text-center text-lg font-bold text-primary">{team.points}</td>
+                    <td class="px-4 py-4 text-center text-sm">{team.goalsFor}</td>
+                    <td class="px-4 py-4 text-center text-sm">{team.goalsAgainst}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium">
+                      <span class={team.goalDifference >= 0 ? "text-green-600" : "text-red-600"}>
+                        {team.goalDifference >= 0 ? "+" : ""}{team.goalDifference}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Legend -->
+          <div class="p-4 bg-muted/10 border-t">
+            <div class="flex items-center justify-center space-x-6 text-sm">
+              <div class="flex items-center space-x-1">
+                <div class="w-3 h-3 bg-green-500 rounded"></div>
+                <span class="text-muted-foreground">Playoffs (1-6)</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <div class="w-3 h-3 bg-yellow-500 rounded"></div>
+                <span class="text-muted-foreground">Pre-playoffs (7-10)</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <div class="w-3 h-3 bg-red-500 rounded"></div>
+                <span class="text-muted-foreground">Relegation (11-12)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NLB Standings -->
+      <section>
+        <div class="flex items-center space-x-2 mb-4">
+          <h2 class="text-xl font-semibold text-foreground">National League B (NLB)</h2>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+            {nlbStandings.length} teams
+          </span>
+        </div>
+
+        <div class="bg-card rounded-lg border overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-muted/20 border-b">
+                <tr class="text-left">
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground">#</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground">Team</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">GP</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">W</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">L</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">D</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">PTS</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">GF</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">GA</th>
+                  <th class="px-4 py-3 text-sm font-medium text-muted-foreground text-center">+/-</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nlbStandings.map((team, index) => (
+                  <tr class={`border-b hover:bg-muted/10 transition-colors ${index < nlbStandings.length - 1 ? 'border-b' : ''}`}>
+                    <td class="px-4 py-4">
+                      <span class={`font-bold text-lg ${getPositionColor(team.position, "NLB")}`}>
+                        {team.position}
+                      </span>
+                    </td>
+                    <td class="px-4 py-4">
+                      <a href={`/teams/${team.slug}`} class="flex items-center space-x-3 hover:text-primary transition-colors">
+                        <img src={team.logo || "/placeholder.svg"} alt={team.team} class="w-8 h-8 rounded-full" />
+                        <span class="font-medium">{team.team}</span>
+                      </a>
+                    </td>
+                    <td class="px-4 py-4 text-center text-sm">{team.games}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium text-green-600">{team.wins}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium text-red-600">{team.losses}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium text-yellow-600">{team.draws}</td>
+                    <td class="px-4 py-4 text-center text-lg font-bold text-primary">{team.points}</td>
+                    <td class="px-4 py-4 text-center text-sm">{team.goalsFor}</td>
+                    <td class="px-4 py-4 text-center text-sm">{team.goalsAgainst}</td>
+                    <td class="px-4 py-4 text-center text-sm font-medium">
+                      <span class={team.goalDifference >= 0 ? "text-green-600" : "text-red-600"}>
+                        {team.goalDifference >= 0 ? "+" : ""}{team.goalDifference}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Legend -->
+          <div class="p-4 bg-muted/10 border-t">
+            <div class="flex items-center justify-center space-x-6 text-sm">
+              <div class="flex items-center space-x-1">
+                <div class="w-3 h-3 bg-green-500 rounded"></div>
+                <span class="text-muted-foreground">Promotion (1-2)</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                <span class="text-muted-foreground">Promotion Playoffs (3-4)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</BaseLayout>

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(cp:*)",
+      "Bash(npm info:*)",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(gh:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

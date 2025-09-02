@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/astro/Header.astro';
+import GameCard from '../../components/astro/GameCard.astro';
+
+export async function getStaticPaths() {
+  // Generate static paths for team slugs
+  const teamSlugs = [
+    "zsc-lions", "hc-davos", "floorball-koniz", "uhc-alligator-malans",
+    "unihockey-basel-regio", "sv-wiler-ersigen", "uhc-thun", "floorball-thurgau",
+    "grasshopper-club", "uhc-dietlikon"
+  ];
+  return teamSlugs.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+// Mock team data
+const teamData = {
+  "zsc-lions": {
+    id: "zsc-lions",
+    name: "ZSC Lions",
+    fullName: "Zürcher Schlittschuh Club Lions",
+    league: "NLA",
+    logo: "/zsc-lions-logo.png",
+    founded: "1930",
+    venue: "Swiss Life Arena",
+    capacity: "12,000",
+    website: "https://www.zsc-lions.ch",
+    wins: 12,
+    losses: 3,
+    draws: 2,
+    points: 38,
+    goalsFor: 45,
+    goalsAgainst: 28,
+    position: 1
+  },
+  "hc-davos": {
+    id: "hc-davos",
+    name: "HC Davos",
+    fullName: "Hockey Club Davos",
+    league: "NLA",
+    logo: "/hc-davos-logo.png",
+    founded: "1921",
+    venue: "Vaillant Arena",
+    capacity: "7,080",
+    website: "https://www.hcd.ch",
+    wins: 11,
+    losses: 4,
+    draws: 2,
+    points: 35,
+    goalsFor: 42,
+    goalsAgainst: 31,
+    position: 2
+  }
+};
+
+const team = teamData[slug] || teamData["zsc-lions"];
+
+// Mock recent games for this team
+const recentGames = [
+  {
+    id: 1,
+    homeTeam: team.name,
+    awayTeam: "HC Davos",
+    homeScore: 2,
+    awayScore: 1,
+    date: "March 15",
+    league: team.league,
+    homeLogo: team.logo,
+    awayLogo: "/hc-davos-logo.png",
+  },
+  {
+    id: 2,
+    homeTeam: "Floorball Köniz",
+    awayTeam: team.name,
+    homeScore: 0,
+    awayScore: 3,
+    date: "March 12",
+    league: team.league,
+    homeLogo: "/floorball-k-niz-logo.png",
+    awayLogo: team.logo,
+  },
+  {
+    id: 3,
+    homeTeam: team.name,
+    awayTeam: "UHC Alligator Malans",
+    homeScore: 4,
+    awayScore: 2,
+    date: "March 8",
+    league: team.league,
+    homeLogo: team.logo,
+    awayLogo: "/uhc-alligator-malans-logo.png",
+  }
+];
+
+// Mock upcoming games
+const upcomingGames = [
+  {
+    id: 4,
+    homeTeam: "Unihockey Basel Regio",
+    awayTeam: team.name,
+    startTime: "19:30",
+    date: "March 18",
+    league: team.league,
+    homeLogo: "/unihockey-basel-regio-logo.png",
+    awayLogo: team.logo,
+  },
+  {
+    id: 5,
+    homeTeam: team.name,
+    awayTeam: "SV Wiler-Ersigen",
+    startTime: "20:00",
+    date: "March 22",
+    league: team.league,
+    homeLogo: team.logo,
+    awayLogo: "/sv-wiler-ersigen-logo.png",
+  }
+];
+---
+
+<BaseLayout title={`${team.name} - Unihockey Live Tracker`}>
+  <div class="min-h-screen bg-background">
+    <Header />
+
+    <main class="container mx-auto px-4 py-6 max-w-6xl space-y-8">
+      <!-- Team Header -->
+      <div class="bg-card rounded-lg border p-8">
+        <div class="flex items-center space-x-6 mb-6">
+          <img src={team.logo || "/placeholder.svg"} alt={team.name} class="w-24 h-24 rounded-full" />
+          <div class="flex-1">
+            <div class="flex items-center space-x-3 mb-2">
+              <h1 class="text-3xl font-bold text-foreground">{team.name}</h1>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
+                {team.league}
+              </span>
+            </div>
+            <p class="text-lg text-muted-foreground mb-4">{team.fullName}</p>
+            <div class="flex items-center space-x-6 text-sm text-muted-foreground">
+              <div>Founded: {team.founded}</div>
+              <div>Venue: {team.venue}</div>
+              <div>Capacity: {team.capacity}</div>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-primary mb-1">{team.position}</div>
+            <div class="text-sm text-muted-foreground">League Position</div>
+          </div>
+        </div>
+
+        <!-- Team Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="text-center p-4 bg-muted/20 rounded-lg">
+            <div class="text-2xl font-bold text-primary">{team.points}</div>
+            <div class="text-sm text-muted-foreground">Points</div>
+          </div>
+          <div class="text-center p-4 bg-muted/20 rounded-lg">
+            <div class="text-2xl font-bold text-green-600">{team.wins}</div>
+            <div class="text-sm text-muted-foreground">Wins</div>
+          </div>
+          <div class="text-center p-4 bg-muted/20 rounded-lg">
+            <div class="text-2xl font-bold text-red-600">{team.losses}</div>
+            <div class="text-sm text-muted-foreground">Losses</div>
+          </div>
+          <div class="text-center p-4 bg-muted/20 rounded-lg">
+            <div class="text-2xl font-bold text-foreground">{team.goalsFor}:{team.goalsAgainst}</div>
+            <div class="text-sm text-muted-foreground">Goal Difference</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Games Section -->
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Recent Games -->
+        <section>
+          <h2 class="text-xl font-semibold text-foreground mb-4">Recent Games</h2>
+          <div class="bg-card rounded-lg border overflow-hidden">
+            {recentGames.map((game) => (
+              <GameCard game={game} type="recent" showBorder={false} />
+            ))}
+          </div>
+        </section>
+
+        <!-- Upcoming Games -->
+        <section>
+          <h2 class="text-xl font-semibold text-foreground mb-4">Upcoming Games</h2>
+          <div class="bg-card rounded-lg border overflow-hidden">
+            {upcomingGames.map((game) => (
+              <GameCard game={game} type="upcoming" showBorder={false} />
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <!-- Season Performance -->
+      <section>
+        <h2 class="text-xl font-semibold text-foreground mb-4">Season Performance</h2>
+        <div class="bg-card rounded-lg border p-6">
+          <div class="grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="font-semibold text-foreground mb-4">Form Guide</h3>
+              <div class="flex space-x-2">
+                <span class="w-8 h-8 bg-green-500 rounded text-white text-sm flex items-center justify-center">W</span>
+                <span class="w-8 h-8 bg-green-500 rounded text-white text-sm flex items-center justify-center">W</span>
+                <span class="w-8 h-8 bg-red-500 rounded text-white text-sm flex items-center justify-center">L</span>
+                <span class="w-8 h-8 bg-green-500 rounded text-white text-sm flex items-center justify-center">W</span>
+                <span class="w-8 h-8 bg-yellow-500 rounded text-white text-sm flex items-center justify-center">D</span>
+                <span class="w-8 h-8 bg-green-500 rounded text-white text-sm flex items-center justify-center">W</span>
+                <span class="w-8 h-8 bg-green-500 rounded text-white text-sm flex items-center justify-center">W</span>
+              </div>
+              <p class="text-sm text-muted-foreground mt-2">Last 7 games</p>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-foreground mb-4">Key Statistics</h3>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Goals per game</span>
+                  <span class="font-medium">{(team.goalsFor / (team.wins + team.losses + team.draws)).toFixed(1)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Goals conceded per game</span>
+                  <span class="font-medium">{(team.goalsAgainst / (team.wins + team.losses + team.draws)).toFixed(1)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Win percentage</span>
+                  <span class="font-medium">{((team.wins / (team.wins + team.losses + team.draws)) * 100).toFixed(0)}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</BaseLayout>

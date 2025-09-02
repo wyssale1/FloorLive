@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/astro/Header.astro';
+
+export async function getStaticPaths() {
+  // Generate static paths for game IDs
+  const gameIds = [1, 2, 3, 4, 5, 6];
+  return gameIds.map(id => ({ params: { id: id.toString() } }));
+}
+
+const { id } = Astro.params;
+
+// Mock game data - in real app this would come from API
+const gameData = {
+  "1": {
+    id: 1,
+    homeTeam: "ZSC Lions",
+    awayTeam: "HC Davos",
+    homeScore: 2,
+    awayScore: 1,
+    period: "Final",
+    league: "NLA",
+    homeLogo: "/zsc-lions-logo.png",
+    awayLogo: "/hc-davos-logo.png",
+    venue: "Swiss Life Arena",
+    date: "March 15, 2024",
+    time: "19:45",
+    status: "finished"
+  },
+  "2": {
+    id: 2,
+    homeTeam: "Floorball Köniz",
+    awayTeam: "UHC Alligator Malans",
+    homeScore: 0,
+    awayScore: 3,
+    period: "3rd Period",
+    timeRemaining: "05:22",
+    league: "NLA",
+    homeLogo: "/floorball-k-niz-logo.png",
+    awayLogo: "/uhc-alligator-malans-logo.png",
+    venue: "Sporthalle Köniz",
+    date: "March 15, 2024",
+    time: "20:00",
+    status: "live"
+  }
+};
+
+const game = gameData[id] || gameData["1"];
+---
+
+<BaseLayout title={`${game.homeTeam} vs ${game.awayTeam} - Unihockey Live Tracker`}>
+  <div class="min-h-screen bg-background">
+    <Header />
+
+    <main class="container mx-auto px-4 py-6 max-w-4xl">
+      <!-- Game Header -->
+      <div class="bg-card rounded-lg border p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary">
+              {game.league}
+            </span>
+            {game.status === "live" && (
+              <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+                🔴 LIVE
+              </span>
+            )}
+          </div>
+          <div class="text-sm text-muted-foreground">
+            {game.venue} • {game.date} {game.time}
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center space-x-8">
+          <!-- Home Team -->
+          <div class="text-center flex-1">
+            <img src={game.homeLogo || "/placeholder.svg"} alt={game.homeTeam} class="w-16 h-16 mx-auto mb-3 rounded-full" />
+            <h2 class="text-xl font-bold text-foreground mb-2">{game.homeTeam}</h2>
+            <div class="text-4xl font-bold text-primary">
+              {game.homeScore ?? "-"}
+            </div>
+          </div>
+
+          <!-- VS / Score Separator -->
+          <div class="text-center px-4">
+            <div class="text-sm text-muted-foreground mb-2">vs</div>
+            {game.status === "live" && game.period && (
+              <div class="text-center">
+                <div class="text-sm font-medium text-foreground">{game.period}</div>
+                {game.timeRemaining && (
+                  <div class="text-sm text-muted-foreground">{game.timeRemaining}</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <!-- Away Team -->
+          <div class="text-center flex-1">
+            <img src={game.awayLogo || "/placeholder.svg"} alt={game.awayTeam} class="w-16 h-16 mx-auto mb-3 rounded-full" />
+            <h2 class="text-xl font-bold text-foreground mb-2">{game.awayTeam}</h2>
+            <div class="text-4xl font-bold text-primary">
+              {game.awayScore ?? "-"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Stats -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-card rounded-lg border p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">Game Statistics</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-muted-foreground">Shots on Goal</span>
+              <span class="font-medium">12 - 8</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-muted-foreground">Face-offs Won</span>
+              <span class="font-medium">15 - 12</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-muted-foreground">Penalties</span>
+              <span class="font-medium">2 - 4</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-muted-foreground">Power Play</span>
+              <span class="font-medium">1/2 - 0/4</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-card rounded-lg border p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">Recent Form</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="text-sm font-medium text-foreground mb-2">{game.homeTeam}</div>
+              <div class="flex space-x-1">
+                <span class="w-6 h-6 bg-green-500 rounded text-white text-xs flex items-center justify-center">W</span>
+                <span class="w-6 h-6 bg-green-500 rounded text-white text-xs flex items-center justify-center">W</span>
+                <span class="w-6 h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center">L</span>
+                <span class="w-6 h-6 bg-green-500 rounded text-white text-xs flex items-center justify-center">W</span>
+                <span class="w-6 h-6 bg-yellow-500 rounded text-white text-xs flex items-center justify-center">D</span>
+              </div>
+            </div>
+            <div>
+              <div class="text-sm font-medium text-foreground mb-2">{game.awayTeam}</div>
+              <div class="flex space-x-1">
+                <span class="w-6 h-6 bg-green-500 rounded text-white text-xs flex items-center justify-center">W</span>
+                <span class="w-6 h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center">L</span>
+                <span class="w-6 h-6 bg-green-500 rounded text-white text-xs flex items-center justify-center">W</span>
+                <span class="w-6 h-6 bg-green-500 rounded text-white text-xs flex items-center justify-center">W</span>
+                <span class="w-6 h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center">L</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Events (only for live games) -->
+      {game.status === "live" && (
+        <div class="bg-card rounded-lg border p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">Live Events</h3>
+          <div class="space-y-3">
+            <div class="flex items-center space-x-3 p-3 bg-muted/20 rounded">
+              <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div class="flex-1">
+                <div class="text-sm font-medium">Goal - {game.awayTeam}</div>
+                <div class="text-xs text-muted-foreground">45:30 - Player Name</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3 p-3 bg-muted/20 rounded">
+              <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <div class="flex-1">
+                <div class="text-sm font-medium">Penalty - {game.homeTeam}</div>
+                <div class="text-xs text-muted-foreground">42:15 - 2min roughing</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3 p-3 bg-muted/20 rounded">
+              <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div class="flex-1">
+                <div class="text-sm font-medium">Goal - {game.homeTeam}</div>
+                <div class="text-xs text-muted-foreground">38:45 - Player Name (PP)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  </div>
+</BaseLayout>
