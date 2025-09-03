@@ -19,20 +19,28 @@ const TeamLogo = ({ team }: { team: { logo: string; name: string } }) => (
 export default function GameCard({ game, className }: GameCardProps) {
   const isLive = game.status === 'live'
   const isUpcoming = game.status === 'upcoming'
-  const isFinished = game.status === 'finished'
+  const hasScores = isLive || game.status === 'finished'
 
-  const renderLiveIndicator = () => {
-    if (isLive) {
-      return (
-        <div className="flex items-center justify-center space-x-1 mb-2">
-          <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
-          <span className="text-red-600 font-medium text-xs">LIVE</span>
-        </div>
-      )
+  const renderLeftContent = () => {
+    if (isUpcoming) {
+      return <span className="text-gray-700 font-medium text-sm">{game.startTime}</span>
     }
     return null
   }
 
+  const renderTeamLine = (team: any, score?: number | null) => (
+    <div className="flex items-center space-x-3">
+      {hasScores && (
+        <div className="min-w-[40px] text-center">
+          <span className="text-sm font-medium text-gray-800">{score}</span>
+        </div>
+      )}
+      <TeamLogo team={team} />
+      <span className="text-sm text-gray-700 font-medium truncate">
+        {team.name}
+      </span>
+    </div>
+  )
 
   return (
     <Link to="/game/$gameId" params={{ gameId: game.id }} className="block">
@@ -44,45 +52,27 @@ export default function GameCard({ game, className }: GameCardProps) {
           className
         )}
       >
-        {/* Show live indicator */}
-        {renderLiveIndicator()}
+        {/* Live indicator */}
+        {isLive && (
+          <div className="flex items-center justify-center space-x-1 mb-2">
+            <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-red-600 font-medium text-xs">LIVE</span>
+          </div>
+        )}
         
-        {/* Two-line structure: Home team on line 1, Away team on line 2 */}
+        {/* Main content */}
         <div className="flex items-center">
-          {/* Left side - Start time centered between teams for upcoming games */}
+          {/* Left side - Start time for upcoming games */}
           {isUpcoming && (
             <div className="min-w-[40px] text-center mr-3">
-              <span className="text-gray-700 font-medium text-sm">{game.startTime}</span>
+              {renderLeftContent()}
             </div>
           )}
           
-          {/* Teams with scores */}
+          {/* Teams */}
           <div className="flex-1 space-y-2">
-            {/* Line 1: Home Team */}
-            <div className="flex items-center space-x-3">
-              {(isLive || isFinished) && (
-                <div className="min-w-[40px] text-center">
-                  <span className="text-sm font-medium text-gray-800">{game.homeScore}</span>
-                </div>
-              )}
-              <TeamLogo team={game.homeTeam} />
-              <span className="text-sm text-gray-700 font-medium truncate">
-                {game.homeTeam.name}
-              </span>
-            </div>
-            
-            {/* Line 2: Away Team */}
-            <div className="flex items-center space-x-3">
-              {(isLive || isFinished) && (
-                <div className="min-w-[40px] text-center">
-                  <span className="text-sm font-medium text-gray-800">{game.awayScore}</span>
-                </div>
-              )}
-              <TeamLogo team={game.awayTeam} />
-              <span className="text-sm text-gray-700 font-medium truncate">
-                {game.awayTeam.name}
-              </span>
-            </div>
+            {renderTeamLine(game.homeTeam, game.homeScore)}
+            {renderTeamLine(game.awayTeam, game.awayScore)}
           </div>
         </div>
 
