@@ -1,6 +1,6 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { ChevronLeft, Clock } from 'lucide-react'
+import { ChevronLeft, Clock, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient, type Game, type GameEvent } from '../lib/apiClient'
 import GameTimeline from '../components/GameTimeline'
@@ -86,8 +86,8 @@ export default function GameDetail() {
                   }}
                 />
               ) : null}
-              <div className="text-4xl sm:text-6xl" style={{ display: game.homeTeam.logo ? 'none' : 'block' }}>
-                🏒
+              <div className="text-gray-400" style={{ display: game.homeTeam.logo ? 'none' : 'block' }}>
+                <Shield className="w-12 h-12 sm:w-16 sm:h-16" />
               </div>
               <div className="text-center sm:text-right">
                 <div className="text-base sm:text-xl font-medium text-gray-800">
@@ -173,8 +173,8 @@ export default function GameDetail() {
                   }}
                 />
               ) : null}
-              <div className="text-4xl sm:text-6xl" style={{ display: game.awayTeam.logo ? 'none' : 'block' }}>
-                🏒
+              <div className="text-gray-400" style={{ display: game.awayTeam.logo ? 'none' : 'block' }}>
+                <Shield className="w-12 h-12 sm:w-16 sm:h-16" />
               </div>
             </motion.div>
           </div>

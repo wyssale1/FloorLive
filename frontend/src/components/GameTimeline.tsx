@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Target, FileText } from 'lucide-react'
 import type { GameEvent } from '../lib/apiClient'
 
 interface GameTimelineProps {
@@ -70,11 +71,11 @@ export default function GameTimeline({ events }: GameTimelineProps) {
             <div className="flex-shrink-0 mt-1">
               {event.type === 'goal' ? (
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">🥅</span>
+                  <Target className="w-3 h-3 text-white" />
                 </div>
               ) : (
                 <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">📋</span>
+                  <FileText className="w-3 h-3 text-white" />
                 </div>
               )}
             </div>
