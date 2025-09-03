@@ -5,23 +5,30 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import Home from './pages/Home'
 import GameDetail from './pages/GameDetail'
+import Header from './components/Header'
 
 const queryClient = new QueryClient()
 
-// Step 1: Create a root route with Outlet
+// Step 1: Create a root route with Header + Outlet
 const rootRoute = createRootRoute({
   component: () => (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50/30">
+      <Header />
       <Outlet />
     </div>
   ),
 })
 
-// Step 2: Create index route (home page)
+// Step 2: Create index route (home page) with search params
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: Home,
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      date: typeof search.date === 'string' ? search.date : undefined,
+    }
+  },
 })
 
 // Step 3: Create game detail route

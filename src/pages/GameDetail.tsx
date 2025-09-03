@@ -23,25 +23,13 @@ export default function GameDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header with back button */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4">
-          <Link 
-            to="/" 
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ChevronLeft className="w-5 h-5 mr-1" />
-            Back
-          </Link>
-        </div>
-      </div>
+    <div>
 
       {/* Team Header */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white"
+        className="bg-white/50 backdrop-blur-sm"
       >
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 sm:flex-nowrap">
@@ -54,7 +42,7 @@ export default function GameDetail() {
             >
               <div className="text-4xl sm:text-6xl">{game.homeTeam.logo}</div>
               <div className="text-center sm:text-right">
-                <div className="text-lg sm:text-2xl font-bold text-gray-900">
+                <div className="text-lg sm:text-2xl font-semibold text-gray-800">
                   {game.homeTeam.name}
                 </div>
               </div>
@@ -67,7 +55,7 @@ export default function GameDetail() {
               transition={{ delay: 0.4 }}
               className="mx-4 sm:mx-8 text-center order-first sm:order-none w-full sm:w-auto"
             >
-              <div className="text-4xl sm:text-6xl font-bold text-gray-900 mb-2">
+              <div className="text-4xl sm:text-6xl font-semibold text-gray-800 mb-2">
                 {game.homeScore} - {game.awayScore}
               </div>
               
@@ -120,7 +108,7 @@ export default function GameDetail() {
               className="flex items-center space-x-2 sm:space-x-4 flex-1 sm:flex-none justify-center sm:justify-start"
             >
               <div className="text-center sm:text-left">
-                <div className="text-lg sm:text-2xl font-bold text-gray-900">
+                <div className="text-lg sm:text-2xl font-semibold text-gray-800">
                   {game.awayTeam.name}
                 </div>
               </div>

@@ -1,4 +1,5 @@
-export type GameStatus = 'live' | 'today' | 'recent'
+export type GameStatus = 'live' | 'upcoming' | 'finished'
+export type LeagueType = 'NLA Men' | 'NLA Women' | 'NLB Men' | 'NLB Women'
 
 export type Team = {
   id: string
@@ -11,13 +12,14 @@ export type Game = {
   id: string
   homeTeam: Team
   awayTeam: Team
-  homeScore: number
-  awayScore: number
+  homeScore: number | null
+  awayScore: number | null
   status: GameStatus
   period?: string
   time?: string
-  league: string
-  startTime?: string
+  league: LeagueType
+  startTime: string
+  gameDate: Date
   isLive: boolean
 }
 
@@ -95,8 +97,13 @@ export const teams: Team[] = [
   }
 ]
 
+// Helper to create dates
+const today = new Date()
+const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
+const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
+
 export const games: Game[] = [
-  // Live games
+  // Live games - Today
   {
     id: '1',
     homeTeam: teams[0], // ZSC Lions
@@ -106,7 +113,9 @@ export const games: Game[] = [
     status: 'live',
     period: '2nd Period',
     time: '12:34',
-    league: 'NLA',
+    league: 'NLA Men',
+    startTime: '19:30',
+    gameDate: today,
     isLive: true
   },
   {
@@ -116,45 +125,65 @@ export const games: Game[] = [
     homeScore: 0,
     awayScore: 3,
     status: 'live',
-    period: '3rd Period',
+    period: '3rd Period', 
     time: '05:22',
-    league: 'NLB',
+    league: 'NLB Men',
+    startTime: '20:15',
+    gameDate: today,
     isLive: true
   },
   
-  // Today's games
+  // Today's upcoming games
   {
     id: '3',
     homeTeam: teams[4], // Unihockey Basel Regio
     awayTeam: teams[5], // SV Wiler-Ersigen
-    homeScore: 0,
-    awayScore: 0,
-    status: 'today',
+    homeScore: null,
+    awayScore: null,
+    status: 'upcoming',
     startTime: '19:30',
-    league: 'NLA',
+    league: 'NLA Women',
+    gameDate: today,
     isLive: false
   },
   {
     id: '4',
     homeTeam: teams[6], // UHC Thun
     awayTeam: teams[7], // Floorball Thurgau
-    homeScore: 0,
-    awayScore: 0,
-    status: 'today',
+    homeScore: null,
+    awayScore: null,
+    status: 'upcoming',
     startTime: '20:00',
-    league: 'NLB',
+    league: 'NLB Women',
+    gameDate: today,
     isLive: false
   },
 
-  // Recent games
+  // Finished games - Yesterday
   {
     id: '5',
     homeTeam: teams[8], // Grasshopper Club
     awayTeam: teams[9], // UHC Dietlikon
     homeScore: 4,
     awayScore: 2,
-    status: 'recent',
-    league: 'NLA',
+    status: 'finished',
+    startTime: '19:00',
+    league: 'NLA Men',
+    gameDate: yesterday,
+    isLive: false
+  },
+  
+  // Tomorrow's games
+  {
+    id: '6',
+    homeTeam: teams[1], // HC Davos
+    awayTeam: teams[0], // ZSC Lions
+    homeScore: null,
+    awayScore: null,
+    status: 'upcoming',
+    startTime: '18:00',
+    league: 'NLA Men',
+    gameDate: tomorrow,
     isLive: false
   }
 ]
@@ -208,8 +237,14 @@ export const gameEvents: GameEvent[] = [
   }
 ]
 
-export function getGamesByStatus(status: GameStatus): Game[] {
-  return games.filter(game => game.status === status)
+export function getGamesByDate(date: Date): Game[] {
+  return games.filter(game => 
+    game.gameDate.toDateString() === date.toDateString()
+  )
+}
+
+export function getGamesByLeague(games: Game[], league: LeagueType): Game[] {
+  return games.filter(game => game.league === league)
 }
 
 export function getGameById(id: string): Game | undefined {
@@ -218,4 +253,11 @@ export function getGameById(id: string): Game | undefined {
 
 export function getGameEvents(gameId: string): GameEvent[] {
   return gameEvents.filter(event => event.gameId === gameId)
+}
+
+// Helper to get all leagues that have games on a specific date
+export function getLeaguesForDate(date: Date): LeagueType[] {
+  const gamesForDate = getGamesByDate(date)
+  const leagues = [...new Set(gamesForDate.map(game => game.league))]
+  return leagues.sort() // Sort leagues alphabetically
 }
