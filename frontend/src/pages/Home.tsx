@@ -3,7 +3,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import GameCard from '../components/GameCard'
 import WeekPicker from '../components/WeekPicker'
-import { getGamesByDate, getLeaguesForDate, getGamesByLeague, type LeagueType } from '../lib/mockData'
+import { apiClient } from '../lib/apiClient'
 import { format, parseISO } from 'date-fns'
 
 export default function Home() {
@@ -23,6 +23,8 @@ export default function Home() {
   }
 
   const [selectedDate, setSelectedDate] = useState(getInitialDate)
+  const [games, setGames] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date)
@@ -41,12 +43,33 @@ export default function Home() {
     }
   }, [search?.date])
   
-  // Get games for selected date
-  const gamesForDate = getGamesByDate(selectedDate)
-  const leaguesForDate = getLeaguesForDate(selectedDate)
+  // Fetch games when date changes
+  useEffect(() => {
+    const fetchGames = async () => {
+      setLoading(true)
+      try {
+        const dateString = format(selectedDate, 'yyyy-MM-dd')
+        const apiGames = await apiClient.getGamesByDate(dateString)
+        
+        // Adapt API games to frontend format
+        const adaptedGames = apiGames.map(game => apiClient.adaptGameForFrontend(game))
+        setGames(adaptedGames)
+      } catch (error) {
+        console.error('Error fetching games:', error)
+        setGames([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchGames()
+  }, [selectedDate])
   
-  const renderLeagueSection = (league: LeagueType, index: number) => {
-    const leagueGames = getGamesByLeague(gamesForDate, league)
+  // Get leagues and games for rendering
+  const leaguesForDate = apiClient.getLeaguesForDate(games)
+  
+  const renderLeagueSection = (league: string, index: number) => {
+    const leagueGames = apiClient.getGamesByLeague(games, league)
     
     if (leagueGames.length === 0) return null
     
@@ -90,7 +113,11 @@ export default function Home() {
       />
       
       {/* Games by League */}
-      {leaguesForDate.length > 0 ? (
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="text-gray-400 text-lg mb-2">Loading games...</div>
+        </div>
+      ) : leaguesForDate.length > 0 ? (
         <div>
           {leaguesForDate.map((league, index) => renderLeagueSection(league, index))}
         </div>

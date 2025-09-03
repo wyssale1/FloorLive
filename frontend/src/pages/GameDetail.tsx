@@ -1,13 +1,48 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { ChevronLeft, Clock } from 'lucide-react'
-import { getGameById, getGameEvents } from '../lib/mockData'
+import { useState, useEffect } from 'react'
+import { apiClient, type Game, type GameEvent } from '../lib/apiClient'
 import GameTimeline from '../components/GameTimeline'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
-  const game = getGameById(gameId)
-  const events = getGameEvents(gameId)
+  const [game, setGame] = useState<any>(null)
+  const [events, setEvents] = useState<GameEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  
+  useEffect(() => {
+    const fetchGameData = async () => {
+      setLoading(true)
+      try {
+        const [gameData, eventsData] = await Promise.all([
+          apiClient.getGameDetails(gameId),
+          apiClient.getGameEvents(gameId)
+        ])
+        
+        if (gameData) {
+          setGame(apiClient.adaptGameForFrontend(gameData))
+        }
+        setEvents(eventsData)
+      } catch (error) {
+        console.error('Error fetching game data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchGameData()
+  }, [gameId])
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-400 text-lg mb-2">Loading game details...</div>
+        </div>
+      </div>
+    )
+  }
   
   if (!game) {
     return (

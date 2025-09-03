@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npm run dev:*)",
       "Bash(npm uninstall:*)",
-      "Bash(npx shadcn@latest add:*)"
+      "Bash(npx shadcn@latest add:*)",
+      "WebFetch(domain:api-v2.swissunihockey.ch)",
+      "Bash(npm init:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
