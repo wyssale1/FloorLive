@@ -60,7 +60,7 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
         </button>
 
         {/* Week Days */}
-        <div className="flex space-x-1 flex-1 justify-center">
+        <div className="flex space-x-0.5 sm:space-x-1 flex-1 justify-center">
           {weekDays.map((date) => {
             const dayName = format(date, 'EEE')
             const dayNumber = format(date, 'd')
@@ -72,7 +72,7 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
                 key={date.toString()}
                 onClick={() => onDateSelect(date)}
                 className={`
-                  relative flex flex-col items-center px-2.5 py-1.5 rounded-md transition-colors min-w-[40px]
+                  relative flex flex-col items-center px-2 py-1.5 rounded-md transition-colors min-w-[36px]
                   ${selected 
                     ? 'bg-blue-500 text-white' 
                     : 'hover:bg-gray-50 text-gray-700'

@@ -171,7 +171,7 @@ class ApiClient {
       'UHC Dietlikon': '🔴'
     };
     
-    return emojiMap[teamName] || '⚽';
+    return emojiMap[teamName] || '🏒';
   }
 }
 

@@ -122,7 +122,7 @@ export default function Home() {
       'Grasshopper Club': '🦗',
       'UHC Dietlikon': '🔴'
     };
-    return emojiMap[teamName] || '⚽';
+    return emojiMap[teamName] || '🏒';
   };
   
   const [gamesByLeague, setGamesByLeague] = useState<Record<string, any[]>>({})
