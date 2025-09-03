@@ -83,7 +83,7 @@ export default function Home() {
             time: game.time,
             league: leagueName,
             startTime: game.start_time,
-            gameDate: new Date(game.game_date),
+            gameDate: game.game_date,
             isLive: game.status === 'live'
           }))
           

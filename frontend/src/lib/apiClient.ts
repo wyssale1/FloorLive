@@ -151,7 +151,7 @@ class ApiClient {
       time: apiGame.time,
       league: apiGame.league.name,
       startTime: apiGame.start_time,
-      gameDate: new Date(apiGame.game_date),
+      gameDate: apiGame.game_date,
       isLive: apiGame.status === 'live'
     };
   }

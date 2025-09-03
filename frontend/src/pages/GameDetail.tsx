@@ -145,7 +145,7 @@ export default function GameDetail() {
               
               {game.gameDate && (
                 <div className="text-xs text-gray-500 mt-1">
-                  {typeof game.gameDate === 'string' ? game.gameDate : game.gameDate.toLocaleDateString()}
+                  {game.gameDate}
                 </div>
               )}
             </motion.div>
