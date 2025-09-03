@@ -29,7 +29,7 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
   const isSelected = (date: Date) => isSameDay(date, selectedDate)
 
   return (
-    <div className="bg-white/30 backdrop-blur-sm border border-gray-100/50 rounded-lg p-3 mb-6">
+    <div className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-4 mb-6">
       <div className="flex items-center justify-between">
         {/* Previous Week Button */}
         <button
