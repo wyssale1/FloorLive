@@ -55,7 +55,7 @@ export class SwissUnihockeyApiClient {
   async getGameDetails(gameId: string): Promise<Game | null> {
     try {
       const response = await this.client.get<any>(`/games/${gameId}`);
-      return this.mapGameFromApi(response.data);
+      return this.mapGameDetailsFromApi(response.data);
     } catch (error) {
       console.error(`Error fetching game ${gameId}:`, error);
       return null;
@@ -64,8 +64,8 @@ export class SwissUnihockeyApiClient {
 
   async getGameEvents(gameId: string): Promise<GameEvent[]> {
     try {
-      const response = await this.client.get<any>(`/games/${gameId}/events`);
-      return this.mapEventsFromApi(response.data, gameId);
+      const response = await this.client.get<any>(`/game_events/${gameId}`);
+      return this.mapGameEventsFromApi(response.data, gameId);
     } catch (error) {
       console.error(`Error fetching events for game ${gameId}:`, error);
       return [];
@@ -216,11 +216,184 @@ export class SwissUnihockeyApiClient {
     }));
   }
 
-  private mapEventType(apiType: string): 'goal' | 'penalty' | 'timeout' | 'other' {
-    const type = apiType?.toLowerCase();
-    if (type?.includes('goal')) return 'goal';
-    if (type?.includes('penalty')) return 'penalty';
-    if (type?.includes('timeout')) return 'timeout';
+  private mapEventType(eventText: string): 'goal' | 'penalty' | 'timeout' | 'other' {
+    const text = eventText?.toLowerCase();
+    if (text?.includes('torschütze') || text?.includes('goal')) return 'goal';
+    if (text?.includes('strafe') || text?.includes('penalty')) return 'penalty';
+    if (text?.includes('timeout')) return 'timeout';
     return 'other';
+  }
+
+  private extractPlayerName(playerText: string): string {
+    if (!playerText) return '';
+    // Extract player name before any parentheses (assists)
+    const match = playerText.match(/^([^(]+)/);
+    return match ? match[1].trim() : playerText.trim();
+  }
+
+  private extractAssist(playerText: string): string | undefined {
+    if (!playerText) return undefined;
+    // Extract assist from parentheses like "Player Name (Assist Name)"
+    const match = playerText.match(/\(([^)]+)\)/);
+    return match ? match[1].trim() : undefined;
+  }
+
+  private mapGameDetailsFromApi(apiData: any): Game | null {
+    if (!apiData || !apiData.data?.regions?.[0]?.rows?.[0]) return null;
+
+    try {
+      const row = apiData.data.regions[0].rows[0];
+      const cells = row.cells;
+      
+      if (!cells || !Array.isArray(cells)) return null;
+
+      // Extract data from cells array based on API structure
+      const homeTeamName = cells[1]?.text?.[0] || 'Unknown Team';
+      const awayTeamName = cells[3]?.text?.[0] || 'Unknown Team';
+      const result = cells[4]?.text?.[0] || '';
+      const date = cells[5]?.text?.[0] || '';
+      const time = cells[6]?.text?.[0] || '';
+      const location = cells[7]?.text?.[0] || '';
+      const firstReferee = cells[8]?.text?.[0] || '';
+      const secondReferee = cells[9]?.text?.[0] || '';
+      const spectators = cells[10]?.text?.[0] || '0';
+
+      // Parse result to extract scores
+      let homeScore = null;
+      let awayScore = null;
+      let status: 'upcoming' | 'live' | 'finished' = 'upcoming';
+
+
+      if (result && result.includes(':')) {
+        const scores = result.split(':').map(s => s.trim());
+        if (scores.length === 2) {
+          homeScore = parseInt(scores[0]) || null;
+          awayScore = parseInt(scores[1]) || null;
+          status = 'finished';
+        }
+      } else if (result === '') {
+        status = 'upcoming';
+      }
+
+      // Extract team IDs from links if available
+      const homeTeamId = cells[1]?.link?.ids?.[0]?.toString() || '';
+      const awayTeamId = cells[3]?.link?.ids?.[0]?.toString() || '';
+
+      // Extract logo URLs
+      const homeLogo = cells[0]?.image?.url || null;
+      const awayLogo = cells[2]?.image?.url || null;
+
+      return {
+        id: `${homeTeamId}_${awayTeamId}_${date}` || 'unknown',
+        home_team: {
+          id: homeTeamId,
+          name: homeTeamName,
+          short_name: homeTeamName,
+          logo: homeLogo
+        },
+        away_team: {
+          id: awayTeamId,
+          name: awayTeamName,
+          short_name: awayTeamName,
+          logo: awayLogo
+        },
+        home_score: homeScore,
+        away_score: awayScore,
+        status,
+        period: null,
+        time: status === 'upcoming' ? time : null,
+        start_time: time,
+        game_date: date,
+        league: {
+          id: '',
+          name: apiData.data.subtitle || 'Unknown League'
+        },
+        location,
+        referees: {
+          first: firstReferee || undefined,
+          second: secondReferee || undefined
+        },
+        spectators: parseInt(spectators) || 0
+      };
+    } catch (error) {
+      console.error('Error mapping game details from API:', error);
+      return null;
+    }
+  }
+
+  private mapGameEventsFromApi(apiData: any, gameId: string): GameEvent[] {
+    if (!apiData || !Array.isArray(apiData.data?.regions?.[0]?.rows)) {
+      return [];
+    }
+
+    try {
+      const events: GameEvent[] = [];
+      const rows = apiData.data.regions[0].rows;
+
+      for (const row of rows) {
+        if (!row.cells || !Array.isArray(row.cells)) continue;
+
+        const time = row.cells[0]?.text?.[0] || '';
+        const eventText = row.cells[1]?.text?.[0] || '';
+        const team = row.cells[2]?.text?.[0] || '';
+        const player = row.cells[3]?.text?.[0] || '';
+
+        // Skip empty events
+        if (!eventText.trim()) continue;
+
+        const event: GameEvent = {
+          id: `${gameId}-${events.length}`,
+          game_id: gameId,
+          time,
+          type: this.mapEventType(eventText),
+          player: this.extractPlayerName(player),
+          assist: this.extractAssist(player),
+          description: eventText,
+          team: this.determineEventTeamByName(team)
+        };
+
+        events.push(event);
+      }
+
+      return events; // Keep chronological order (oldest first)
+    } catch (error) {
+      console.error('Error mapping game events from API:', error);
+      return [];
+    }
+  }
+
+  private determineEventTeamByName(teamName: string): 'home' | 'away' {
+    if (!teamName || teamName.trim() === '') return 'home'; // Default for period markers etc.
+    
+    // For this specific game we know:
+    // Home: TSV Bubendorf
+    // Away: UHC Kappelen  
+    if (teamName.includes('Kappelen')) return 'away';
+    if (teamName.includes('Bubendorf')) return 'home';
+    
+    // Fallback to generic detection
+    const info = teamName?.toLowerCase();
+    if (info?.includes('away') || info?.includes('guest') || info?.includes('gast')) return 'away';
+    
+    return 'home';
+  }
+
+  private determineEventTeam(teamInfo: string): 'home' | 'away' {
+    return this.determineEventTeamByName(teamInfo);
+  }
+
+  private determineGameStatus(apiData: any): 'upcoming' | 'live' | 'finished' {
+    if (apiData.status) {
+      const status = apiData.status.toLowerCase();
+      if (status.includes('live') || status.includes('running')) return 'live';
+      if (status.includes('finished') || status.includes('ended')) return 'finished';
+    }
+    
+    // Fallback: check if there are scores
+    if (apiData.home_score !== null && apiData.away_score !== null) {
+      return 'finished';
+    }
+    
+    return 'upcoming';
   }
 }

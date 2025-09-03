@@ -58,7 +58,7 @@ export default function GameDetail() {
   }
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-6">
 
       {/* Team Header */}
       <motion.div 
@@ -75,7 +75,20 @@ export default function GameDetail() {
               transition={{ delay: 0.2 }}
               className="flex items-center space-x-2 sm:space-x-4 flex-1 sm:flex-none justify-center sm:justify-end"
             >
-              <div className="text-4xl sm:text-6xl">{game.homeTeam.logo}</div>
+              {game.homeTeam.logo ? (
+                <img 
+                  src={game.homeTeam.logo} 
+                  alt={`${game.homeTeam.name} logo`}
+                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling.style.display = 'block';
+                  }}
+                />
+              ) : null}
+              <div className="text-4xl sm:text-6xl" style={{ display: game.homeTeam.logo ? 'none' : 'block' }}>
+                🏒
+              </div>
               <div className="text-center sm:text-right">
                 <div className="text-lg sm:text-2xl font-semibold text-gray-800">
                   {game.homeTeam.name}
@@ -123,10 +136,6 @@ export default function GameDetail() {
                 <div className="text-sm text-gray-600 mb-1">{game.period}</div>
               )}
               
-              {game.time && (
-                <div className="text-sm font-medium text-gray-900">{game.time}</div>
-              )}
-              
               {game.startTime && (
                 <div className="text-sm text-gray-600">
                   <Clock className="w-4 h-4 inline mr-1" />
@@ -147,7 +156,20 @@ export default function GameDetail() {
                   {game.awayTeam.name}
                 </div>
               </div>
-              <div className="text-4xl sm:text-6xl">{game.awayTeam.logo}</div>
+              {game.awayTeam.logo ? (
+                <img 
+                  src={game.awayTeam.logo} 
+                  alt={`${game.awayTeam.name} logo`}
+                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling.style.display = 'block';
+                  }}
+                />
+              ) : null}
+              <div className="text-4xl sm:text-6xl" style={{ display: game.awayTeam.logo ? 'none' : 'block' }}>
+                🏒
+              </div>
             </motion.div>
           </div>
         </div>

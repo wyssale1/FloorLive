@@ -22,7 +22,7 @@ export default function Home() {
     return new Date()
   }
 
-  const [selectedDate, setSelectedDate] = useState(getInitialDate)
+  const [selectedDate, setSelectedDate] = useState(() => getInitialDate())
   const [games, setGames] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 

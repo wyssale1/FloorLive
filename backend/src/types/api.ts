@@ -21,7 +21,11 @@ export interface Game {
     name: string;
   };
   location?: string;
-  referees?: string[];
+  referees?: {
+    first?: string;
+    second?: string;
+  };
+  spectators?: number;
 }
 
 export interface GameEvent {

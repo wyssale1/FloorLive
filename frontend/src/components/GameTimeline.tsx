@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import type { GameEvent } from '../lib/mockData'
+import type { GameEvent } from '../lib/apiClient'
 
 interface GameTimelineProps {
   events: GameEvent[]

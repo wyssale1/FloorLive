@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate, useRouter } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -28,8 +28,14 @@ const useBackButton = () => {
   const shouldShow = location.pathname !== '/'
   
   const goBack = () => {
-    // Smart back navigation - go to previous page or home
-    navigate({ to: '/' })
+    // Use browser's back functionality to maintain the previous state
+    // This will preserve the date and scroll position
+    if (window.history.length > 1) {
+      window.history.back()
+    } else {
+      // Fallback: navigate to home if no history
+      navigate({ to: '/' })
+    }
   }
   
   return { shouldShow, goBack }
