@@ -68,6 +68,7 @@ export class CacheService {
 
   // Helper methods for games
   setGames(date: string, games: Game[]): void {
+    // Always cache the result, even if it's empty
     const hasLiveGames = games.some(game => game.status === 'live');
     const ttl = hasLiveGames ? this.LIVE_GAME_TTL : this.DEFAULT_TTL;
     this.set(`games:${date}`, games, ttl);
@@ -75,6 +76,11 @@ export class CacheService {
 
   getGames(date: string): Game[] | null {
     return this.get(`games:${date}`);
+  }
+
+  // Force clear games cache for a specific date
+  clearGamesCache(date: string): void {
+    this.delete(`games:${date}`);
   }
 
   setLiveGames(games: Game[]): void {

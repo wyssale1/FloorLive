@@ -49,14 +49,55 @@ export default function Home() {
       setLoading(true)
       try {
         const dateString = format(selectedDate, 'yyyy-MM-dd')
-        const apiGames = await apiClient.getGamesByDate(dateString)
+        const response = await fetch(`http://localhost:3001/api/games?date=${dateString}`)
         
-        // Adapt API games to frontend format
-        const adaptedGames = apiGames.map(game => apiClient.adaptGameForFrontend(game))
-        setGames(adaptedGames)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        
+        // Convert backend format to frontend format, preserving league structure
+        const allGames: any[] = []
+        const gamesByLeague: Record<string, any[]> = {}
+        
+        Object.entries(data.gamesByLeague).forEach(([leagueName, games]: [string, any]) => {
+          const adaptedGames = games.map((game: any) => ({
+            id: game.id,
+            homeTeam: {
+              id: game.home_team.id,
+              name: game.home_team.name,
+              shortName: game.home_team.short_name,
+              logo: game.home_team.logo || getTeamEmoji(game.home_team.name)
+            },
+            awayTeam: {
+              id: game.away_team.id,
+              name: game.away_team.name,
+              shortName: game.away_team.short_name,
+              logo: game.away_team.logo || getTeamEmoji(game.away_team.name)
+            },
+            homeScore: game.home_score,
+            awayScore: game.away_score,
+            status: game.status,
+            period: game.period,
+            time: game.time,
+            league: leagueName,
+            startTime: game.start_time,
+            gameDate: new Date(game.game_date),
+            isLive: game.status === 'live'
+          }))
+          
+          gamesByLeague[leagueName] = adaptedGames
+          allGames.push(...adaptedGames)
+        })
+        
+        setGames(allGames)
+        setGamesByLeague(gamesByLeague)
+        
       } catch (error) {
         console.error('Error fetching games:', error)
         setGames([])
+        setGamesByLeague({})
       } finally {
         setLoading(false)
       }
@@ -65,11 +106,30 @@ export default function Home() {
     fetchGames()
   }, [selectedDate])
   
-  // Get leagues and games for rendering
-  const leaguesForDate = apiClient.getLeaguesForDate(games)
+  // Helper function for team emojis
+  const getTeamEmoji = (teamName: string): string => {
+    const emojiMap: Record<string, string> = {
+      'ZSC Lions': '🦁',
+      'HC Davos': '🛡️',
+      'Floorball Köniz': '⚫',
+      'UHC Alligator Malans': '🐊',
+      'Unihockey Basel Regio': '🏒',
+      'SV Wiler-Ersigen': '⭐',
+      'UHC Thun': '🏔️',
+      'Floorball Thurgau': '🔵',
+      'Grasshopper Club': '🦗',
+      'UHC Dietlikon': '🔴'
+    };
+    return emojiMap[teamName] || '⚽';
+  };
+  
+  const [gamesByLeague, setGamesByLeague] = useState<Record<string, any[]>>({})
+  
+  // Get leagues for rendering
+  const leaguesForDate = Object.keys(gamesByLeague).sort()
   
   const renderLeagueSection = (league: string, index: number) => {
-    const leagueGames = apiClient.getGamesByLeague(games, league)
+    const leagueGames = gamesByLeague[league] || []
     
     if (leagueGames.length === 0) return null
     
@@ -84,7 +144,7 @@ export default function Home() {
         <h2 className="text-lg font-medium text-gray-800 mb-4 px-1">
           {league}
           <span className="text-sm text-gray-500 ml-2">
-            {leagueGames.length} {leagueGames.length === 1 ? 'game' : 'games'}
+            • {leagueGames.length} {leagueGames.length === 1 ? 'game' : 'games'}
           </span>
         </h2>
         

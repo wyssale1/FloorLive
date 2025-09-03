@@ -27,18 +27,33 @@ router.get('/', async (req, res) => {
 
     // Check cache first
     let games = cache.getGames(dateString);
+    let fromCache = false;
     
-    if (!games) {
+    if (games === null) {
       console.log(`Fetching games for ${dateString} from API...`);
-      games = await apiClient.getGamesByDate(dateString);
-      cache.setGames(dateString, games);
+      try {
+        games = await apiClient.getGamesByDate(dateString);
+        // Always cache the result, even if empty
+        cache.setGames(dateString, games);
+        console.log(`Cached ${games.length} games for ${dateString}`);
+      } catch (error) {
+        console.error(`Failed to fetch games for ${dateString}:`, error);
+        games = []; // Return empty array on error
+      }
     } else {
-      console.log(`Serving cached games for ${dateString}`);
+      console.log(`Serving cached games for ${dateString} (${games.length} games)`);
+      fromCache = true;
     }
 
     // Group by league for frontend
     const gamesByLeague = games.reduce((acc, game) => {
-      const leagueName = game.league.name;
+      let leagueName = game.league.name;
+      
+      // Handle games without proper league information
+      if (!leagueName || leagueName === 'Unknown League' || leagueName.trim() === '') {
+        leagueName = 'Other Leagues';
+      }
+      
       if (!acc[leagueName]) {
         acc[leagueName] = [];
       }
@@ -51,7 +66,8 @@ router.get('/', async (req, res) => {
       leagues: Object.keys(gamesByLeague).sort(),
       gamesByLeague,
       totalGames: games.length,
-      cached: cache.has(`games:${dateString}`)
+      cached: fromCache,
+      hasGames: games.length > 0
     });
 
   } catch (error) {

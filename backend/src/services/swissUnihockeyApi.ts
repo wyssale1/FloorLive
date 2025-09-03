@@ -18,14 +18,14 @@ export class SwissUnihockeyApiClient {
 
   async getGames(params: GameListParams = {}): Promise<Game[]> {
     try {
-      const response = await this.client.get<SwissUnihockeyApiResponse<any>>('/games', {
+      const response = await this.client.get<any>('/games', {
         params: {
-          mode: params.mode || 'list',
+          mode: params.mode || 'current',
           ...params
         }
       });
 
-      return this.mapGamesFromApi(response.data.regions);
+      return this.mapGamesFromApi(response.data);
     } catch (error) {
       console.error('Error fetching games:', error);
       throw new Error('Failed to fetch games from Swiss Unihockey API');
@@ -33,11 +33,19 @@ export class SwissUnihockeyApiClient {
   }
 
   async getGamesByDate(date: string): Promise<Game[]> {
-    return this.getGames({
-      mode: 'list',
-      date_from: date,
-      date_to: date
+    // Convert date to navigate to the right day
+    const targetDate = new Date(date);
+    const nextDay = new Date(targetDate);
+    nextDay.setDate(targetDate.getDate() + 1);
+    const nextDayStr = nextDay.toISOString().split('T')[0];
+    
+    const allGames = await this.getGames({
+      mode: 'current',
+      before_date: nextDayStr
     });
+    
+    // Filter games to only include the exact date requested
+    return allGames.filter(game => game.game_date === date);
   }
 
   async getCurrentGames(): Promise<Game[]> {
@@ -64,20 +72,89 @@ export class SwissUnihockeyApiClient {
     }
   }
 
-  private mapGamesFromApi(regions: any[]): Game[] {
+  private mapGamesFromApi(apiData: any): Game[] {
     const games: Game[] = [];
     
-    if (!Array.isArray(regions)) return games;
+    if (!apiData?.data?.regions) return games;
 
-    regions.forEach(region => {
-      if (region.games && Array.isArray(region.games)) {
-        region.games.forEach((game: any) => {
-          games.push(this.mapGameFromApi(game));
+    // Get the actual game date from the API context
+    const gameDate = apiData?.data?.context?.on_date || new Date().toISOString().split('T')[0];
+
+    apiData.data.regions.forEach((region: any) => {
+      const leagueName = region.text || 'Unknown League';
+      
+      if (region.rows && Array.isArray(region.rows)) {
+        region.rows.forEach((row: any) => {
+          try {
+            const game = this.mapRowToGame(row, leagueName, gameDate);
+            if (game) {
+              games.push(game);
+            }
+          } catch (error) {
+            console.warn('Failed to map game row:', error);
+          }
         });
       }
     });
 
     return games;
+  }
+
+  private mapRowToGame(row: any, leagueName: string, gameDate: string): Game | null {
+    if (!row.cells || !Array.isArray(row.cells) || row.cells.length < 5) {
+      return null;
+    }
+
+    // Parse cells: [time, home_team, separator, away_team, score]
+    const timeCell = row.cells[0]?.text?.[0] || '';
+    const homeTeamName = row.cells[1]?.text?.[0] || '';
+    const awayTeamName = row.cells[3]?.text?.[0] || '';
+    const scoreCell = row.cells[4]?.text?.[0] || '';
+
+    // Parse score if it exists (e.g., "2:1" or "2 - 1")
+    let homeScore = null;
+    let awayScore = null;
+    let status: 'upcoming' | 'live' | 'finished' = 'upcoming';
+
+    if (scoreCell && scoreCell.trim()) {
+      const scoreMatch = scoreCell.match(/(\d+)\s*[-:]\s*(\d+)/);
+      if (scoreMatch) {
+        homeScore = parseInt(scoreMatch[1]);
+        awayScore = parseInt(scoreMatch[2]);
+        status = 'finished';
+      }
+    }
+
+    // Check if game is live (this might be indicated differently in the API)
+    if (timeCell.toLowerCase().includes('live') || scoreCell.toLowerCase().includes('live')) {
+      status = 'live';
+    }
+
+    return {
+      id: row.id?.toString() || '',
+      home_team: {
+        id: '',
+        name: homeTeamName,
+        short_name: homeTeamName.substring(0, 3).toUpperCase()
+      },
+      away_team: {
+        id: '',
+        name: awayTeamName,
+        short_name: awayTeamName.substring(0, 3).toUpperCase()
+      },
+      home_score: homeScore,
+      away_score: awayScore,
+      status,
+      start_time: timeCell,
+      game_date: gameDate,
+      league: {
+        id: '',
+        name: leagueName
+      },
+      location: undefined,
+      period: undefined,
+      time: status === 'live' ? timeCell : undefined
+    };
   }
 
   private mapGameFromApi(apiGame: any): Game {

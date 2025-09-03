@@ -52,4 +52,7 @@ export interface GameListParams {
   team_id?: string;
   date_from?: string;
   date_to?: string;
+  on_date?: string;
+  before_date?: string;
+  after_date?: string;
 }
