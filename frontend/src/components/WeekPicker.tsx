@@ -25,11 +25,30 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
     setCurrentWeekStart(prev => addDays(prev, 7))
   }
 
+  const goToToday = () => {
+    const today = new Date()
+    setCurrentWeekStart(startOfWeek(today, { weekStartsOn: 1 }))
+    onDateSelect(today)
+  }
+
   const isToday = (date: Date) => isSameDay(date, new Date())
   const isSelected = (date: Date) => isSameDay(date, selectedDate)
 
   return (
     <div className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-4 mb-6">
+      {/* Month/Year Header */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm text-gray-600 font-medium">
+          {format(currentWeekStart, 'MMMM yyyy')}
+        </div>
+        <button
+          onClick={goToToday}
+          className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 hover:bg-blue-50 rounded transition-colors"
+        >
+          Today
+        </button>
+      </div>
+      
       <div className="flex items-center justify-between">
         {/* Previous Week Button */}
         <button

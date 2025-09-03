@@ -93,11 +93,13 @@ export default function Home() {
         
         setGames(allGames)
         setGamesByLeague(gamesByLeague)
+        setLeaguesForDate(data.leagues || [])
         
       } catch (error) {
         console.error('Error fetching games:', error)
         setGames([])
         setGamesByLeague({})
+        setLeaguesForDate([])
       } finally {
         setLoading(false)
       }
@@ -125,8 +127,8 @@ export default function Home() {
   
   const [gamesByLeague, setGamesByLeague] = useState<Record<string, any[]>>({})
   
-  // Get leagues for rendering
-  const leaguesForDate = Object.keys(gamesByLeague).sort()
+  // Get leagues for rendering (use backend-provided order)
+  const [leaguesForDate, setLeaguesForDate] = useState<string[]>([])
   
   const renderLeagueSection = (league: string, index: number) => {
     const leagueGames = gamesByLeague[league] || []
@@ -144,7 +146,7 @@ export default function Home() {
         <h2 className="text-lg font-medium text-gray-800 mb-4 px-1">
           {league}
           <span className="text-sm text-gray-500 ml-2">
-            • {leagueGames.length} {leagueGames.length === 1 ? 'game' : 'games'}
+            {leagueGames.length} {leagueGames.length === 1 ? 'game' : 'games'}
           </span>
         </h2>
         
