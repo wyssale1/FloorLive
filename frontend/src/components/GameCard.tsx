@@ -25,16 +25,19 @@ export default function GameCard({ game, className }: GameCardProps) {
     if (isUpcoming) {
       return <span className="text-gray-700 font-medium text-sm">{game.startTime}</span>
     }
+    if (hasScores) {
+      return (
+        <div className="space-y-1">
+          <span className="text-sm font-medium text-gray-800 block">{game.homeScore}</span>
+          <span className="text-sm font-medium text-gray-800 block">{game.awayScore}</span>
+        </div>
+      )
+    }
     return null
   }
 
-  const renderTeamLine = (team: any, score?: number | null) => (
+  const renderTeamLine = (team: any) => (
     <div className="flex items-center space-x-3">
-      {hasScores && (
-        <div className="min-w-[40px] text-center">
-          <span className="text-sm font-medium text-gray-800">{score}</span>
-        </div>
-      )}
       <TeamLogo team={team} />
       <span className="text-sm text-gray-700 font-medium truncate">
         {team.name}
@@ -62,17 +65,15 @@ export default function GameCard({ game, className }: GameCardProps) {
         
         {/* Main content */}
         <div className="flex items-center">
-          {/* Left side - Start time for upcoming games */}
-          {isUpcoming && (
-            <div className="min-w-[40px] text-center mr-3">
-              {renderLeftContent()}
-            </div>
-          )}
+          {/* Left side - Always present for consistent height */}
+          <div className="min-w-[40px] text-center mr-3">
+            {renderLeftContent()}
+          </div>
           
           {/* Teams */}
           <div className="flex-1 space-y-2">
-            {renderTeamLine(game.homeTeam, game.homeScore)}
-            {renderTeamLine(game.awayTeam, game.awayScore)}
+            {renderTeamLine(game.homeTeam)}
+            {renderTeamLine(game.awayTeam)}
           </div>
         </div>
 
