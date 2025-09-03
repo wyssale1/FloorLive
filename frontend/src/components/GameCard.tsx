@@ -62,7 +62,7 @@ export default function GameCard({ game, className }: GameCardProps) {
             <div className="flex items-center space-x-3">
               {(isLive || isFinished) && (
                 <div className="min-w-[40px] text-center">
-                  <span className="text-lg font-bold text-gray-800">{game.homeScore}</span>
+                  <span className="text-sm font-medium text-gray-800">{game.homeScore}</span>
                 </div>
               )}
               <TeamLogo team={game.homeTeam} />
@@ -75,7 +75,7 @@ export default function GameCard({ game, className }: GameCardProps) {
             <div className="flex items-center space-x-3">
               {(isLive || isFinished) && (
                 <div className="min-w-[40px] text-center">
-                  <span className="text-lg font-bold text-gray-800">{game.awayScore}</span>
+                  <span className="text-sm font-medium text-gray-800">{game.awayScore}</span>
                 </div>
               )}
               <TeamLogo team={game.awayTeam} />
