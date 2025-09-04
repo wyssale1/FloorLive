@@ -67,13 +67,15 @@ export default function Home() {
               id: game.home_team.id,
               name: game.home_team.name,
               shortName: game.home_team.short_name,
-              logo: game.home_team.logo || getTeamEmoji(game.home_team.name)
+              logo: game.home_team.logo,
+              logoUrls: game.home_team.logoUrls
             },
             awayTeam: {
               id: game.away_team.id,
               name: game.away_team.name,
               shortName: game.away_team.short_name,
-              logo: game.away_team.logo || getTeamEmoji(game.away_team.name)
+              logo: game.away_team.logo,
+              logoUrls: game.away_team.logoUrls
             },
             homeScore: game.home_score,
             awayScore: game.away_score,
@@ -105,22 +107,6 @@ export default function Home() {
     fetchGames()
   }, [selectedDate])
   
-  // Helper function for team emojis
-  const getTeamEmoji = (teamName: string): string => {
-    const emojiMap: Record<string, string> = {
-      'ZSC Lions': '🦁',
-      'HC Davos': '🛡️',
-      'Floorball Köniz': '⚫',
-      'UHC Alligator Malans': '🐊',
-      'Unihockey Basel Regio': '🏒',
-      'SV Wiler-Ersigen': '⭐',
-      'UHC Thun': '🏔️',
-      'Floorball Thurgau': '🔵',
-      'Grasshopper Club': '🦗',
-      'UHC Dietlikon': '🔴'
-    };
-    return emojiMap[teamName] || '🏒';
-  };
   
   const [gamesByLeague, setGamesByLeague] = useState<Record<string, any[]>>({})
   

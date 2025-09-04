@@ -1,25 +1,76 @@
-// Team name mapping system - normalize/override team names from API
-export const TEAM_NAME_MAP: Record<string, string> = {
-  // Example mappings - add more as needed
-  'HCR': 'HC Rychenberg Winterthur',
-  'ZSC': 'ZSC Lions Zürich',
-  'HCD': 'HC Davos',
-  'FBK': 'Floorball Köniz',
-  'UAM': 'UHC Alligator Malans',
-  'UBR': 'Unihockey Basel Regio',
-  'SWE': 'SV Wiler-Ersigen',
-  'UHT': 'UHC Thun',
-  'FBT': 'Floorball Thurgau',
-  'GCZ': 'Grasshopper Club Zürich',
-  'UHD': 'UHC Dietlikon'
-};
+import fs from 'fs/promises';
+import path from 'path';
+
+interface TeamOverride {
+  mappingNames: string[];
+  displayName?: string;
+}
+
+interface TeamOverrides {
+  _instructions: string;
+  mappings: Record<string, TeamOverride>;
+}
+
+let teamOverridesCache: TeamOverrides | null = null;
 
 /**
- * Maps/normalizes team names from API response
- * If a mapping exists, use it. Otherwise, return original name.
+ * Load team overrides from JSON file
+ */
+async function loadTeamOverrides(): Promise<TeamOverrides> {
+  if (teamOverridesCache) {
+    return teamOverridesCache;
+  }
+
+  try {
+    const overridesPath = path.join(process.cwd(), 'data', 'team-overrides.json');
+    const data = await fs.readFile(overridesPath, 'utf-8');
+    teamOverridesCache = JSON.parse(data);
+    return teamOverridesCache!;
+  } catch (error) {
+    console.warn('Could not load team overrides, using empty mappings:', error);
+    teamOverridesCache = { _instructions: '', mappings: {} };
+    return teamOverridesCache;
+  }
+}
+
+/**
+ * Get display name for a team (with override if available)
+ */
+export async function getTeamDisplayName(teamName: string): Promise<string> {
+  const teamId = await getTeamId(teamName);
+  if (!teamId) return teamName;
+  
+  const overrides = await loadTeamOverrides();
+  const override = overrides.mappings[teamId];
+  return override?.displayName || teamName;
+}
+
+/**
+ * Get team ID for a team name (for logo lookup)
+ * Searches through all mappingNames arrays to find matching team ID
+ */
+export async function getTeamId(teamName: string): Promise<string | null> {
+  const overrides = await loadTeamOverrides();
+  
+  // Search through all team IDs and their mappingNames
+  for (const [teamId, teamData] of Object.entries(overrides.mappings)) {
+    if (teamData.mappingNames && teamData.mappingNames.includes(teamName)) {
+      return teamId;
+    }
+  }
+  
+  return null;
+}
+
+
+/**
+ * Legacy function - maps/normalizes team names from API response
+ * @deprecated Use getTeamDisplayName instead
  */
 export function mapTeamName(apiTeamName: string): string {
-  return TEAM_NAME_MAP[apiTeamName] || apiTeamName;
+  // For backward compatibility, return original name
+  // Real mapping now happens async via getTeamDisplayName
+  return apiTeamName;
 }
 
 // League ordering preferences

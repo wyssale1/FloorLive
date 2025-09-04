@@ -5,6 +5,7 @@ interface TeamLogoProps {
   team: {
     id: string;
     name: string;
+    logo?: string; // Swiss Unihockey logo URL
     logoUrls?: {
       large: Record<string, string>;
       small: Record<string, string>;
@@ -14,13 +15,15 @@ interface TeamLogoProps {
   size?: 'large' | 'small';
   className?: string;
   fallbackIcon?: React.ReactNode;
+  showSwissUnihockeyFallback?: boolean; // New prop to control fallback behavior
 }
 
 export default function TeamLogo({ 
   team, 
   size = 'small', 
   className = '', 
-  fallbackIcon 
+  fallbackIcon,
+  showSwissUnihockeyFallback = false 
 }: TeamLogoProps) {
   const logoUrls = team.logoUrls?.[size];
   const optimalUrl = useOptimalLogoUrl(logoUrls);
@@ -36,6 +39,7 @@ export default function TeamLogo({
     small: 'w-4 h-4'
   };
 
+  // First priority: Optimized logos (our processed logos)
   if (optimalUrl) {
     return (
       <img
@@ -47,7 +51,19 @@ export default function TeamLogo({
     );
   }
 
-  // Fallback to icon
+  // Second priority: Swiss Unihockey logo (only if allowed by context)
+  if (showSwissUnihockeyFallback && team.logo) {
+    return (
+      <img
+        src={team.logo}
+        alt={`${team.name} logo`}
+        className={`${sizeClasses[size]} object-contain ${className}`}
+        loading="lazy"
+      />
+    );
+  }
+
+  // Final fallback: Icon placeholder
   const FallbackIcon = fallbackIcon || (
     <Shield className={`${iconSizes[size]} text-gray-400`} />
   );

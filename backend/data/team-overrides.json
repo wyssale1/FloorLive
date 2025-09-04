@@ -1,0 +1,13 @@
+{
+  "_instructions": "Team mapping file - ID-first structure. Each ID maps to multiple possible team names and a display name.",
+  "mappings": {
+    "428322": {
+      "mappingNames": ["Floorball Thurgau", "FB Thurgau", "Thurgau"],
+      "displayName": "FB Thurgau"
+    },
+    "428499": {
+      "mappingNames": ["HCR", "HC Rychenberg", "Rychenberg"],
+      "displayName": "HC Rychenberg"
+    }
+  }
+}

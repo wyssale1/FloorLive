@@ -3,8 +3,7 @@ import { format, parseISO, isValid } from 'date-fns';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
 import { sortLeagues } from '../shared/utils/teamMapping.js';
-import { enrichGameWithLogos } from '../middleware/logoCache.js';
-import { addOptimisticLogosToGames } from '../utils/logoEnrichment.js';
+import { addOptimisticLogosToGames, triggerBackgroundLogoProcessing } from '../utils/logoEnrichment.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -33,18 +32,15 @@ router.get('/', async (req, res) => {
     let fromCache = false;
     
     if (games === null) {
-      console.log(`Fetching games for ${dateString} from API...`);
       try {
         games = await apiClient.getGamesByDate(dateString);
         // Always cache the result, even if empty
         cache.setGames(dateString, games);
-        console.log(`Cached ${games.length} games for ${dateString}`);
       } catch (error) {
         console.error(`Failed to fetch games for ${dateString}:`, error);
         games = []; // Return empty array on error
       }
     } else {
-      console.log(`Serving cached games for ${dateString} (${games.length} games)`);
       fromCache = true;
     }
 
@@ -67,8 +63,8 @@ router.get('/', async (req, res) => {
     const leagueNames = Object.keys(gamesByLeague);
     const orderedLeagues = sortLeagues(leagueNames);
 
-    // Add optimistic logo URLs to all games (fast, sync operation)
-    addOptimisticLogosToGames(games);
+    // Add optimistic logo URLs to all games (async operation)
+    await addOptimisticLogosToGames(games);
 
     res.json({
       date: dateString,
@@ -94,18 +90,15 @@ router.get('/live', async (req, res) => {
     let liveGames = cache.getLiveGames();
     
     if (!liveGames) {
-      console.log('Fetching live games from API...');
       liveGames = await apiClient.getCurrentGames();
       // Only cache if there are actual live games
       if (liveGames.length > 0) {
         cache.setLiveGames(liveGames);
       }
-    } else {
-      console.log('Serving cached live games');
     }
 
     // Add optimistic logo URLs to live games
-    addOptimisticLogosToGames(liveGames);
+    await addOptimisticLogosToGames(liveGames);
 
     res.json({
       games: liveGames,
@@ -123,7 +116,7 @@ router.get('/live', async (req, res) => {
 });
 
 // GET /api/games/:gameId - Get game details
-router.get('/:gameId', enrichGameWithLogos, async (req, res) => {
+router.get('/:gameId', async (req, res) => {
   try {
     const { gameId } = req.params;
     
@@ -136,7 +129,6 @@ router.get('/:gameId', enrichGameWithLogos, async (req, res) => {
     let game = cache.get(cacheKey);
     
     if (!game) {
-      console.log(`Fetching game ${gameId} from API...`);
       game = await apiClient.getGameDetails(gameId);
       
       if (!game) {
@@ -146,9 +138,13 @@ router.get('/:gameId', enrichGameWithLogos, async (req, res) => {
       // Cache for shorter time if live, longer if finished
       const ttl = (game as any).status === 'live' ? 30000 : 3600000; // 30s vs 1h
       cache.set(cacheKey, game, ttl);
-    } else {
-      console.log(`Serving cached game ${gameId}`);
     }
+
+    // Add optimistic logo URLs to the game
+    await addOptimisticLogosToGames([game]);
+
+    // Trigger background logo processing (after response)
+    triggerBackgroundLogoProcessing([game]);
 
     res.json(game);
 
@@ -174,13 +170,10 @@ router.get('/:gameId/events', async (req, res) => {
     let events = cache.get(cacheKey);
     
     if (!events) {
-      console.log(`Fetching events for game ${gameId} from API...`);
       events = await apiClient.getGameEvents(gameId);
       
       // Cache events for 30 seconds (they update frequently during live games)
       cache.set(cacheKey, events, 30000);
-    } else {
-      console.log(`Serving cached events for game ${gameId}`);
     }
 
     res.json({

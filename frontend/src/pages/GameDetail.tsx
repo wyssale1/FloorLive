@@ -1,9 +1,10 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { Clock, Shield } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient, type GameEvent } from '../lib/apiClient'
 import GameTimeline from '../components/GameTimeline'
+import TeamLogo from '../components/TeamLogo'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
@@ -75,23 +76,12 @@ export default function GameDetail() {
               transition={{ delay: 0.2 }}
               className="flex items-center space-x-2 sm:space-x-4 flex-1 sm:flex-none justify-center sm:justify-end"
             >
-              {game.homeTeam.logo ? (
-                <img 
-                  src={game.homeTeam.logo} 
-                  alt={`${game.homeTeam.name} logo`}
-                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement | null;
-                    if (nextElement) {
-                      nextElement.style.display = 'block';
-                    }
-                  }}
-                />
-              ) : null}
-              <div className="text-gray-400" style={{ display: game.homeTeam.logo ? 'none' : 'block' }}>
-                <Shield className="w-12 h-12 sm:w-16 sm:h-16" />
-              </div>
+              <TeamLogo 
+                team={game.homeTeam} 
+                size="large" 
+                className="w-12 h-12 sm:w-16 sm:h-16"
+                showSwissUnihockeyFallback={true}
+              />
               <div className="text-center sm:text-right">
                 <div className="text-base sm:text-xl font-medium text-gray-800">
                   {game.homeTeam.name}
@@ -165,23 +155,12 @@ export default function GameDetail() {
                   {game.awayTeam.name}
                 </div>
               </div>
-              {game.awayTeam.logo ? (
-                <img 
-                  src={game.awayTeam.logo} 
-                  alt={`${game.awayTeam.name} logo`}
-                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement | null;
-                    if (nextElement) {
-                      nextElement.style.display = 'block';
-                    }
-                  }}
-                />
-              ) : null}
-              <div className="text-gray-400" style={{ display: game.awayTeam.logo ? 'none' : 'block' }}>
-                <Shield className="w-12 h-12 sm:w-16 sm:h-16" />
-              </div>
+              <TeamLogo 
+                team={game.awayTeam} 
+                size="large" 
+                className="w-12 h-12 sm:w-16 sm:h-16"
+                showSwissUnihockeyFallback={true}
+              />
             </motion.div>
           </div>
         </div>

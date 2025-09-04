@@ -2,7 +2,6 @@ import sharp from 'sharp';
 import { promises as fs } from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
-import { mapTeamName } from '../shared/utils/teamMapping.js';
 
 interface LogoMetadata {
   teamId: string;
@@ -44,30 +43,22 @@ export class LogoService {
   };
 
   constructor() {
-    console.log('[LOGO SERVICE] Initializing LogoService...');
     this.initializeCache();
   }
 
   private initializeCache(): void {
-    console.log('[LOGO SERVICE] Starting cache initialization...');
-    console.log('[LOGO SERVICE] Assets directory:', this.ASSETS_DIR);
-    
     // Initialize asynchronously but don't block constructor
     setImmediate(async () => {
       try {
         await fs.mkdir(this.ASSETS_DIR, { recursive: true });
-        console.log('[LOGO SERVICE] Assets directory created/verified');
         
         // Load existing cache if it exists
         try {
           const cacheData = await fs.readFile(this.METADATA_FILE, 'utf8');
           this.cache = JSON.parse(cacheData);
-          console.log('[LOGO SERVICE] Loaded existing cache with', Object.keys(this.cache.teams).length, 'teams');
         } catch (error) {
-          console.log('[LOGO SERVICE] No existing cache found, creating new one');
           await this.saveCache();
         }
-        console.log('[LOGO SERVICE] Cache initialization complete');
       } catch (error) {
         console.error('[LOGO SERVICE] Failed to initialize logo cache:', error);
       }
@@ -175,7 +166,7 @@ export class LogoService {
 
     return {
       teamId,
-      teamName: mapTeamName(teamId),
+      teamName: '', // Will be set by caller with actual team name
       originalUrl: '', // Will be set by caller
       downloadedAt: new Date().toISOString(),
       processedAt: new Date().toISOString(),
@@ -220,50 +211,27 @@ export class LogoService {
    * Process team logo in background (non-blocking)
    * This is fire-and-forget for optimal performance
    */
-  public async processTeamLogoBackground(teamId: string, logoUrl: string): Promise<void> {
-    console.log(`[LOGO SERVICE] processTeamLogoBackground called for team ${teamId} with URL: ${logoUrl}`);
-    
+  public async processTeamLogoBackground(teamId: string, logoUrl: string, teamName?: string): Promise<void> {
     // Don't await this - it runs in background
     setImmediate(async () => {
       try {
-        console.log(`[LOGO SERVICE] Starting background processing for team ${teamId}...`);
-        
         // Check if we need to process this logo
         const hasValid = await this.hasValidLogo(teamId);
-        console.log(`[LOGO SERVICE] Team ${teamId} has valid logo: ${hasValid}`);
         
         if (hasValid) {
-          console.log(`[LOGO SERVICE] Logo for team ${teamId} is already cached and fresh, skipping`);
           return;
         }
 
-        console.log(`[LOGO SERVICE] Downloading logo for team ${teamId} from: ${logoUrl}`);
-        
         // Download and process logo
         const logoBuffer = await this.downloadLogo(logoUrl);
-        console.log(`[LOGO SERVICE] Downloaded ${logoBuffer.length} bytes for team ${teamId}`);
-        
-        console.log(`[LOGO SERVICE] Processing logo for team ${teamId}...`);
         const metadata = await this.processLogo(logoBuffer, teamId);
         
         // Update metadata
         metadata.originalUrl = logoUrl;
         this.cache.teams[teamId] = metadata;
         await this.saveCache();
-        
-        console.log(`[LOGO SERVICE] Logo processed successfully for team ${teamId}:`, {
-          sizes: metadata.fileSize,
-          formats: metadata.formats,
-          processedAt: metadata.processedAt
-        });
       } catch (error) {
         console.error(`[LOGO SERVICE] Failed to process logo for team ${teamId}:`, error);
-        if (error instanceof Error) {
-          console.error(`[LOGO SERVICE] Error details:`, {
-            message: error.message,
-            stack: error.stack
-          });
-        }
       }
     });
   }
