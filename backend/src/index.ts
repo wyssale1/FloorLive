@@ -6,6 +6,7 @@ import { createServer } from 'http';
 import gamesRouter from './routes/games.js';
 import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
+import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -13,7 +14,8 @@ const port = process.env.PORT || 3001;
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5174',
+  //origin: process.env.FRONTEND_URL || 'http://localhost:5174',
+  origin: '*',
   credentials: true
 }));
 app.use(morgan('combined'));
@@ -80,25 +82,10 @@ const schedulerService = new SchedulerService();
 // Connect services
 schedulerService.setWebSocketService(websocketService);
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  schedulerService.stop();
-  websocketService.cleanup();
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  schedulerService.stop();
-  websocketService.cleanup();
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
+// Setup graceful shutdown
+setupGracefulShutdown(server, {
+  schedulerService,
+  websocketService
 });
 
 // Start server

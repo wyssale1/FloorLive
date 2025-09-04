@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { format, parseISO, isValid } from 'date-fns';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
+import { sortLeagues } from '../shared/utils/teamEmojis.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -61,21 +62,8 @@ router.get('/', async (req, res) => {
       return acc;
     }, {} as Record<string, typeof games>);
 
-    // Define preferred order for main leagues
-    const preferredOrder = [
-      'Herren L-UPL',
-      'Damen L-UPL', 
-      'Herren NLB',
-      'Damen NLB'
-    ];
-    
     const leagueNames = Object.keys(gamesByLeague);
-    const orderedLeagues = [
-      // First, add leagues in preferred order (only if they have games)
-      ...preferredOrder.filter(league => leagueNames.includes(league)),
-      // Then add remaining leagues alphabetically
-      ...leagueNames.filter(league => !preferredOrder.includes(league)).sort()
-    ];
+    const orderedLeagues = sortLeagues(leagueNames);
 
     res.json({
       date: dateString,

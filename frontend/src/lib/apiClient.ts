@@ -1,48 +1,10 @@
+import type { Game, Team, GameEvent, ApiResponse } from '../shared/types/index.js';
+import { getTeamEmoji } from '../shared/utils/teamEmojis.js';
+
+// Re-export types for external usage
+export type { Game, Team, GameEvent, ApiResponse };
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-
-export interface Team {
-  id: string;
-  name: string;
-  short_name: string;
-  logo?: string;
-}
-
-export interface Game {
-  id: string;
-  home_team: Team;
-  away_team: Team;
-  home_score: number | null;
-  away_score: number | null;
-  status: 'upcoming' | 'live' | 'finished';
-  period?: string;
-  time?: string;
-  start_time: string;
-  game_date: string;
-  league: {
-    id: string;
-    name: string;
-  };
-  location?: string;
-}
-
-export interface ApiResponse<T> {
-  date: string;
-  leagues: string[];
-  gamesByLeague: Record<string, T[]>;
-  totalGames: number;
-  cached: boolean;
-}
-
-export interface GameEvent {
-  id: string;
-  game_id: string;
-  time: string;
-  type: 'goal' | 'penalty' | 'timeout' | 'other';
-  player: string;
-  assist?: string;
-  description?: string;
-  team: 'home' | 'away';
-}
 
 class ApiClient {
   private baseURL: string;
@@ -136,13 +98,13 @@ class ApiClient {
         id: apiGame.home_team.id,
         name: apiGame.home_team.name,
         shortName: apiGame.home_team.short_name,
-        logo: apiGame.home_team.logo || this.getTeamEmoji(apiGame.home_team.name)
+        logo: apiGame.home_team.logo || getTeamEmoji(apiGame.home_team.name)
       },
       awayTeam: {
         id: apiGame.away_team.id,
         name: apiGame.away_team.name,
         shortName: apiGame.away_team.short_name,
-        logo: apiGame.away_team.logo || this.getTeamEmoji(apiGame.away_team.name)
+        logo: apiGame.away_team.logo || getTeamEmoji(apiGame.away_team.name)
       },
       homeScore: apiGame.home_score,
       awayScore: apiGame.away_score,
@@ -156,23 +118,6 @@ class ApiClient {
     };
   }
 
-  private getTeamEmoji(teamName: string): string {
-    // Simple emoji mapping for Swiss teams
-    const emojiMap: Record<string, string> = {
-      'ZSC Lions': '🦁',
-      'HC Davos': '🛡️',
-      'Floorball Köniz': '⚫',
-      'UHC Alligator Malans': '🐊',
-      'Unihockey Basel Regio': '🏒',
-      'SV Wiler-Ersigen': '⭐',
-      'UHC Thun': '🏔️',
-      'Floorball Thurgau': '🔵',
-      'Grasshopper Club': '🦗',
-      'UHC Dietlikon': '🔴'
-    };
-    
-    return emojiMap[teamName] || '🏒';
-  }
 }
 
 export const apiClient = new ApiClient();

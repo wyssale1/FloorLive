@@ -6,7 +6,9 @@
       "Bash(npx shadcn@latest add:*)",
       "WebFetch(domain:api-v2.swissunihockey.ch)",
       "Bash(npm init:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
