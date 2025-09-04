@@ -2,6 +2,10 @@ import sharp from 'sharp';
 import { promises as fs } from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 interface LogoMetadata {
   teamId: string;
@@ -27,7 +31,7 @@ interface LogoCache {
 }
 
 export class LogoService {
-  private readonly ASSETS_DIR = path.join(process.cwd(), 'assets', 'logos');
+  private readonly ASSETS_DIR = path.join(__dirname, '..', '..', 'assets', 'logos');
   private readonly METADATA_FILE = path.join(this.ASSETS_DIR, 'metadata.json');
   private readonly FORMATS = ['avif', 'webp', 'png'] as const;
   private readonly SIZES = {
@@ -178,12 +182,18 @@ export class LogoService {
 
   /**
    * Get logo URLs for a team (non-blocking)
+   * Environment-aware: full URLs in development, relative in production
    */
   public getLogoUrls(teamId: string): {
     large: Record<string, string>;
     small: Record<string, string>;
   } {
-    const baseUrl = `/api/logos/team-${teamId}`;
+    // In development, use full URL with port for cross-port access
+    // In production, use relative URL since frontend and backend are on same domain
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const baseUrl = isDevelopment 
+      ? `http://localhost:3001/api/logos/team-${teamId}`
+      : `/api/logos/team-${teamId}`;
     
     return {
       large: {
