@@ -2,7 +2,9 @@ import { Router } from 'express';
 import { format, parseISO, isValid } from 'date-fns';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
-import { sortLeagues } from '../shared/utils/teamEmojis.js';
+import { sortLeagues } from '../shared/utils/teamMapping.js';
+import { enrichGameWithLogos } from '../middleware/logoCache.js';
+import { addOptimisticLogosToGames } from '../utils/logoEnrichment.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -65,6 +67,9 @@ router.get('/', async (req, res) => {
     const leagueNames = Object.keys(gamesByLeague);
     const orderedLeagues = sortLeagues(leagueNames);
 
+    // Add optimistic logo URLs to all games (fast, sync operation)
+    addOptimisticLogosToGames(games);
+
     res.json({
       date: dateString,
       leagues: orderedLeagues,
@@ -99,6 +104,9 @@ router.get('/live', async (req, res) => {
       console.log('Serving cached live games');
     }
 
+    // Add optimistic logo URLs to live games
+    addOptimisticLogosToGames(liveGames);
+
     res.json({
       games: liveGames,
       count: liveGames.length,
@@ -115,7 +123,7 @@ router.get('/live', async (req, res) => {
 });
 
 // GET /api/games/:gameId - Get game details
-router.get('/:gameId', async (req, res) => {
+router.get('/:gameId', enrichGameWithLogos, async (req, res) => {
   try {
     const { gameId } = req.params;
     

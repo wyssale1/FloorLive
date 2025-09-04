@@ -1,5 +1,5 @@
 import type { Game, Team, GameEvent, ApiResponse } from '../shared/types/index.js';
-import { getTeamEmoji } from '../shared/utils/teamEmojis.js';
+import { mapTeamName } from '../shared/utils/teamMapping.js';
 
 // Re-export types for external usage
 export type { Game, Team, GameEvent, ApiResponse };
@@ -96,15 +96,15 @@ class ApiClient {
       id: apiGame.id,
       homeTeam: {
         id: apiGame.home_team.id,
-        name: apiGame.home_team.name,
-        shortName: apiGame.home_team.short_name,
-        logo: apiGame.home_team.logo || getTeamEmoji(apiGame.home_team.name)
+        name: mapTeamName(apiGame.home_team.name),
+        shortName: mapTeamName(apiGame.home_team.short_name),
+        logo: apiGame.home_team.logo
       },
       awayTeam: {
         id: apiGame.away_team.id,
-        name: apiGame.away_team.name,
-        shortName: apiGame.away_team.short_name,
-        logo: apiGame.away_team.logo || getTeamEmoji(apiGame.away_team.name)
+        name: mapTeamName(apiGame.away_team.name),
+        shortName: mapTeamName(apiGame.away_team.short_name),
+        logo: apiGame.away_team.logo
       },
       homeScore: apiGame.home_score,
       awayScore: apiGame.away_score,

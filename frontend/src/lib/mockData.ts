@@ -1,5 +1,4 @@
 import type { FrontendGame, GameStatus, LeagueType } from '../shared/types/index.js';
-import { getTeamEmoji } from '../shared/utils/teamEmojis.js';
 
 // Re-export types for convenience  
 export type { FrontendGame as Game, GameStatus, LeagueType };
@@ -23,24 +22,19 @@ export type GameEvent = {
   team: 'home' | 'away'
 }
 
-// Generate teams with shared emoji logic
-const teamData = [
-  { id: '1', name: 'ZSC Lions', shortName: 'ZSC' },
-  { id: '2', name: 'HC Davos', shortName: 'HCD' },
-  { id: '3', name: 'Floorball Köniz', shortName: 'FBK' },
-  { id: '4', name: 'UHC Alligator Malans', shortName: 'UAM' },
-  { id: '5', name: 'Unihockey Basel Regio', shortName: 'UBR' },
-  { id: '6', name: 'SV Wiler-Ersigen', shortName: 'SWE' },
-  { id: '7', name: 'UHC Thun', shortName: 'UHT' },
-  { id: '8', name: 'Floorball Thurgau', shortName: 'FBT' },
-  { id: '9', name: 'Grasshopper Club', shortName: 'GCZ' },
-  { id: '10', name: 'UHC Dietlikon', shortName: 'UHD' }
+// Mock team data - no more emojis, just clean team names
+export const teams: Team[] = [
+  { id: '1', name: 'ZSC Lions Zürich', shortName: 'ZSC', logo: '' },
+  { id: '2', name: 'HC Davos', shortName: 'HCD', logo: '' },
+  { id: '3', name: 'Floorball Köniz', shortName: 'FBK', logo: '' },
+  { id: '4', name: 'UHC Alligator Malans', shortName: 'UAM', logo: '' },
+  { id: '5', name: 'Unihockey Basel Regio', shortName: 'UBR', logo: '' },
+  { id: '6', name: 'SV Wiler-Ersigen', shortName: 'SWE', logo: '' },
+  { id: '7', name: 'UHC Thun', shortName: 'UHT', logo: '' },
+  { id: '8', name: 'Floorball Thurgau', shortName: 'FBT', logo: '' },
+  { id: '9', name: 'Grasshopper Club Zürich', shortName: 'GCZ', logo: '' },
+  { id: '10', name: 'UHC Dietlikon', shortName: 'UHD', logo: '' }
 ];
-
-export const teams: Team[] = teamData.map(team => ({
-  ...team,
-  logo: getTeamEmoji(team.name)
-}));
 
 // Helper to create dates
 const today = new Date()

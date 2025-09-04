@@ -3,6 +3,12 @@ export interface Team {
   name: string;
   short_name: string;
   logo?: string;
+  // Logo system additions
+  logoUrls?: {
+    large: Record<string, string>; // { avif: url, webp: url, png: url }
+    small: Record<string, string>;
+  };
+  hasLogo?: boolean;
 }
 
 export interface Game {

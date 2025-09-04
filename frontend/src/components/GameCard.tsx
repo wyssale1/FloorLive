@@ -3,18 +3,13 @@ import { motion } from 'framer-motion'
 import { Shield } from 'lucide-react'
 import type { Game } from '../lib/mockData'
 import { cn } from '../lib/utils'
+import TeamLogo from './TeamLogo'
 
 interface GameCardProps {
   game: Game
   className?: string
 }
 
-// Team logo placeholder component
-const TeamLogo = ({ team }: { team: { logo: string; name: string } }) => (
-  <div className="w-5 h-5 flex items-center justify-center text-gray-400 shrink-0">
-    <Shield className="w-4 h-4" />
-  </div>
-)
 
 export default function GameCard({ game, className }: GameCardProps) {
   const isLive = game.status === 'live'
@@ -38,7 +33,12 @@ export default function GameCard({ game, className }: GameCardProps) {
 
   const renderTeamLine = (team: any) => (
     <div className="flex items-center space-x-3">
-      <TeamLogo team={team} />
+      <TeamLogo 
+        team={team} 
+        size="small" 
+        className="shrink-0"
+        fallbackIcon={<Shield className="w-4 h-4 text-gray-400" />}
+      />
       <span className="text-sm text-gray-700 font-medium truncate">
         {team.name}
       </span>

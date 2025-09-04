@@ -8,7 +8,10 @@
       "Bash(npm init:*)",
       "Bash(curl:*)",
       "Bash(tree:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebSearch",
+      "Bash(npm start)",
+      "Bash(time curl:*)"
     ],
     "deny": [],
     "ask": []

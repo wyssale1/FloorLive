@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import gamesRouter from './routes/games.js';
+import logosRouter from './routes/logos.js';
 import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/games', gamesRouter);
+app.use('/api/logos', logosRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -45,6 +47,9 @@ app.get('/api', (req, res) => {
       live_games: '/api/games/live',
       game_details: '/api/games/:gameId',
       game_events: '/api/games/:gameId/events',
+      logos: '/api/logos/team-:teamId/:size.:format',
+      logo_info: '/api/logos/team-:teamId/info',
+      logo_cache_stats: '/api/logos/cache/stats',
       health: '/health'
     },
     websocket: {
