@@ -71,4 +71,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./backend-deploy/
           server-dir: /app/floorlive_backend/
-          delete-remote-dir: true
+          sync-mode: true
