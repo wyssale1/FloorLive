@@ -144,7 +144,7 @@ router.get('/:gameId', enrichGameWithLogos, async (req, res) => {
       }
 
       // Cache for shorter time if live, longer if finished
-      const ttl = (game as any)?.status === 'live' ? 30000 : 3600000; // 30s vs 1h
+      const ttl = (game as any).status === 'live' ? 30000 : 3600000; // 30s vs 1h
       cache.set(cacheKey, game, ttl);
     } else {
       console.log(`Serving cached game ${gameId}`);
@@ -186,7 +186,7 @@ router.get('/:gameId/events', async (req, res) => {
     res.json({
       gameId,
       events,
-      count: (events as any[])?.length || 0,
+      count: (events as any[]).length,
       timestamp: new Date().toISOString()
     });
 
