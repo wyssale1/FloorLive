@@ -2,12 +2,32 @@
   "_instructions": "Team mapping file - ID-first structure. Each ID maps to multiple possible team names and a display name.",
   "mappings": {
     "428322": {
-      "mappingNames": ["Floorball Thurgau", "FB Thurgau", "Thurgau"],
-      "displayName": "FB Thurgau"
+      "mappingNames": ["Winterthur United"],
+      "displayName": ""
     },
     "428499": {
-      "mappingNames": ["HCR", "HC Rychenberg", "Rychenberg"],
-      "displayName": "HC Rychenberg"
+      "mappingNames": ["UHC Pfannenstiel", "Pfannenstiel Egg"],
+      "displayName": "UHC Pfannenstiel"
+    },
+    "429485": {
+      "mappingNames": ["GC", "Grasshopper Club Zürich"],
+      "displayName": "Grasshopper Club Zürich"
+    },
+    "429494": {
+      "mappingNames": ["SVWE", "SV Wiler-Ersigen"],
+      "displayName": "SV Wiler-Ersigen"
+    },
+    "432520": {
+      "mappingNames": ["Chur United", "Floorball Chur United"],
+      "displayName": "Floorball Chur United"
+    },
+    "429603": {
+      "mappingNames": ["Zug United"],
+      "displayName": "Zug United"
+    },
+    "429523": {
+      "mappingNames": ["Tigers", "Tigers Langnau"],
+      "displayName": "Tigers Langnau"
     }
   }
 }

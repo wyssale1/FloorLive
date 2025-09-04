@@ -13,7 +13,11 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: process.env.NODE_ENV === 'production' 
+    ? { policy: "same-origin" }
+    : { policy: "cross-origin" }
+}));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://floorlive.alexander-wyss.ch', 'http://floorlive.alexander-wyss.ch']

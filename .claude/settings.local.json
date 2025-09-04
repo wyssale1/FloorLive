@@ -12,7 +12,8 @@
       "WebSearch",
       "Bash(npm start)",
       "Bash(time curl:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(/dev/null)"
     ],
     "deny": [],
     "ask": []

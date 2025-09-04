@@ -48,7 +48,6 @@ export default function GameCard({ game, className }: GameCardProps) {
   return (
     <Link to="/game/$gameId" params={{ gameId: game.id }} className="block">
       <motion.div
-        whileHover={{ scale: 1.005 }}
         whileTap={{ scale: 0.995 }}
         className={cn(
           "bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-100 hover:bg-white/80 transition-all duration-200 touch-manipulation",
