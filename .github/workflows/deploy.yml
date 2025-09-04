@@ -24,6 +24,9 @@ jobs:
           npm install
           npm run build
 
+      - name: Rename _htaccess to .htaccess
+        run: mv frontend/dist/_htaccess frontend/dist/.htaccess
+
       - name: Deploy Frontend via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
