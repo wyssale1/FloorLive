@@ -53,7 +53,7 @@ jobs:
   #     - name: Install Backend & Build (TypeScript → JS)
   #       run: |
   #         cd backend
-  #         npm ci
+  #         npm install
   #         npm run build    # assumes your package.json has "build": "tsc"
   #         mkdir -p ../backend-dist
   #         cp -r dist ../backend-dist   # compiled JS (tsc outDir=dist)

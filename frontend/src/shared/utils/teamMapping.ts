@@ -1,17 +1,17 @@
 // Team name mapping system - normalize/override team names from API
 export const TEAM_NAME_MAP: Record<string, string> = {
-  // Example mappings - add more as needed
   'HCR': 'HC Rychenberg Winterthur',
   'ZSC': 'ZSC Lions Zürich',
   'HCD': 'HC Davos',
   'FBK': 'Floorball Köniz',
   'UAM': 'UHC Alligator Malans',
   'UBR': 'Unihockey Basel Regio',
-  'SWE': 'SV Wiler-Ersigen',
+  'SVWE': 'SV Wiler-Ersigen',
   'UHT': 'UHC Thun',
   'FBT': 'Floorball Thurgau',
   'GCZ': 'Grasshopper Club Zürich',
-  'UHD': 'UHC Dietlikon'
+  'UHD': 'UHC Dietlikon',
+  'WASA': 'UHC Wasa',
 };
 
 /**

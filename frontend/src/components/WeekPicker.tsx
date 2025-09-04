@@ -42,14 +42,16 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
         <div className="text-sm text-gray-600 font-medium">
           {format(currentWeekStart, 'MMMM yyyy')}
         </div>
-        {!isTodaySelected && (
-          <button
-            onClick={goToToday}
-            className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 hover:bg-blue-50 rounded transition-colors"
-          >
-            Today
-          </button>
-        )}
+        <button
+          onClick={isTodaySelected ? undefined : goToToday}
+          className={`text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 hover:bg-blue-50 rounded transition-all duration-200 ${
+            isTodaySelected 
+              ? 'opacity-0 pointer-events-none' 
+              : 'opacity-100'
+          }`}
+        >
+          Today
+        </button>
       </div>
       
       <div className="flex items-center justify-between">
