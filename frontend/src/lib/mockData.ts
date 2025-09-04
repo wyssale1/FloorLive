@@ -2,7 +2,6 @@ import type { FrontendGame, GameStatus, LeagueType } from '../shared/types/index
 
 // Re-export types for convenience  
 export type { FrontendGame as Game, GameStatus, LeagueType };
-export type Game = FrontendGame;
 
 export type Team = {
   id: string
@@ -36,12 +35,12 @@ export const teams: Team[] = [
   { id: '10', name: 'UHC Dietlikon', shortName: 'UHD', logo: '' }
 ];
 
-// Helper to create dates
-const today = new Date()
-const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
-const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
+// Helper to create date strings
+const today = new Date().toISOString().split('T')[0]
+const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
-export const games: Game[] = [
+export const games: FrontendGame[] = [
   // Live games - Today
   {
     id: '1',
@@ -176,17 +175,18 @@ export const gameEvents: GameEvent[] = [
   }
 ]
 
-export function getGamesByDate(date: Date): Game[] {
+export function getGamesByDate(date: Date): FrontendGame[] {
+  const dateString = date.toISOString().split('T')[0]
   return games.filter(game => 
-    game.gameDate.toDateString() === date.toDateString()
+    game.gameDate === dateString
   )
 }
 
-export function getGamesByLeague(games: Game[], league: LeagueType): Game[] {
+export function getGamesByLeague(games: FrontendGame[], league: LeagueType): FrontendGame[] {
   return games.filter(game => game.league === league)
 }
 
-export function getGameById(id: string): Game | undefined {
+export function getGameById(id: string): FrontendGame | undefined {
   return games.find(game => game.id === id)
 }
 
@@ -198,5 +198,7 @@ export function getGameEvents(gameId: string): GameEvent[] {
 export function getLeaguesForDate(date: Date): LeagueType[] {
   const gamesForDate = getGamesByDate(date)
   const leagues = [...new Set(gamesForDate.map(game => game.league))]
-  return leagues.sort() // Sort leagues alphabetically
+  return leagues.filter(league => 
+    ['NLA Men', 'NLA Women', 'NLB Men', 'NLB Women'].includes(league)
+  ).sort() as LeagueType[] // Filter and cast to LeagueType
 }

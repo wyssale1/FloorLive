@@ -3,7 +3,6 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import GameCard from '../components/GameCard'
 import WeekPicker from '../components/WeekPicker'
-import { apiClient } from '../lib/apiClient'
 import { format, parseISO } from 'date-fns'
 
 export default function Home() {
@@ -23,7 +22,6 @@ export default function Home() {
   }
 
   const [selectedDate, setSelectedDate] = useState(() => getInitialDate())
-  const [games, setGames] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   const handleDateSelect = (date: Date) => {
@@ -91,13 +89,11 @@ export default function Home() {
           allGames.push(...adaptedGames)
         })
         
-        setGames(allGames)
         setGamesByLeague(gamesByLeague)
         setLeaguesForDate(data.leagues || [])
         
       } catch (error) {
         console.error('Error fetching games:', error)
-        setGames([])
         setGamesByLeague({})
         setLeaguesForDate([])
       } finally {

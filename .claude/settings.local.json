@@ -11,7 +11,8 @@
       "Bash(mkdir:*)",
       "WebSearch",
       "Bash(npm start)",
-      "Bash(time curl:*)"
+      "Bash(time curl:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

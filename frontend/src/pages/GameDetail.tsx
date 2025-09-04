@@ -1,8 +1,8 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { ChevronLeft, Clock, Shield } from 'lucide-react'
+import { Clock, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { apiClient, type Game, type GameEvent } from '../lib/apiClient'
+import { apiClient, type GameEvent } from '../lib/apiClient'
 import GameTimeline from '../components/GameTimeline'
 
 export default function GameDetail() {
@@ -49,7 +49,7 @@ export default function GameDetail() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Game Not Found</h1>
-          <Link to="/" className="text-blue-600 hover:text-blue-800">
+          <Link to="/" search={{ date: undefined }} className="text-blue-600 hover:text-blue-800">
             ← Back to Home
           </Link>
         </div>
@@ -82,7 +82,10 @@ export default function GameDetail() {
                   className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling.style.display = 'block';
+                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement | null;
+                    if (nextElement) {
+                      nextElement.style.display = 'block';
+                    }
                   }}
                 />
               ) : null}
@@ -169,7 +172,10 @@ export default function GameDetail() {
                   className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling.style.display = 'block';
+                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement | null;
+                    if (nextElement) {
+                      nextElement.style.display = 'block';
+                    }
                   }}
                 />
               ) : null}

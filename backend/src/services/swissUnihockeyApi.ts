@@ -130,15 +130,45 @@ export class SwissUnihockeyApiClient {
       status = 'live';
     }
 
+    // Extract team IDs from links if available 
+    // Note: Use different extraction approach than mapGameDetailsFromApi since data structure might differ
+    let homeTeamId = '';
+    let awayTeamId = '';
+    
+    // Try to extract team IDs from multiple possible locations
+    if (row.cells[1]?.link?.ids?.[0]) {
+      homeTeamId = row.cells[1].link.ids[0].toString();
+    } else if (row.cells[1]?.href) {
+      // Extract ID from href if available (e.g., "/teams/12345")
+      const match = row.cells[1].href.match(/\/teams\/(\d+)/);
+      if (match) homeTeamId = match[1];
+    }
+    
+    if (row.cells[3]?.link?.ids?.[0]) {
+      awayTeamId = row.cells[3].link.ids[0].toString();
+    } else if (row.cells[3]?.href) {
+      // Extract ID from href if available (e.g., "/teams/12345")
+      const match = row.cells[3].href.match(/\/teams\/(\d+)/);
+      if (match) awayTeamId = match[1];
+    }
+    
+    // If no proper team IDs found, generate consistent IDs from team names
+    if (!homeTeamId && homeTeamName) {
+      homeTeamId = homeTeamName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    }
+    if (!awayTeamId && awayTeamName) {
+      awayTeamId = awayTeamName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    }
+
     return {
       id: row.id?.toString() || '',
       home_team: {
-        id: '',
+        id: homeTeamId,
         name: homeTeamName,
         short_name: homeTeamName.substring(0, 3).toUpperCase()
       },
       away_team: {
-        id: '',
+        id: awayTeamId,
         name: awayTeamName,
         short_name: awayTeamName.substring(0, 3).toUpperCase()
       },
@@ -265,7 +295,7 @@ export class SwissUnihockeyApiClient {
 
 
       if (result && result.includes(':')) {
-        const scores = result.split(':').map(s => s.trim());
+        const scores = result.split(':').map((s: string) => s.trim());
         if (scores.length === 2) {
           homeScore = parseInt(scores[0]) || null;
           awayScore = parseInt(scores[1]) || null;
@@ -300,7 +330,7 @@ export class SwissUnihockeyApiClient {
         home_score: homeScore,
         away_score: awayScore,
         status,
-        period: null,
+        period: undefined,
         time: status === 'upcoming' ? time : null,
         start_time: time,
         game_date: date,

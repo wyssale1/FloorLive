@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate, useRouter } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -34,7 +34,7 @@ const useBackButton = () => {
       window.history.back()
     } else {
       // Fallback: navigate to home if no history
-      navigate({ to: '/' })
+      navigate({ to: '/', search: { date: undefined } })
     }
   }
   
@@ -71,6 +71,7 @@ export default function Header() {
         {/* Center Section - Logo + Brand */}
         <Link 
           to="/" 
+          search={{ date: undefined }}
           className="flex items-center space-x-2 transition-opacity"
         >
           <Logo className="h-6 w-6" />
