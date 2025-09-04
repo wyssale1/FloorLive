@@ -35,6 +35,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./frontend/dist/
           server-dir: /public_html/floorlive_frontend/
+          dangerous-clean-slate: true
 
   backend:
     name: Deploy Backend
