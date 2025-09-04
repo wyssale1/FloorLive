@@ -1,4 +1,4 @@
-import cron from 'node-cron';
+import * as cron from 'node-cron';
 import { SwissUnihockeyApiClient } from './swissUnihockeyApi.js';
 import { CacheService } from './cacheService.js';
 import { WebSocketService } from './websocketService.js';
@@ -24,8 +24,6 @@ export class SchedulerService {
     const hourlyRefreshTask = cron.schedule('0 * * * *', async () => {
       console.log('Running hourly games cache refresh...');
       await this.refreshGamesCache();
-    }, {
-      scheduled: false
     });
 
     // 2. Update live games every 30 seconds
@@ -34,24 +32,18 @@ export class SchedulerService {
         console.log('Updating live games for WebSocket clients...');
         await this.updateLiveGames();
       }
-    }, {
-      scheduled: false
     });
 
     // 3. Cache cleanup every 15 minutes
     const cleanupTask = cron.schedule('*/15 * * * *', () => {
       console.log('Running cache cleanup...');
       this.cache.cleanup();
-    }, {
-      scheduled: false
     });
 
     // 4. Pre-cache tomorrow's games at midnight
     const midnightCacheTask = cron.schedule('0 0 * * *', async () => {
       console.log('Pre-caching tomorrow\'s games...');
       await this.preCacheTomorrowGames();
-    }, {
-      scheduled: false
     });
 
     // Store tasks for cleanup

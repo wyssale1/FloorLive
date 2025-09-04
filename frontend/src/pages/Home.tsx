@@ -47,7 +47,8 @@ export default function Home() {
       setLoading(true)
       try {
         const dateString = format(selectedDate, 'yyyy-MM-dd')
-        const response = await fetch(`http://localhost:3001/api/games?date=${dateString}`)
+        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${API_BASE_URL}/games?date=${dateString}`)
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
