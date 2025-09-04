@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 🚫 Never rewrite /api requests
+  RewriteCond %{REQUEST_URI} ^/api($|/)
+  RewriteRule ^ - [L]
+
+  # 🚫 Never rewrite static assets (optional, safer)
+  RewriteCond %{REQUEST_URI} \.(png|jpe?g|gif|svg|css|js|ico|webp|woff2?|ttf|eot)$ [NC]
+  RewriteRule ^ - [L]
+
+  # If file or directory exists, serve it
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Otherwise, serve index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
