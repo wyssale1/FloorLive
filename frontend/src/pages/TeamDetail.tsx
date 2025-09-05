@@ -10,6 +10,9 @@ import { Skeleton } from '../components/ui/skeleton'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import UpcomingGames from '../components/UpcomingGames'
+import PlayerLink from '../components/PlayerLink'
+import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
+import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
 
 function groupPlayersByPosition(players: any[]) {
   const categories = {
@@ -77,6 +80,21 @@ export default function TeamDetail() {
     
     fetchTeamData()
   }, [teamId])
+
+  // Set dynamic page title and meta tags when team data is loaded
+  const pageTitle = team ? pageTitles.team(team.name) : 'Team Details'
+  usePageTitle(pageTitle)
+
+  const metaOptions = team ? generateTeamMeta({
+    teamName: team.name,
+    league: team.league?.name,
+    logo: team.logo
+  }) : {
+    title: 'Team Details',
+    description: 'Swiss Unihockey team information on FloorLive',
+    type: 'website' as const
+  }
+  useMetaTags(metaOptions)
 
   const loadLeagueTables = async () => {
     if (leagueTables.length > 0) return // Already loaded
@@ -298,7 +316,10 @@ export default function TeamDetail() {
                                 )}
                                 <div className="min-w-0">
                                   <div className="text-sm font-medium text-gray-800">
-                                    {player.name}
+                                    <PlayerLink 
+                                      playerId={player.id} 
+                                      playerName={player.name}
+                                    />
                                   </div>
                                   {player.yearOfBirth && (
                                     <div className="text-xs text-gray-600">

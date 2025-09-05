@@ -12,6 +12,8 @@ import TeamLogo from '../components/TeamLogo'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import GameOverview from '../components/GameOverview'
+import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
+import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
@@ -49,6 +51,27 @@ export default function GameDetail() {
     
     fetchGameData()
   }, [gameId])
+
+  // Set dynamic page title and meta tags when game data is loaded
+  const pageTitle = game 
+    ? pageTitles.game(game.home_team?.name || 'Team', game.away_team?.name || 'Team', game.status)
+    : 'Game Details'
+  usePageTitle(pageTitle)
+
+  const metaOptions = game ? generateGameMeta({
+    homeTeam: game.home_team?.name || 'Team',
+    awayTeam: game.away_team?.name || 'Team', 
+    homeScore: game.home_score,
+    awayScore: game.away_score,
+    status: game.status,
+    startTime: game.start_time,
+    gameDate: game.game_date
+  }) : {
+    title: 'Game Details',
+    description: 'Swiss Unihockey game information on FloorLive',
+    type: 'website' as const
+  }
+  useMetaTags(metaOptions)
 
   const loadLeagueTable = async (leagueId?: string) => {
     if (leagueTable) return // Already loaded

@@ -5,6 +5,8 @@ import GameSection from '../components/GameSection'
 import GameCardSkeleton from '../components/GameCardSkeleton'
 import WeekPicker from '../components/WeekPicker'
 import { format, parseISO } from 'date-fns'
+import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
+import { useMetaTags } from '../hooks/useMetaTags'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -24,6 +26,15 @@ export default function Home() {
 
   const [selectedDate, setSelectedDate] = useState(() => getInitialDate())
   const [loading, setLoading] = useState(true)
+
+  // Set dynamic page title and meta tags
+  const formattedDate = format(selectedDate, 'yyyy-MM-dd')
+  usePageTitle(pageTitles.home(formattedDate))
+  useMetaTags({
+    title: pageTitles.home(formattedDate),
+    description: `Swiss Unihockey games and live scores for ${format(selectedDate, 'MMMM d, yyyy')}. Track your favorite teams and follow live games.`,
+    type: 'website'
+  })
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date)
