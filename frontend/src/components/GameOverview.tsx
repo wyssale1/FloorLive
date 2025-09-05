@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { MapPin, Clock, Users, Shield } from 'lucide-react'
 import { apiClient } from '../lib/apiClient'
-import GameCard from './GameCard'
+import GameList from './GameList'
 import GameCardSkeleton from './GameCardSkeleton'
 
 interface GameOverviewProps {
@@ -118,15 +118,9 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
         <h2 className="text-lg font-medium text-gray-800 mb-4">Recent Meetings</h2>
         
         {loading ? (
-          <div className="space-y-2">
-            <GameCardSkeleton count={3} />
-          </div>
+          <GameCardSkeleton variant="list" count={3} />
         ) : headToHeadGames.length > 0 ? (
-          <div className="space-y-2">
-            {headToHeadGames.map((headToHeadGame) => (
-              <GameCard key={headToHeadGame.id} game={headToHeadGame} />
-            ))}
-          </div>
+          <GameList games={headToHeadGames} showSeparators={true} />
         ) : (
           <div className="text-center py-8">
             <div className="text-gray-400 text-sm mb-1">No recent meetings found</div>

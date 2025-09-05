@@ -50,17 +50,20 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     const homeScore = parseInt(scoreMatch[1])
     const awayScore = parseInt(scoreMatch[2])
     
-    // Determine which team scored and what goal number this was
+    // The API provides score in home:away format consistently
+    // We need to display it as "currentScore after this goal"
     if (event.team === 'home') {
       return {
-        goalNumber: homeScore,
-        opponentScore: awayScore,
+        goalNumber: homeScore, // This home team's goal number
+        opponentScore: awayScore, // Away team's current score
+        currentScore: `${homeScore}-${awayScore}`, // Current game score
         playerName: event.player
       }
     } else {
       return {
-        goalNumber: awayScore,
-        opponentScore: homeScore,
+        goalNumber: awayScore, // This away team's goal number  
+        opponentScore: homeScore, // Home team's current score
+        currentScore: `${homeScore}-${awayScore}`, // Current game score (home-away)
         playerName: event.player
       }
     }
@@ -141,7 +144,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     if (goalInfo) {
       return (
         <span>
-          <span className="font-bold">{goalInfo.goalNumber}</span>-{goalInfo.opponentScore} {goalInfo.playerName}
+          <span className="font-bold">{goalInfo.currentScore}</span> {goalInfo.playerName}
         </span>
       )
     }

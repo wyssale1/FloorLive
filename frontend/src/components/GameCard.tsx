@@ -50,7 +50,7 @@ export default function GameCard({ game, className }: GameCardProps) {
       <motion.div
         whileTap={{ scale: 0.995 }}
         className={cn(
-          "bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-100 hover:bg-white/80 transition-all duration-200 touch-manipulation",
+          "p-3 hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg",
           className
         )}
       >

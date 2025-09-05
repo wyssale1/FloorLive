@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import GameCard from '../components/GameCard'
+import GameSection from '../components/GameSection'
 import GameCardSkeleton from '../components/GameCardSkeleton'
 import WeekPicker from '../components/WeekPicker'
 import { format, parseISO } from 'date-fns'
@@ -117,36 +117,13 @@ export default function Home() {
   const renderLeagueSection = (league: string, index: number) => {
     const leagueGames = gamesByLeague[league] || []
     
-    if (leagueGames.length === 0) return null
-    
     return (
-      <motion.section
+      <GameSection
         key={league}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1 }}
-        className="mb-8"
-      >
-        <h2 className="text-lg font-medium text-gray-800 mb-4 px-1">
-          {league}
-          <span className="text-sm text-gray-500 ml-2">
-            {leagueGames.length} {leagueGames.length === 1 ? 'game' : 'games'}
-          </span>
-        </h2>
-        
-        <div className="space-y-2">
-          {leagueGames.map((game, gameIndex) => (
-            <motion.div
-              key={game.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: (index * 0.1) + (gameIndex * 0.05) }}
-            >
-              <GameCard game={game} />
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
+        title={league}
+        games={leagueGames}
+        index={index}
+      />
     )
   }
 
@@ -169,14 +146,10 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: leagueIndex * 0.1 }}
             >
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="h-6 w-32 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-              
-              <div className="space-y-2">
-                <GameCardSkeleton count={leagueIndex === 0 ? 4 : leagueIndex === 1 ? 3 : 2} />
-              </div>
+              <GameCardSkeleton 
+                variant="section" 
+                count={leagueIndex === 0 ? 4 : leagueIndex === 1 ? 3 : 2} 
+              />
             </motion.section>
           ))}
         </div>

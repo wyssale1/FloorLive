@@ -114,17 +114,18 @@ export default function GameDetail() {
 
       {/* Team Header */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
         className="bg-white/50 backdrop-blur-sm"
       >
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
           <div className="flex items-center justify-between gap-3 sm:gap-6">
             {/* Home Team */}
             <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
               className="flex flex-col items-center text-center flex-1"
             >
               <Link 
@@ -152,9 +153,9 @@ export default function GameDetail() {
 
             {/* Score */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
               className="text-center flex-shrink-0"
             >
               <div className="text-xl sm:text-3xl font-medium text-gray-800 mb-1">
@@ -206,9 +207,9 @@ export default function GameDetail() {
 
             {/* Away Team */}
             <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
               className="flex flex-col items-center text-center flex-1"
             >
               <Link 
@@ -242,7 +243,7 @@ export default function GameDetail() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
           className="bg-red-500 text-white text-center py-2"
         >
           <div className="flex items-center justify-center space-x-2">
@@ -255,7 +256,7 @@ export default function GameDetail() {
       {/* Game Content Tabs */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
         <TabsContainer
-          defaultValue="events"
+          defaultValue="overview"
           tabs={[
             {
               value: 'overview',
@@ -270,6 +271,7 @@ export default function GameDetail() {
             {
               value: 'events',
               label: 'Events',
+              disabled: game.status === 'upcoming',
               content: (
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
                   <div className="flex items-center justify-between mb-3 sm:mb-6">
