@@ -1,7 +1,7 @@
-import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics } from '../shared/types';
+import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, Player, PlayerStatistics, PlayerGamePerformance, TeamStatistics } from '../shared/types';
 
 // Re-export types for external usage
-export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics };
+export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, Player, PlayerStatistics, PlayerGamePerformance, TeamStatistics };
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -235,6 +235,53 @@ class ApiClient {
       spectators: apiGame.spectators,
       isLive: apiGame.status === 'live'
     };
+  }
+
+  // Player-related methods
+  async getPlayerDetails(playerId: string): Promise<Player | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/players/${playerId}`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.player || null;
+    } catch (error) {
+      console.error('Error fetching player details:', error);
+      return null;
+    }
+  }
+
+  async getPlayerStatistics(playerId: string): Promise<PlayerStatistics[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/players/${playerId}/statistics`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.statistics || [];
+    } catch (error) {
+      console.error('Error fetching player statistics:', error);
+      return [];
+    }
+  }
+
+  async getPlayerOverview(playerId: string): Promise<PlayerGamePerformance[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/players/${playerId}/overview`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.overview || [];
+    } catch (error) {
+      console.error('Error fetching player overview:', error);
+      return [];
+    }
   }
 
 

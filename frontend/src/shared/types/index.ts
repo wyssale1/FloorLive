@@ -121,16 +121,6 @@ export interface TeamRanking {
   points: number;
 }
 
-export interface PlayerInfo {
-  id: string;
-  name: string;
-  number?: string;
-  position?: string;
-  yearOfBirth?: number;
-  goals?: number;
-  assists?: number;
-  points?: number;
-}
 
 export interface TeamStatistics {
   achievements?: Array<{
@@ -172,4 +162,54 @@ export interface FrontendGame {
   startTime: string;
   gameDate: string;
   isLive: boolean;
+}
+
+// Player-related interfaces (updated definitions)
+export interface Player {
+  id: string;
+  name: string;
+  number?: string;
+  position?: string;
+  yearOfBirth?: number;
+  height?: string;
+  weight?: string;
+  licenseType?: string;
+  profileImage?: string;
+  club?: {
+    id: string;
+    name: string;
+  };
+}
+
+
+export interface PlayerStatistics {
+  season: string;
+  league: string;
+  team: string;
+  teamId?: string;
+  games: number;
+  goals: number;
+  assists: number;
+  points: number;
+  penalties: {
+    twoMinute: number;
+    fiveMinute: number;
+    tenMinute: number;
+    matchPenalty: number;
+  };
+}
+
+export interface PlayerGamePerformance {
+  gameDate: string;
+  venue: string;
+  gameTime: string;
+  homeTeam: string;
+  homeTeamId?: string;
+  awayTeam: string;
+  awayTeamId?: string;
+  gameScore: string;
+  playerGoals: number;
+  playerAssists: number;
+  playerPoints: number;
+  matchPenalties: number;
 }

@@ -6,6 +6,7 @@ import './index.css'
 import Home from './pages/Home'
 import GameDetail from './pages/GameDetail'
 import TeamDetail from './pages/TeamDetail'
+import PlayerDetail from './pages/PlayerDetail'
 import Header from './components/Header'
 
 const queryClient = new QueryClient()
@@ -46,13 +47,20 @@ const teamRoute = createRoute({
   component: TeamDetail,
 })
 
-// Step 5: Create the route tree
-const routeTree = rootRoute.addChildren([indexRoute, gameRoute, teamRoute])
+// Step 5: Create player detail route
+const playerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/player/$playerId',
+  component: PlayerDetail,
+})
 
-// Step 6: Create the router
+// Step 6: Create the route tree
+const routeTree = rootRoute.addChildren([indexRoute, gameRoute, teamRoute, playerRoute])
+
+// Step 7: Create the router
 const router = createRouter({ routeTree })
 
-// Step 7: Register for TypeScript
+// Step 8: Register for TypeScript
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router

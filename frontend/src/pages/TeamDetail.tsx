@@ -317,7 +317,7 @@ export default function TeamDetail() {
                                 <div className="min-w-0">
                                   <div className="text-sm font-medium text-gray-800">
                                     <PlayerLink 
-                                      playerId={player.id} 
+                                      playerId={player.id && player.id.trim() ? player.id : ''} 
                                       playerName={player.name}
                                     />
                                   </div>

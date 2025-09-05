@@ -140,6 +140,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
   // Combine: best players first, then game end events, then regular events
   const sortedEvents = [...bestPlayerEvents, ...gameEndEvents, ...sortedRegularEvents]
 
+
   const renderPlayerInfo = (event: GameEvent) => {
     if (isTimeout(event)) {
       return "Timeout"
@@ -153,7 +154,8 @@ export default function GameTimeline({ events }: GameTimelineProps) {
           ) : (
             <span>{goalInfo.homeScore}-<span className="font-bold">{goalInfo.awayScore}</span></span>
           )}
-          {' '}{goalInfo.playerName}
+          {' '}
+          {goalInfo.playerName}
         </span>
       )
     }
