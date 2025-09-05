@@ -1,69 +1,33 @@
-# React + TypeScript + Vite
+# FloorLive
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Swiss Unihockey Live Scores & Game Tracker**
 
-Currently, two official plugins are available:
+FloorLive is a modern web application that provides real-time Swiss Unihockey game information, live scores, and comprehensive team and player statistics. Built with React and TypeScript, it offers an intuitive interface to follow your favorite Swiss Unihockey teams and players.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Live Game Tracking**: Real-time scores and game events
+- **Team Profiles**: Detailed team information, player rosters, and league standings  
+- **Player Statistics**: Individual player stats and career information
+- **Dynamic SEO**: Social media optimized sharing with dynamic meta tags
+- **Responsive Design**: Mobile-first design that works on all devices
+- **Date Navigation**: Browse games by date with intuitive week picker
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Frontend**: React 19, TypeScript, TailwindCSS, Framer Motion
+- **Backend**: Node.js, Express, TypeScript
+- **API Integration**: Swiss Unihockey Official API
+- **Build Tools**: Vite, ESLint
+- **UI Components**: shadcn/ui, Radix UI
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start development server: `npm run dev`
+4. Build for production: `npm run build`
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## API Integration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+FloorLive integrates with the official Swiss Unihockey API to provide accurate and up-to-date game information, team data, and player statistics.
