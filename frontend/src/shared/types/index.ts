@@ -79,6 +79,87 @@ export interface ApiResponse<T> {
 export type GameStatus = 'live' | 'upcoming' | 'finished';
 export type LeagueType = 'NLA Men' | 'NLA Women' | 'NLB Men' | 'NLB Women';
 
+// Additional types for new features
+export interface RankingsApiResponse {
+  type: string;
+  subtype: string;
+  doc: string;
+  data: {
+    context: {
+      season?: string;
+      league?: string;
+      game_class?: string;
+      group?: string;
+    };
+    headers: string[];
+    title: string;
+    tabs?: any[];
+    regions: TeamRanking[][];
+  };
+}
+
+export interface TeamRanking {
+  position: number;
+  teamId: string;
+  teamName: string;
+  teamLogo?: string | null;
+  games: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  points: number;
+}
+
+export interface PlayerInfo {
+  id: string;
+  name: string;
+  number?: string;
+  position?: string;
+  yearOfBirth?: number;
+  goals?: number;
+  assists?: number;
+  points?: number;
+}
+
+export interface TeamStatistics {
+  achievements?: Array<{
+    competition: string;
+    season: string;
+    result: string;
+  }>;
+  seasons?: Array<{
+    season: string;
+    league: string;
+    position?: string;
+    games?: number;
+    wins?: number;
+  }>;
+}
+
+export interface GamePlayerStats {
+  number: string;
+  name: string;
+  goals: number;
+  assists: number;
+  penalties: number;
+  playingTime: string;
+}
+
+export interface GameStatisticsData {
+  gameStats: any;
+  playerStats: {
+    home: GamePlayerStats[];
+    away: GamePlayerStats[];
+  };
+  teamStats: {
+    home: Record<string, string>;
+    away: Record<string, string>;
+  };
+}
+
 // Frontend Game interface (camelCase version)
 export interface FrontendGame {
   id: string;

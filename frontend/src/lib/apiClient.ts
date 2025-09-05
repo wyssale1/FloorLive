@@ -1,7 +1,7 @@
-import type { Game, Team, GameEvent, ApiResponse } from '../shared/types/index.js';
+import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics, GamePlayerStats, GameStatisticsData } from '../shared/types';
 
 // Re-export types for external usage
-export type { Game, Team, GameEvent, ApiResponse };
+export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics, GamePlayerStats, GameStatisticsData };
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -76,6 +76,138 @@ class ApiClient {
     } catch (error) {
       console.error('Error fetching game events:', error);
       return [];
+    }
+  }
+
+  async getTeamDetails(teamId: string): Promise<any | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/teams/${teamId}`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching team details:', error);
+      return null;
+    }
+  }
+
+  async getTeamPlayers(teamId: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/teams/${teamId}/players`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.players || [];
+    } catch (error) {
+      console.error('Error fetching team players:', error);
+      return [];
+    }
+  }
+
+  async getTeamStatistics(teamId: string): Promise<any | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/teams/${teamId}/statistics`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.statistics || null;
+    } catch (error) {
+      console.error('Error fetching team statistics:', error);
+      return null;
+    }
+  }
+
+  async getTeamCompetitions(teamId: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/teams/${teamId}/competitions`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.competitions || [];
+    } catch (error) {
+      console.error('Error fetching team competitions:', error);
+      return [];
+    }
+  }
+
+  async getTeamUpcomingGames(teamId: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/teams/${teamId}/games`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.games || [];
+    } catch (error) {
+      console.error('Error fetching team upcoming games:', error);
+      return [];
+    }
+  }
+
+  async getGameStatistics(gameId: string): Promise<any | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/games/${gameId}/statistics`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.statistics || null;
+    } catch (error) {
+      console.error('Error fetching game statistics:', error);
+      return null;
+    }
+  }
+
+  async getLeagueTable(leagueId: string): Promise<any | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/leagues/${leagueId}/table`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.table || null;
+    } catch (error) {
+      console.error('Error fetching league table:', error);
+      return null;
+    }
+  }
+
+  async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string } = {}): Promise<any | null> {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params.season) searchParams.append('season', params.season);
+      if (params.league) searchParams.append('league', params.league);
+      if (params.game_class) searchParams.append('game_class', params.game_class);
+      if (params.group) searchParams.append('group', params.group);
+
+      const url = `${this.baseURL}/leagues/rankings${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.rankings || null;
+    } catch (error) {
+      console.error('Error fetching rankings:', error);
+      return null;
     }
   }
 

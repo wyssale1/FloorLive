@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Target, FileText } from 'lucide-react'
+import { Target, AlertTriangle, Pause, Crown } from 'lucide-react'
 import type { GameEvent } from '../lib/apiClient'
 
 interface GameTimelineProps {
@@ -26,93 +26,241 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     )
   }
 
+  const is2MinPenalty = (event: GameEvent) => {
+    return event.type === 'penalty' && 
+           (event.description?.includes('2min') || event.description?.includes("2'"))
+  }
+
+  const isTimeout = (event: GameEvent) => {
+    return event.type === 'timeout' || 
+           (event.type === 'other' && event.description?.toLowerCase().includes('timeout'))
+  }
+
+  const isBestPlayer = (event: GameEvent) => {
+    return event.description?.includes('Bester Spieler') || false
+  }
+
+  const parseGoalInfo = (event: GameEvent) => {
+    if (event.type !== 'goal') return null
+    
+    // Extract score from description like "Torschütze 4:4"
+    const scoreMatch = event.description?.match(/(\d+):(\d+)/)
+    if (!scoreMatch) return null
+    
+    const homeScore = parseInt(scoreMatch[1])
+    const awayScore = parseInt(scoreMatch[2])
+    
+    // Determine which team scored and what goal number this was
+    if (event.team === 'home') {
+      return {
+        goalNumber: homeScore,
+        opponentScore: awayScore,
+        playerName: event.player
+      }
+    } else {
+      return {
+        goalNumber: awayScore,
+        opponentScore: homeScore,
+        playerName: event.player
+      }
+    }
+  }
+
+  const getEventIcon = (event: GameEvent) => {
+    if (isBestPlayer(event)) {
+      return <Crown className="w-3 h-3 text-gray-600" />
+    }
+    if (event.type === 'goal') {
+      return <Target className="w-3 h-3 text-gray-600" />
+    }
+    if (isTimeout(event)) {
+      return <Pause className="w-3 h-3 text-gray-600" />
+    }
+    if (event.type === 'penalty' && !is2MinPenalty(event)) {
+      return <AlertTriangle className="w-3 h-3 text-gray-600" />
+    }
+    return null
+  }
+
+  // Helper function to parse time string to minutes for sorting
+  const parseTimeToMinutes = (timeStr: string) => {
+    if (!timeStr) return 0
+    const parts = timeStr.split(':')
+    if (parts.length !== 2) return 0
+    return parseInt(parts[0]) * 60 + parseInt(parts[1])
+  }
+
+  // Deduplicate consecutive identical period events first
+  const deduplicatedEvents = events.reduce((acc: GameEvent[], event: GameEvent) => {
+    // For period events, check if it's identical to the previous period event
+    if (isPeriodEvent(event)) {
+      const lastEvent = acc[acc.length - 1]
+      // Skip if the last event was the same period event
+      if (lastEvent && isPeriodEvent(lastEvent) && 
+          lastEvent.description === event.description) {
+        return acc // Skip this duplicate
+      }
+    }
+    acc.push(event)
+    return acc
+  }, [])
+
+  // Separate events into categories for proper 3-tier sorting
+  const bestPlayerEvents = deduplicatedEvents.filter(isBestPlayer)
+  const gameEndEvents = deduplicatedEvents.filter(e => 
+    isPeriodEvent(e) && e.description?.includes('Spielende')
+  )
+  const regularEvents = deduplicatedEvents.filter(e => 
+    !isBestPlayer(e) && !(isPeriodEvent(e) && e.description?.includes('Spielende'))
+  )
+  
+  // Sort regular events in reverse chronological order (latest first)
+  const sortedRegularEvents = regularEvents.sort((a, b) => {
+    const timeA = parseTimeToMinutes(a.time)
+    const timeB = parseTimeToMinutes(b.time)
+    
+    // If both have no time (like some period events), keep original order
+    if (timeA === 0 && timeB === 0) return 0
+    
+    // Events with time come before events without time
+    if (timeA === 0) return 1
+    if (timeB === 0) return -1
+    
+    // Regular sorting: reverse chronological (latest first)
+    return timeB - timeA
+  })
+  
+  // Combine: best players first, then game end events, then regular events
+  const sortedEvents = [...bestPlayerEvents, ...gameEndEvents, ...sortedRegularEvents]
+
+  const renderPlayerInfo = (event: GameEvent) => {
+    if (isTimeout(event)) {
+      return "Timeout"
+    }
+    const goalInfo = parseGoalInfo(event)
+    if (goalInfo) {
+      return (
+        <span>
+          <span className="font-bold">{goalInfo.goalNumber}</span>-{goalInfo.opponentScore} {goalInfo.playerName}
+        </span>
+      )
+    }
+    return event.player
+  }
+
   return (
-    <div className="space-y-4">
-      {events.map((event, index) => {
-        // Check if this is a period marker event
-        if (isPeriodEvent(event)) {
+    <div className="relative">
+      {/* Central dotted line */}
+      <div className="absolute left-1/2 top-0 bottom-0 w-px border-l-2 border-dashed border-gray-300 -translate-x-0.5"></div>
+      
+      <div className="space-y-4 py-4">
+        {sortedEvents.map((event, index) => {
+          // Check if this is a period marker event
+          if (isPeriodEvent(event)) {
+            return (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="relative flex justify-center my-6"
+              >
+                <div className="bg-white px-3 py-1 border border-gray-200 rounded-full">
+                  <div className="text-xs font-medium text-gray-700 text-center">
+                    {event.description}
+                  </div>
+                </div>
+              </motion.div>
+            )
+          }
+
+          const isHomeTeam = event.team === 'home'
+          
           return (
             <motion.div
               key={event.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="my-6 p-4 bg-blue-50 rounded-lg border border-blue-200"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="relative flex items-center min-h-12"
             >
-              <div className="text-center">
-                <div className="text-sm font-medium text-blue-900 mb-1">
-                  {event.description}
-                </div>
-                <div className="text-xs text-blue-700">
-                  {event.time}
-                </div>
-              </div>
+              {isHomeTeam ? (
+                <>
+                  {/* Player info on left */}
+                  <div className="flex-1 flex justify-end pr-4">
+                    <div className="text-right max-w-xs">
+                      <div className="text-xs text-gray-700 font-medium">
+                        {renderPlayerInfo(event)}
+                      </div>
+                      {event.assist && (
+                        <div className="text-2xs text-gray-500 mt-0.5">
+                          Assist: {event.assist}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Central icon */}
+                  <div className="relative z-10 flex items-center justify-center">
+                    <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
+                      {is2MinPenalty(event) ? (
+                        <span className="text-2xs font-bold text-gray-600">+2</span>
+                      ) : (
+                        getEventIcon(event)
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Time on right */}
+                  <div className="flex-1 flex justify-start pl-4">
+                    <div className="text-left">
+                      <div className="text-2xs text-gray-400 font-mono">
+                        {event.time}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Time on left for away team */}
+                  <div className="flex-1 flex justify-end pr-4">
+                    <div className="text-right">
+                      <div className="text-2xs text-gray-400 font-mono">
+                        {event.time}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Central icon */}
+                  <div className="relative z-10 flex items-center justify-center">
+                    <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
+                      {is2MinPenalty(event) ? (
+                        <span className="text-2xs font-bold text-gray-600">+2</span>
+                      ) : (
+                        getEventIcon(event)
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Player info on right for away team */}
+                  <div className="flex-1 flex justify-start pl-4">
+                    <div className="text-left max-w-xs">
+                      <div className="text-xs text-gray-700 font-medium">
+                        {renderPlayerInfo(event)}
+                      </div>
+                      {event.assist && (
+                        <div className="text-2xs text-gray-500 mt-0.5">
+                          Assist: {event.assist}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </motion.div>
           )
-        }
-
-        // Regular event display
-        return (
-          <motion.div
-            key={event.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
-          >
-            {/* Time */}
-            <div className="flex-shrink-0 text-right w-16">
-              <div className="font-mono text-lg font-bold text-gray-900">
-                {event.time}
-              </div>
-            </div>
-
-            {/* Event Icon */}
-            <div className="flex-shrink-0 mt-1">
-              {event.type === 'goal' ? (
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                  <Target className="w-3 h-3 text-white" />
-                </div>
-              ) : (
-                <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
-                  <FileText className="w-3 h-3 text-white" />
-                </div>
-              )}
-            </div>
-
-            {/* Event Details */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">
-                  {event.player}
-                </span>
-                {event.type === 'goal' && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                    Goal
-                  </span>
-                )}
-                {event.type === 'penalty' && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                    Penalty
-                  </span>
-                )}
-              </div>
-              
-              {event.assist && (
-                <div className="text-sm text-gray-600 mt-1">
-                  Assist: <span className="font-medium">{event.assist}</span>
-                </div>
-              )}
-              
-              {event.description && (
-                <div className="text-sm text-gray-600 mt-1">
-                  {event.description}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )
-      })}
+        })}
+      </div>
     </div>
   )
 }

@@ -192,6 +192,44 @@ router.get('/:gameId/events', async (req, res) => {
   }
 });
 
+// GET /api/games/:gameId/statistics - Get game statistics
+router.get('/:gameId/statistics', async (req, res) => {
+  try {
+    const { gameId } = req.params;
+    
+    if (!gameId) {
+      return res.status(400).json({ error: 'Game ID is required' });
+    }
+
+    const cacheKey = `statistics:${gameId}`;
+    let statistics = cache.get(cacheKey);
+    
+    if (!statistics) {
+      statistics = await apiClient.getGameStatistics(gameId);
+      
+      if (!statistics) {
+        return res.status(404).json({ error: 'Game statistics not found' });
+      }
+
+      // Cache statistics for 1 hour (they don't change after game is finished)
+      cache.set(cacheKey, statistics, 3600000);
+    }
+
+    res.json({
+      gameId,
+      statistics,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching game statistics:', error);
+    res.status(500).json({
+      error: 'Failed to fetch game statistics',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // GET /api/games/cache/stats - Cache statistics (for debugging)
 router.get('/cache/stats', (req, res) => {
   const stats = cache.getStats();

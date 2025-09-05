@@ -13,7 +13,9 @@
       "Bash(npm start)",
       "Bash(time curl:*)",
       "Bash(pkill:*)",
-      "Bash(/dev/null)"
+      "Bash(/dev/null)",
+      "WebFetch(domain:ui.shadcn.com)",
+      "Bash(pnpm dlx:*)"
     ],
     "deny": [],
     "ask": []

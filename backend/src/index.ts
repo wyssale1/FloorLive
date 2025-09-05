@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import gamesRouter from './routes/games.js';
+import teamsRouter from './routes/teams.js';
+import leaguesRouter from './routes/leagues.js';
 import logosRouter from './routes/logos.js';
 import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
@@ -30,6 +32,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/games', gamesRouter);
+app.use('/api/teams', teamsRouter);
+app.use('/api/leagues', leaguesRouter);
 app.use('/api/logos', logosRouter);
 
 // Health check endpoint
@@ -52,6 +56,14 @@ app.get('/api', (req, res) => {
       live_games: '/api/games/live',
       game_details: '/api/games/:gameId',
       game_events: '/api/games/:gameId/events',
+      teams: '/api/teams/:teamId',
+      team_players: '/api/teams/:teamId/players',
+      team_statistics: '/api/teams/:teamId/statistics',
+      team_competitions: '/api/teams/:teamId/competitions',
+      team_games: '/api/teams/:teamId/games',
+      game_statistics: '/api/games/:gameId/statistics',
+      league_table: '/api/leagues/:leagueId/table',
+      rankings: '/api/leagues/rankings',
       logos: '/api/logos/team-:teamId/:size.:format',
       logo_info: '/api/logos/team-:teamId/info',
       logo_cache_stats: '/api/logos/cache/stats',

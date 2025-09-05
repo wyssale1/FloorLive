@@ -5,26 +5,39 @@ import { useState, useEffect } from 'react'
 import { apiClient, type GameEvent } from '../lib/apiClient'
 import GameTimeline from '../components/GameTimeline'
 import TeamLogo from '../components/TeamLogo'
+import TabsContainer from '../components/TabsContainer'
+import LeagueTable from '../components/LeagueTable'
+import GameStatistics from '../components/GameStatistics'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
   const [game, setGame] = useState<any>(null)
   const [events, setEvents] = useState<GameEvent[]>([])
+  const [leagueTable, setLeagueTable] = useState<any>(null)
+  const [gameStatistics, setGameStatistics] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [tabsLoading, setTabsLoading] = useState({
+    events: false,
+    table: false,
+    statistics: false
+  })
   
   useEffect(() => {
     const fetchGameData = async () => {
       setLoading(true)
       try {
-        const [gameData, eventsData] = await Promise.all([
-          apiClient.getGameDetails(gameId),
-          apiClient.getGameEvents(gameId)
-        ])
+        const gameData = await apiClient.getGameDetails(gameId)
         
         if (gameData) {
-          setGame(apiClient.adaptGameForFrontend(gameData))
+          const adaptedGame = apiClient.adaptGameForFrontend(gameData)
+          setGame(adaptedGame)
+          
+          // Initial load of events (for default tab)
+          setTabsLoading(prev => ({ ...prev, events: true }))
+          const eventsData = await apiClient.getGameEvents(gameId)
+          setEvents(eventsData)
+          setTabsLoading(prev => ({ ...prev, events: false }))
         }
-        setEvents(eventsData)
       } catch (error) {
         console.error('Error fetching game data:', error)
       } finally {
@@ -34,6 +47,44 @@ export default function GameDetail() {
     
     fetchGameData()
   }, [gameId])
+
+  const loadLeagueTable = async (leagueId: string) => {
+    if (leagueTable) return // Already loaded
+    
+    setTabsLoading(prev => ({ ...prev, table: true }))
+    try {
+      // Extract season from game date for historical rankings
+      const gameYear = game?.gameDate ? new Date(game.gameDate).getFullYear() : new Date().getFullYear()
+      const currentYear = new Date().getFullYear()
+      
+      // Use current season if game is from this year, otherwise use historical season
+      const season = gameYear === currentYear ? undefined : gameYear.toString()
+      
+      const rankingsData = await apiClient.getRankings({ 
+        season,
+        league: leagueId 
+      })
+      setLeagueTable(rankingsData)
+    } catch (error) {
+      console.error('Error fetching league table:', error)
+    } finally {
+      setTabsLoading(prev => ({ ...prev, table: false }))
+    }
+  }
+
+  const loadGameStatistics = async () => {
+    if (gameStatistics) return // Already loaded
+    
+    setTabsLoading(prev => ({ ...prev, statistics: true }))
+    try {
+      const statsData = await apiClient.getGameStatistics(gameId)
+      setGameStatistics(statsData)
+    } catch (error) {
+      console.error('Error fetching game statistics:', error)
+    } finally {
+      setTabsLoading(prev => ({ ...prev, statistics: false }))
+    }
+  }
   
   if (loading) {
     return (
@@ -83,9 +134,13 @@ export default function GameDetail() {
                 showSwissUnihockeyFallback={true}
               />
               <div className="text-center sm:text-right">
-                <div className="text-base sm:text-xl font-medium text-gray-800">
+                <Link 
+                  to="/team/$teamId" 
+                  params={{ teamId: game.homeTeam.id }}
+                  className="text-base sm:text-xl font-medium text-gray-800 hover:text-gray-900 transition-colors"
+                >
                   {game.homeTeam.name}
-                </div>
+                </Link>
               </div>
             </motion.div>
 
@@ -151,9 +206,13 @@ export default function GameDetail() {
               className="flex items-center space-x-2 sm:space-x-4 flex-1 sm:flex-none justify-center sm:justify-start"
             >
               <div className="text-center sm:text-left">
-                <div className="text-base sm:text-xl font-medium text-gray-800">
+                <Link 
+                  to="/team/$teamId" 
+                  params={{ teamId: game.awayTeam.id }}
+                  className="text-base sm:text-xl font-medium text-gray-800 hover:text-gray-900 transition-colors"
+                >
                   {game.awayTeam.name}
-                </div>
+                </Link>
               </div>
               <TeamLogo 
                 team={game.awayTeam} 
@@ -181,24 +240,69 @@ export default function GameDetail() {
         </motion.div>
       )}
 
-      {/* Game Events */}
+      {/* Game Content Tabs */}
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-medium text-gray-800">Game Timeline</h2>
-            <div className="flex items-center space-x-2">
-              <Clock className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-600">Live updates</span>
-            </div>
-          </div>
-          
-          <GameTimeline events={events} />
-        </motion.div>
+        <TabsContainer
+          defaultValue="events"
+          tabs={[
+            {
+              value: 'events',
+              label: 'Events',
+              content: (
+                <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-medium text-gray-800">Game Timeline</h2>
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-600">Live updates</span>
+                    </div>
+                  </div>
+                  
+                  {tabsLoading.events ? (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 text-sm">Loading events...</div>
+                    </div>
+                  ) : (
+                    <GameTimeline events={events} />
+                  )}
+                </div>
+              )
+            },
+            {
+              value: 'table',
+              label: 'League Table',
+              content: (
+                <div
+                  onFocus={() => game?.league?.id && loadLeagueTable(game.league.id)}
+                  onClick={() => game?.league?.id && loadLeagueTable(game.league.id)}
+                >
+                  <LeagueTable 
+                    table={leagueTable} 
+                    loading={tabsLoading.table}
+                  />
+                </div>
+              ),
+              disabled: !game?.league?.id
+            },
+            {
+              value: 'statistics',
+              label: 'Statistics',
+              content: (
+                <div
+                  onFocus={() => loadGameStatistics()}
+                  onClick={() => loadGameStatistics()}
+                >
+                  <GameStatistics
+                    statistics={gameStatistics}
+                    homeTeam={game?.homeTeam || { name: 'Home Team' }}
+                    awayTeam={game?.awayTeam || { name: 'Away Team' }}
+                    loading={tabsLoading.statistics}
+                  />
+                </div>
+              )
+            }
+          ]}
+        />
       </div>
     </div>
   )

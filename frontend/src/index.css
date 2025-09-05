@@ -118,3 +118,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .text-2xs {
+    font-size: 0.625rem;
+    line-height: 0.75rem;
+  }
+}
+
+body {
+  scrollbar-gutter: stable both-edges;
+}

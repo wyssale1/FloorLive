@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import Home from './pages/Home'
 import GameDetail from './pages/GameDetail'
+import TeamDetail from './pages/TeamDetail'
 import Header from './components/Header'
 
 const queryClient = new QueryClient()
@@ -38,13 +39,20 @@ const gameRoute = createRoute({
   component: GameDetail,
 })
 
-// Step 4: Create the route tree
-const routeTree = rootRoute.addChildren([indexRoute, gameRoute])
+// Step 4: Create team detail route
+const teamRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/team/$teamId',
+  component: TeamDetail,
+})
 
-// Step 5: Create the router
+// Step 5: Create the route tree
+const routeTree = rootRoute.addChildren([indexRoute, gameRoute, teamRoute])
+
+// Step 6: Create the router
 const router = createRouter({ routeTree })
 
-// Step 6: Register for TypeScript
+// Step 7: Register for TypeScript
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
