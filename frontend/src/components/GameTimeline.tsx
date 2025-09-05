@@ -178,7 +178,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                 className="relative flex justify-center my-6"
               >
                 <div className="bg-white px-3 py-1 border border-gray-200 rounded-full">
-                  <div className="text-xs font-medium text-gray-700 text-center">
+                  <div className="text-sm font-medium text-gray-700 text-center">
                     {event.description}
                   </div>
                 </div>
@@ -201,11 +201,11 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                   {/* Player info on left */}
                   <div className="flex-1 flex justify-end pr-4">
                     <div className="text-right max-w-xs">
-                      <div className="text-xs text-gray-700 font-medium">
+                      <div className="text-sm text-gray-700 font-medium">
                         {renderPlayerInfo(event)}
                       </div>
                       {event.assist && (
-                        <div className="text-2xs text-gray-500 mt-0.5">
+                        <div className="text-xs text-gray-500 mt-0.5">
                           Assist: {event.assist}
                         </div>
                       )}
@@ -216,7 +216,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                   <div className="relative z-10 flex items-center justify-center">
                     <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
                       {is2MinPenalty(event) ? (
-                        <span className="text-2xs font-bold text-gray-600">+2</span>
+                        <span className="text-xs font-bold text-gray-600">+2</span>
                       ) : (
                         getEventIcon(event)
                       )}
@@ -226,7 +226,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                   {/* Time on right */}
                   <div className="flex-1 flex justify-start pl-4">
                     <div className="text-left">
-                      <div className="text-2xs text-gray-400 font-mono">
+                      <div className="text-xs text-gray-400 font-mono">
                         {event.time}
                       </div>
                     </div>
@@ -237,7 +237,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                   {/* Time on left for away team */}
                   <div className="flex-1 flex justify-end pr-4">
                     <div className="text-right">
-                      <div className="text-2xs text-gray-400 font-mono">
+                      <div className="text-xs text-gray-400 font-mono">
                         {event.time}
                       </div>
                     </div>
@@ -247,7 +247,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                   <div className="relative z-10 flex items-center justify-center">
                     <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
                       {is2MinPenalty(event) ? (
-                        <span className="text-2xs font-bold text-gray-600">+2</span>
+                        <span className="text-xs font-bold text-gray-600">+2</span>
                       ) : (
                         getEventIcon(event)
                       )}
@@ -257,11 +257,11 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                   {/* Player info on right for away team */}
                   <div className="flex-1 flex justify-start pl-4">
                     <div className="text-left max-w-xs">
-                      <div className="text-xs text-gray-700 font-medium">
+                      <div className="text-sm text-gray-700 font-medium">
                         {renderPlayerInfo(event)}
                       </div>
                       {event.assist && (
-                        <div className="text-2xs text-gray-500 mt-0.5">
+                        <div className="text-xs text-gray-500 mt-0.5">
                           Assist: {event.assist}
                         </div>
                       )}

@@ -292,10 +292,12 @@ export default function GameDetail() {
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
                   <div className="flex items-center justify-between mb-3 sm:mb-6">
                     <h2 className="text-lg font-medium text-gray-800">Game Timeline</h2>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">Live updates</span>
-                    </div>
+                    {game.status === 'live' && (
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">Live updates</span>
+                      </div>
+                    )}
                   </div>
                   
                   {tabsLoading.events ? (

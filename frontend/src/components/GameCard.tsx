@@ -43,7 +43,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
   }
 
   const renderTeamLine = (team: any) => (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center space-x-3 min-w-0 flex-1">
       <TeamLogo 
         team={team} 
         size="small" 
@@ -82,14 +82,14 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
           </div>
           
           {/* Teams */}
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 min-w-0 space-y-2">
             {renderTeamLine(game.homeTeam)}
             {renderTeamLine(game.awayTeam)}
           </div>
           
           {/* Date display if enabled */}
           {showDate && game.gameDate && (
-            <div className="ml-3">
+            <div className="ml-3 flex-shrink-0">
               <div className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 font-medium">
                 {formatDate(game.gameDate)}
               </div>
