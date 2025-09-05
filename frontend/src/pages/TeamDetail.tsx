@@ -4,6 +4,8 @@ import { Users, Trophy, Target, Globe, User, Hash } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../lib/apiClient'
 import TeamLogo from '../components/TeamLogo'
+import PlayerListSkeleton from '../components/PlayerListSkeleton'
+import { Skeleton } from '../components/ui/skeleton'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import UpcomingGames from '../components/UpcomingGames'
@@ -128,9 +130,34 @@ export default function TeamDetail() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-gray-400 text-lg mb-2">Loading team details...</div>
+      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
+        {/* Team Header Skeleton */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 sm:mb-10"
+        >
+          <div className="flex items-start space-x-6 sm:space-x-8">
+            {/* Logo skeleton */}
+            <Skeleton className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex-shrink-0" />
+            
+            {/* Info skeleton */}
+            <div className="flex flex-col justify-between min-h-16 sm:min-h-20 py-1">
+              <Skeleton className="h-6 sm:h-8 w-48 sm:w-64 mb-2" />
+              <Skeleton className="h-4 w-32 sm:w-40 mb-2" />
+              <Skeleton className="h-4 w-24 sm:w-32" />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Content Skeleton */}
+        <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <Skeleton className="w-4 h-4" />
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+          <PlayerListSkeleton />
         </div>
       </div>
     )
@@ -214,9 +241,7 @@ export default function TeamDetail() {
                 </div>
                 
                 {tabsLoading.players ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 text-sm">Loading players...</div>
-                  </div>
+                  <PlayerListSkeleton />
                 ) : players.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="text-gray-400 text-sm mb-2">No player information available</div>
@@ -307,8 +332,24 @@ export default function TeamDetail() {
                 onClick={() => loadLeagueTables()}
               >
                 {tabsLoading.tables ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 text-sm">Loading league tables...</div>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
+                    <div className="space-y-4">
+                      <Skeleton className="h-6 w-48 mb-6" />
+                      {Array(12).fill(0).map((_, index) => (
+                        <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100">
+                          <div className="flex items-center space-x-3">
+                            <Skeleton className="w-6 h-6 rounded-full" />
+                            <Skeleton className="h-4 w-32" />
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <Skeleton className="h-4 w-8" />
+                            <Skeleton className="h-4 w-8" />
+                            <Skeleton className="h-4 w-8" />
+                            <Skeleton className="h-4 w-8" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : leagueTables.length === 0 ? (
                   <div className="text-center py-12">

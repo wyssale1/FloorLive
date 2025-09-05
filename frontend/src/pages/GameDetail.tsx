@@ -4,6 +4,8 @@ import { Clock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient, type GameEvent } from '../lib/apiClient'
 import GameTimeline from '../components/GameTimeline'
+import GameTimelineSkeleton from '../components/GameTimelineSkeleton'
+import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
 import TeamLogo from '../components/TeamLogo'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
@@ -88,9 +90,22 @@ export default function GameDetail() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-gray-400 text-lg mb-2">Loading game details...</div>
+      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
+        {/* Game Header Skeleton */}
+        <GameHeaderSkeleton />
+
+        {/* Game Content Tabs Skeleton */}
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-6">
+              <div className="h-5 w-28 bg-gray-200 rounded animate-pulse"></div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+            <GameTimelineSkeleton />
+          </div>
         </div>
       </div>
     )
@@ -271,9 +286,7 @@ export default function GameDetail() {
                   </div>
                   
                   {tabsLoading.events ? (
-                    <div className="text-center py-12">
-                      <div className="text-gray-400 text-sm">Loading events...</div>
-                    </div>
+                    <GameTimelineSkeleton />
                   ) : (
                     <GameTimeline events={events} />
                   )}
