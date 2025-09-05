@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { format, parseISO, isValid } from 'date-fns'
+import { useEffect } from 'react'
 
 // SVG Logo Component - inline for performance
 const Logo = ({ className }: { className?: string }) => (
@@ -23,12 +23,42 @@ const Logo = ({ className }: { className?: string }) => (
 // Hook to determine if back button should be shown
 const useBackButton = () => {
   const location = useLocation()
+  const navigate = useNavigate()
   
-  // Only show back button if not on home page AND user came from same site
-  const referrer = document.referrer
-  const currentOrigin = window.location.origin
-  const isFromSameApp = referrer && referrer.startsWith(currentOrigin)
-  const shouldShow = location.pathname !== '/' && isFromSameApp
+  // Check if user has navigated within the app
+  const hasNavigated = sessionStorage.getItem('hasNavigated') === 'true'
+  
+  // Set navigation flag when user navigates (but not on initial load)
+  useEffect(() => {
+    const handleNavigation = () => {
+      sessionStorage.setItem('hasNavigated', 'true')
+    }
+    
+    // Only set flag after a small delay to avoid setting it on initial page load
+    const timer = setTimeout(() => {
+      // Listen for any navigation events
+      window.addEventListener('popstate', handleNavigation)
+      
+      // Also track programmatic navigation by overriding navigate
+      const originalNavigate = navigate
+      // Note: This is handled by the navigation itself triggering useEffect
+    }, 100)
+    
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('popstate', handleNavigation)
+    }
+  }, [])
+  
+  // Mark as navigated when location changes (client-side navigation)
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      sessionStorage.setItem('hasNavigated', 'true')
+    }
+  }, [location.pathname])
+  
+  // Only show back button if not on home page AND user has navigated within app
+  const shouldShow = location.pathname !== '/' && hasNavigated
   
   const goBack = () => {
     window.history.back()
