@@ -1,7 +1,7 @@
-import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics, GamePlayerStats, GameStatisticsData } from '../shared/types';
+import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics } from '../shared/types';
 
 // Re-export types for external usage
-export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics, GamePlayerStats, GameStatisticsData };
+export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, PlayerInfo, TeamStatistics };
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -155,19 +155,16 @@ class ApiClient {
     }
   }
 
-  async getGameStatistics(gameId: string): Promise<any | null> {
+  async getHeadToHeadGames(gameId: string): Promise<any[]> {
     try {
-      const response = await fetch(`${this.baseURL}/games/${gameId}/statistics`);
-      if (!response.ok) {
-        if (response.status === 404) return null;
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const response = await fetch(`${this.baseURL}/games/${gameId}/head-to-head`);
+      if (!response.ok) return [];
       
       const data = await response.json();
-      return data.statistics || null;
+      return (data.games || []).map((game: any) => this.adaptGameForFrontend(game));
     } catch (error) {
-      console.error('Error fetching game statistics:', error);
-      return null;
+      console.error('Error fetching head-to-head games:', error);
+      return [];
     }
   }
 
@@ -243,9 +240,14 @@ class ApiClient {
       status: apiGame.status,
       period: apiGame.period,
       time: apiGame.time,
-      league: apiGame.league.name,
+      league: apiGame.league,
       startTime: apiGame.start_time,
       gameDate: apiGame.game_date,
+      location: apiGame.location,
+      venue: apiGame.venue,
+      coordinates: apiGame.coordinates,
+      referees: apiGame.referees,
+      spectators: apiGame.spectators,
       isLive: apiGame.status === 'live'
     };
   }

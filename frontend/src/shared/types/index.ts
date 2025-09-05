@@ -27,6 +27,14 @@ export interface Game {
     name: string;
   };
   location?: string;
+  venue?: {
+    name: string;
+    address?: string;
+  };
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
   referees?: {
     first?: string;
     second?: string;
@@ -139,26 +147,6 @@ export interface TeamStatistics {
   }>;
 }
 
-export interface GamePlayerStats {
-  number: string;
-  name: string;
-  goals: number;
-  assists: number;
-  penalties: number;
-  playingTime: string;
-}
-
-export interface GameStatisticsData {
-  gameStats: any;
-  playerStats: {
-    home: GamePlayerStats[];
-    away: GamePlayerStats[];
-  };
-  teamStats: {
-    home: Record<string, string>;
-    away: Record<string, string>;
-  };
-}
 
 // Frontend Game interface (camelCase version)
 export interface FrontendGame {

@@ -139,17 +139,64 @@ export class SwissUnihockeyApiClient {
     }
   }
 
-  async getGameStatistics(gameId: string): Promise<any | null> {
+  async getHeadToHeadGames(gameId: string): Promise<Game[]> {
     try {
-      // For now, return null since statistics endpoints require authentication
-      console.log(`Game statistics endpoint for ${gameId} requires API authentication`);
-      return null;
+      const response = await this.client.get<any>('/games', {
+        params: {
+          game_id: gameId,
+          mode: 'direct'
+        }
+      });
+
+      return this.mapHeadToHeadGamesFromApi(response.data);
     } catch (error) {
-      console.error(`Error fetching game statistics for ${gameId}:`, error);
-      return null;
+      console.error('Error fetching head-to-head games:', error);
+      return [];
     }
   }
 
+  private mapHeadToHeadGamesFromApi(apiData: any): Game[] {
+    const rows = apiData?.data?.regions?.[0]?.rows || [];
+    if (!rows.length) return [];
+
+    return rows.map((row: any, index: number) => {
+      const cells = row.cells || [];
+      const timeCell = cells[0]?.text?.[0] || '';
+      const homeTeamName = cells[1]?.text?.[0] || '';
+      const awayTeamName = cells[2]?.text?.[0] || '';
+      const scoreCell = cells[3]?.text?.[0] || '';
+
+      // Simple date/time parsing
+      const [dateStr, timeStr] = timeCell.split(' ');
+      const gameDate = dateStr ? dateStr.split('.').reverse().join('-') : '';
+      
+      // Simple score parsing
+      const scoreMatch = scoreCell.match(/(\d+)[\s\-:]+(\d+)/);
+      const homeScore = scoreMatch ? parseInt(scoreMatch[1]) : null;
+      const awayScore = scoreMatch ? parseInt(scoreMatch[2]) : null;
+
+      return {
+        id: row.id?.toString() || `h2h-${index}`,
+        home_team: {
+          id: cells[1]?.link?.ids?.[0]?.toString() || `team-${index}-home`,
+          name: homeTeamName,
+          short_name: homeTeamName.substring(0, 3).toUpperCase()
+        },
+        away_team: {
+          id: cells[2]?.link?.ids?.[0]?.toString() || `team-${index}-away`, 
+          name: awayTeamName,
+          short_name: awayTeamName.substring(0, 3).toUpperCase()
+        },
+        home_score: homeScore,
+        away_score: awayScore,
+        status: scoreMatch ? 'finished' : 'upcoming' as any,
+        start_time: timeStr || '',
+        game_date: gameDate,
+        league: { id: 'unknown', name: 'Unknown League' }
+      };
+    }).filter((game: Game) => game.home_team.name && game.away_team.name);
+  }
+  
   async getTeamCompetitions(teamId: string): Promise<any[]> {
     // Team competitions endpoints need further investigation
     console.log(`Team competitions endpoints need investigation for team ${teamId}`);
@@ -358,6 +405,51 @@ export class SwissUnihockeyApiClient {
     return match ? match[1].trim() : undefined;
   }
 
+  private parseVenueName(venueName: string): string {
+    if (!venueName) return '';
+    
+    // Split by spaces and remove duplicate adjacent words
+    const words = venueName.split(' ');
+    const uniqueWords: string[] = [];
+    
+    for (let i = 0; i < words.length; i++) {
+      const currentWord = words[i];
+      const previousWord = words[i - 1];
+      
+      // Only add if it's not the same as the previous word (case-insensitive)
+      if (!previousWord || currentWord.toLowerCase() !== previousWord.toLowerCase()) {
+        uniqueWords.push(currentWord);
+      }
+    }
+    
+    return uniqueWords.join(' ');
+  }
+
+  private parseLeagueName(subtitle: string): string {
+    if (!subtitle) return 'Unknown League';
+    
+    // Try to extract league code/name from subtitle
+    // Common patterns: "Herren GF NLA Playoff...", "Herren GF L-UPL Playoff..."
+    const leagueMatch = subtitle.match(/(?:GF\s+)?([A-Z]+-?[A-Z]*[A-Z]+)/);
+    if (leagueMatch && leagueMatch[1]) {
+      return leagueMatch[1];
+    }
+    
+    // Fallback: take first meaningful part after "GF" or similar
+    const parts = subtitle.split(' ');
+    for (const part of parts) {
+      if (part.length >= 2 && /^[A-Z]/.test(part) && !['Herren', 'Damen', 'GF', 'Playoff'].includes(part)) {
+        return part;
+      }
+    }
+    
+    return subtitle; // Return original if no pattern matches
+  }
+
+  private isValidReferee(referee: string): boolean {
+    return referee && referee.trim() !== '' && referee !== '0' && referee !== 'null' && referee !== 'undefined';
+  }
+
   private mapGameDetailsFromApi(apiData: any): Game | null {
     if (!apiData || !apiData.data?.regions?.[0]?.rows?.[0]) return null;
 
@@ -373,10 +465,34 @@ export class SwissUnihockeyApiClient {
       const result = cells[4]?.text?.[0] || '';
       const date = cells[5]?.text?.[0] || '';
       const time = cells[6]?.text?.[0] || '';
-      const location = cells[7]?.text?.[0] || '';
-      const firstReferee = cells[8]?.text?.[0] || '';
-      const secondReferee = cells[9]?.text?.[0] || '';
+      const rawLocation = cells[7]?.text?.[0] || '';
+      const location = this.parseVenueName(rawLocation);
+      const rawFirstReferee = cells[8]?.text?.[0] || '';
+      const rawSecondReferee = cells[9]?.text?.[0] || '';
+      const firstReferee = this.isValidReferee(rawFirstReferee) ? rawFirstReferee : undefined;
+      const secondReferee = this.isValidReferee(rawSecondReferee) ? rawSecondReferee : undefined;
       const spectators = cells[10]?.text?.[0] || '0';
+
+      // Parse coordinates if available in venue data
+      let coordinates = undefined;
+      if (cells[7]?.coordinates) {
+        const coords = cells[7].coordinates;
+        if (coords.lng && coords.lat) {
+          coordinates = {
+            lat: parseFloat(coords.lat),
+            lng: parseFloat(coords.lng)
+          };
+        }
+      }
+
+      // Parse venue information
+      let venue = undefined;
+      if (location) {
+        venue = {
+          name: location,
+          address: cells[7]?.address || undefined
+        };
+      }
 
       // Parse result to extract scores
       let homeScore = null;
@@ -426,9 +542,11 @@ export class SwissUnihockeyApiClient {
         game_date: date,
         league: {
           id: '',
-          name: apiData.data.subtitle || 'Unknown League'
+          name: this.parseLeagueName(apiData.data.subtitle)
         },
         location,
+        venue,
+        coordinates,
         referees: {
           first: firstReferee || undefined,
           second: secondReferee || undefined

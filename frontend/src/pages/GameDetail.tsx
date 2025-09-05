@@ -9,19 +9,17 @@ import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
 import TeamLogo from '../components/TeamLogo'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
-import GameStatistics from '../components/GameStatistics'
+import GameOverview from '../components/GameOverview'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
   const [game, setGame] = useState<any>(null)
   const [events, setEvents] = useState<GameEvent[]>([])
   const [leagueTable, setLeagueTable] = useState<any>(null)
-  const [gameStatistics, setGameStatistics] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [tabsLoading, setTabsLoading] = useState({
     events: false,
-    table: false,
-    statistics: false
+    table: false
   })
   
   useEffect(() => {
@@ -74,19 +72,6 @@ export default function GameDetail() {
     }
   }
 
-  const loadGameStatistics = async () => {
-    if (gameStatistics) return // Already loaded
-    
-    setTabsLoading(prev => ({ ...prev, statistics: true }))
-    try {
-      const statsData = await apiClient.getGameStatistics(gameId)
-      setGameStatistics(statsData)
-    } catch (error) {
-      console.error('Error fetching game statistics:', error)
-    } finally {
-      setTabsLoading(prev => ({ ...prev, statistics: false }))
-    }
-  }
   
   if (loading) {
     return (
@@ -273,6 +258,16 @@ export default function GameDetail() {
           defaultValue="events"
           tabs={[
             {
+              value: 'overview',
+              label: 'Game Info',
+              content: (
+                <GameOverview 
+                  game={game}
+                  gameId={gameId}
+                />
+              )
+            },
+            {
               value: 'events',
               label: 'Events',
               content: (
@@ -308,23 +303,6 @@ export default function GameDetail() {
                 </div>
               ),
               disabled: !game?.league?.id
-            },
-            {
-              value: 'statistics',
-              label: 'Statistics',
-              content: (
-                <div
-                  onFocus={() => loadGameStatistics()}
-                  onClick={() => loadGameStatistics()}
-                >
-                  <GameStatistics
-                    statistics={gameStatistics}
-                    homeTeam={game?.homeTeam || { name: 'Home Team' }}
-                    awayTeam={game?.awayTeam || { name: 'Away Team' }}
-                    loading={tabsLoading.statistics}
-                  />
-                </div>
-              )
             }
           ]}
         />

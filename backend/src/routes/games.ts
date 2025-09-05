@@ -192,41 +192,30 @@ router.get('/:gameId/events', async (req, res) => {
   }
 });
 
-// GET /api/games/:gameId/statistics - Get game statistics
-router.get('/:gameId/statistics', async (req, res) => {
+// GET /api/games/:gameId/head-to-head - Get head-to-head games between two teams
+router.get('/:gameId/head-to-head', async (req, res) => {
   try {
     const { gameId } = req.params;
+    if (!gameId) return res.status(400).json({ error: 'Game ID is required' });
+
+    let headToHeadGames = cache.get(`h2h:${gameId}`);
     
-    if (!gameId) {
-      return res.status(400).json({ error: 'Game ID is required' });
+    if (!headToHeadGames) {
+      headToHeadGames = (await apiClient.getHeadToHeadGames(gameId)).slice(0, 5);
+      cache.set(`h2h:${gameId}`, headToHeadGames, 3600000);
     }
 
-    const cacheKey = `statistics:${gameId}`;
-    let statistics = cache.get(cacheKey);
-    
-    if (!statistics) {
-      statistics = await apiClient.getGameStatistics(gameId);
-      
-      if (!statistics) {
-        return res.status(404).json({ error: 'Game statistics not found' });
-      }
-
-      // Cache statistics for 1 hour (they don't change after game is finished)
-      cache.set(cacheKey, statistics, 3600000);
-    }
+    await addOptimisticLogosToGames(headToHeadGames as any[]);
 
     res.json({
       gameId,
-      statistics,
-      timestamp: new Date().toISOString()
+      games: headToHeadGames,
+      count: (headToHeadGames as any[]).length
     });
 
   } catch (error) {
-    console.error('Error fetching game statistics:', error);
-    res.status(500).json({
-      error: 'Failed to fetch game statistics',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Error fetching head-to-head games:', error);
+    res.status(500).json({ error: 'Failed to fetch head-to-head games' });
   }
 });
 
