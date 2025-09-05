@@ -2,12 +2,14 @@ import { motion } from 'framer-motion'
 import { Link } from '@tanstack/react-router'
 import { Trophy } from 'lucide-react'
 import TeamLogo from './TeamLogo'
+import { formatSeasonDisplay } from '../lib/seasonUtils'
 import type { TeamRanking } from '../shared/types'
 
 interface LeagueTableProps {
   table: {
     leagueId: string
     leagueName: string
+    season?: string
     standings: TeamRanking[]
   } | null
   loading?: boolean
@@ -38,6 +40,11 @@ export default function LeagueTable({ table, loading }: LeagueTableProps) {
       <div className="flex items-center space-x-2 mb-4">
         <Trophy className="w-4 h-4 text-gray-600" />
         <h3 className="text-lg font-medium text-gray-800">{table.leagueName}</h3>
+        {table.season && (
+          <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+            {formatSeasonDisplay(parseInt(table.season))}
+          </span>
+        )}
         <span className="text-sm text-gray-500">
           {table.standings.length} teams
         </span>

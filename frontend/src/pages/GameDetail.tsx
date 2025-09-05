@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Clock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient, type GameEvent } from '../lib/apiClient'
+import { getSeasonInfo, getCurrentSeasonYear } from '../lib/seasonUtils'
 import GameTimeline from '../components/GameTimeline'
 import GameTimelineSkeleton from '../components/GameTimelineSkeleton'
 import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
@@ -49,22 +50,45 @@ export default function GameDetail() {
     fetchGameData()
   }, [gameId])
 
-  const loadLeagueTable = async (leagueId: string) => {
+  const loadLeagueTable = async (leagueId?: string) => {
     if (leagueTable) return // Already loaded
     
     setTabsLoading(prev => ({ ...prev, table: true }))
     try {
-      // Extract season from game date for historical rankings
-      const gameYear = game?.gameDate ? new Date(game.gameDate).getFullYear() : new Date().getFullYear()
-      const currentYear = new Date().getFullYear()
+      // Calculate proper season based on August 1st cutoff
+      const gameDate = game?.gameDate ? game.gameDate : new Date().toISOString()
+      const gameSeasonInfo = getSeasonInfo(gameDate)
+      const currentSeasonYear = getCurrentSeasonYear()
       
-      // Use current season if game is from this year, otherwise use historical season
-      const season = gameYear === currentYear ? undefined : gameYear.toString()
+      // Use current season if game is from current season, otherwise use historical season
+      const season = gameSeasonInfo.year === currentSeasonYear ? undefined : gameSeasonInfo.year.toString()
       
-      const rankingsData = await apiClient.getRankings({ 
-        season,
-        league: leagueId 
-      })
+      // Try multiple approaches to get rankings
+      let rankingsData = null
+      
+      // First: try with league ID if available
+      if (leagueId) {
+        rankingsData = await apiClient.getRankings({ 
+          season,
+          league: leagueId 
+        })
+      }
+      
+      // Second: try with league name if no ID worked
+      if (!rankingsData && game?.league?.name) {
+        rankingsData = await apiClient.getRankings({ 
+          season,
+          league: game.league.name 
+        })
+      }
+      
+      // Third: fallback to general rankings for the season
+      if (!rankingsData) {
+        rankingsData = await apiClient.getRankings({ 
+          season 
+        })
+      }
+      
       setLeagueTable(rankingsData)
     } catch (error) {
       console.error('Error fetching league table:', error)
@@ -287,16 +311,15 @@ export default function GameDetail() {
               label: 'League Table',
               content: (
                 <div
-                  onFocus={() => game?.league?.id && loadLeagueTable(game.league.id)}
-                  onClick={() => game?.league?.id && loadLeagueTable(game.league.id)}
+                  onFocus={() => loadLeagueTable(game?.league?.id)}
+                  onClick={() => loadLeagueTable(game?.league?.id)}
                 >
                   <LeagueTable 
                     table={leagueTable} 
                     loading={tabsLoading.table}
                   />
                 </div>
-              ),
-              disabled: !game?.league?.id
+              )
             }
           ]}
         />

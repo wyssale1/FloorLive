@@ -16,7 +16,8 @@
       "Bash(/dev/null)",
       "WebFetch(domain:ui.shadcn.com)",
       "Bash(pnpm dlx:*)",
-      "Bash(echo $?)"
+      "Bash(echo $?)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []

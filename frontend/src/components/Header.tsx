@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { Link, useLocation } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect } from 'react'
@@ -23,7 +23,6 @@ const Logo = ({ className }: { className?: string }) => (
 // Hook to determine if back button should be shown
 const useBackButton = () => {
   const location = useLocation()
-  const navigate = useNavigate()
   
   // Check if user has navigated within the app
   const hasNavigated = sessionStorage.getItem('hasNavigated') === 'true'
@@ -39,9 +38,7 @@ const useBackButton = () => {
       // Listen for any navigation events
       window.addEventListener('popstate', handleNavigation)
       
-      // Also track programmatic navigation by overriding navigate
-      const originalNavigate = navigate
-      // Note: This is handled by the navigation itself triggering useEffect
+      // Navigation tracking is handled by the navigation itself triggering useEffect
     }, 100)
     
     return () => {

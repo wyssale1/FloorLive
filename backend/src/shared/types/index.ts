@@ -27,6 +27,14 @@ export interface Game {
     name: string;
   };
   location?: string;
+  venue?: {
+    name: string;
+    address?: string;
+  };
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
   referees?: {
     first?: string;
     second?: string;

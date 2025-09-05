@@ -168,21 +168,6 @@ class ApiClient {
     }
   }
 
-  async getLeagueTable(leagueId: string): Promise<any | null> {
-    try {
-      const response = await fetch(`${this.baseURL}/leagues/${leagueId}/table`);
-      if (!response.ok) {
-        if (response.status === 404) return null;
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data.table || null;
-    } catch (error) {
-      console.error('Error fetching league table:', error);
-      return null;
-    }
-  }
 
   async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string } = {}): Promise<any | null> {
     try {

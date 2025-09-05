@@ -123,15 +123,29 @@ export class SwissUnihockeyApiClient {
     return null;
   }
 
-  async getLeagueTable(leagueId: string): Promise<any | null> {
-    // League table endpoints don't exist in the Swiss Unihockey API
-    console.log(`League table endpoints are not available in the Swiss Unihockey API for league ${leagueId}`);
-    return null;
-  }
 
   async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string } = {}): Promise<any | null> {
     try {
-      const response = await this.client.get<any>('/rankings', { params });
+      // Build clean parameter object, filtering out empty/undefined values
+      const cleanParams: Record<string, string> = {};
+      
+      if (params.season && params.season.trim()) {
+        cleanParams.season = params.season.trim();
+      }
+      
+      if (params.league && params.league.trim()) {
+        cleanParams.league = params.league.trim();
+      }
+      
+      if (params.game_class && params.game_class.trim()) {
+        cleanParams.game_class = params.game_class.trim();
+      }
+      
+      if (params.group && params.group.trim()) {
+        cleanParams.group = params.group.trim();
+      }
+      
+      const response = await this.client.get<any>('/rankings', { params: cleanParams });
       return this.mapRankingsFromApi(response.data);
     } catch (error) {
       console.error('Error fetching rankings:', error);
@@ -447,7 +461,7 @@ export class SwissUnihockeyApiClient {
   }
 
   private isValidReferee(referee: string): boolean {
-    return referee && referee.trim() !== '' && referee !== '0' && referee !== 'null' && referee !== 'undefined';
+    return Boolean(referee && referee.trim() !== '' && referee !== '0' && referee !== 'null' && referee !== 'undefined');
   }
 
   private mapGameDetailsFromApi(apiData: any): Game | null {

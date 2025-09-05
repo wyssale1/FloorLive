@@ -6,20 +6,25 @@ const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
 const cache = new CacheService();
 
-// GET /api/leagues/:leagueId/table - Get league table/standings
+// GET /api/leagues/:leagueId/table - Get league table/standings (deprecated - use /rankings instead)
 router.get('/:leagueId/table', async (req, res) => {
   try {
     const { leagueId } = req.params;
+    const { season } = req.query;
     
     if (!leagueId) {
       return res.status(400).json({ error: 'League ID is required' });
     }
 
-    const cacheKey = `league:${leagueId}:table`;
+    const cacheKey = `league:${leagueId}:table:${season || 'current'}`;
     let table = cache.get(cacheKey);
     
     if (!table) {
-      table = await apiClient.getLeagueTable(leagueId);
+      // Use getRankings instead of deprecated getLeagueTable
+      const params: any = { league: leagueId };
+      if (season) params.season = season.toString();
+      
+      table = await apiClient.getRankings(params);
       
       if (!table) {
         return res.status(404).json({ error: 'League table not found' });

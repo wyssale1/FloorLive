@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Users, Trophy, Target, Globe, User, Hash } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../lib/apiClient'
+import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import TeamLogo from '../components/TeamLogo'
 import PlayerListSkeleton from '../components/PlayerListSkeleton'
 import { Skeleton } from '../components/ui/skeleton'
@@ -82,19 +83,35 @@ export default function TeamDetail() {
     
     setTabsLoading(prev => ({ ...prev, tables: true }))
     try {
-      // For now, get current season rankings since we don't have historical team data
-      // In the future, we could extract season from team's last game or allow user selection
-      const rankingsData = await apiClient.getRankings()
+      // Get current season rankings using season calculation utility
+      const currentSeasonYear = getCurrentSeasonYear()
+      
+      // First try to get rankings for the team's league if available
+      let rankingsData = null
+      if (team?.league?.name) {
+        rankingsData = await apiClient.getRankings({ 
+          season: currentSeasonYear.toString(),
+          league: team.league.name 
+        })
+      }
+      
+      // If team league rankings not available, try general current season rankings
+      if (!rankingsData) {
+        rankingsData = await apiClient.getRankings({ 
+          season: currentSeasonYear.toString() 
+        })
+      }
       
       if (rankingsData) {
         setLeagueTables([rankingsData])
       } else {
-        // Fallback: try the old approach if rankings fail
+        // Fallback: try competitions approach if main ranking methods fail
         const competitionsData = await apiClient.getTeamCompetitions(teamId)
         
         const tablePromises = competitionsData.map(async (competition: any) => {
           try {
             const rankingsForCompetition = await apiClient.getRankings({ 
+              season: currentSeasonYear.toString(),
               league: competition.id 
             })
             return rankingsForCompetition
