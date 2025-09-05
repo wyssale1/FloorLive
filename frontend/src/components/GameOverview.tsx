@@ -17,7 +17,18 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
     const fetchHeadToHeadGames = async () => {
       setLoading(true)
       const games = await apiClient.getHeadToHeadGames(gameId)
-      setHeadToHeadGames(games)
+      
+      // First filter out canceled games (keep only finished games with actual results)
+      const gamesWithResults = games.filter(game => 
+        game.status === 'finished' && 
+        game.homeScore !== null && 
+        game.awayScore !== null
+      )
+      
+      // Then take the first 5 games with results
+      const finishedGames = gamesWithResults.slice(0, 5)
+      
+      setHeadToHeadGames(finishedGames)
       setLoading(false)
     }
     fetchHeadToHeadGames()
@@ -120,7 +131,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
         {loading ? (
           <GameCardSkeleton variant="list" count={3} />
         ) : headToHeadGames.length > 0 ? (
-          <GameList games={headToHeadGames} showSeparators={true} showDate={true} />
+          <GameList games={headToHeadGames} showSeparators={true} showDate={true} noPaddingOnMobile={true} />
         ) : (
           <div className="text-center py-8">
             <div className="text-gray-400 text-sm mb-1">No recent meetings found</div>

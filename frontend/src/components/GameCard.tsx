@@ -9,10 +9,11 @@ interface GameCardProps {
   game: Game
   className?: string
   showDate?: boolean
+  noPaddingOnMobile?: boolean
 }
 
 
-export default function GameCard({ game, className, showDate = false }: GameCardProps) {
+export default function GameCard({ game, className, showDate = false, noPaddingOnMobile = false }: GameCardProps) {
   const isLive = game.status === 'live'
   const isUpcoming = game.status === 'upcoming'
   const hasScores = isLive || game.status === 'finished'
@@ -60,7 +61,8 @@ export default function GameCard({ game, className, showDate = false }: GameCard
       <motion.div
         whileTap={{ scale: 0.995 }}
         className={cn(
-          "p-3 hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg",
+          "hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg",
+          noPaddingOnMobile ? "px-0 py-3 sm:p-3" : "p-3",
           className
         )}
       >
