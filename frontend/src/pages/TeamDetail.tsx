@@ -147,44 +147,53 @@ export default function TeamDetail() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
 
       {/* Team Header */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/50 backdrop-blur-sm rounded-lg border border-gray-100 p-6 mb-6"
+        className="mb-8 sm:mb-10"
       >
-        <div className="flex items-center space-x-4 mb-4">
-          <TeamLogo 
-            team={team} 
-            size="large" 
-            className="w-16 h-16 sm:w-20 sm:h-20"
-            showSwissUnihockeyFallback={true}
-          />
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-medium text-gray-800 mb-1">
+        <div className="flex items-start space-x-6 sm:space-x-8">
+          {/* Logo - Left side */}
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center flex-shrink-0 p-1">
+            <TeamLogo 
+              team={team} 
+              size="large" 
+              className="w-12 h-12 sm:w-16 sm:h-16"
+              showSwissUnihockeyFallback={true}
+            />
+          </div>
+          
+          {/* Info - Right side, aligned to logo height */}
+          <div className="flex flex-col justify-between min-h-16 sm:min-h-20 py-1">
+            {/* Team name at top */}
+            <h1 className="text-2xl sm:text-3xl font-medium text-gray-800 leading-tight">
               {team.name}
             </h1>
+            
+            {/* League name in middle */}
             {team.league?.name && (
-              <p className="text-sm text-gray-600">{team.league.name}</p>
+              <p className="text-sm text-gray-600 my-2 sm:my-3">{team.league.name}</p>
+            )}
+            
+            {/* Website at bottom, aligned with logo bottom */}
+            {team.website && (
+              <div className="flex items-center space-x-2 text-sm text-gray-600 mt-auto">
+                <Globe className="w-4 h-4" />
+                <a 
+                  href={team.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  Team Website
+                </a>
+              </div>
             )}
           </div>
         </div>
-        
-        {team.website && (
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Globe className="w-4 h-4" />
-            <a 
-              href={team.website} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-blue-600 transition-colors"
-            >
-              Team Website
-            </a>
-          </div>
-        )}
       </motion.div>
 
       {/* Team Content Tabs */}
@@ -195,10 +204,10 @@ export default function TeamDetail() {
             value: 'players',
             label: 'Players',
             content: (
-              <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
+              <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <Users className="w-4 h-4 text-gray-600" />
-                  <h2 className="text-lg font-medium text-gray-800">Current Roster</h2>
+                  <h2 className="text-lg font-medium text-gray-800">Squad</h2>
                   <span className="text-sm text-gray-500 ml-2">
                     {players.length} {players.length === 1 ? 'player' : 'players'}
                   </span>
@@ -217,29 +226,35 @@ export default function TeamDetail() {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {Object.entries(groupPlayersByPosition(players)).map(([category, categoryPlayers]) => (
-                      <div key={category} className="space-y-3">
+                    {Object.entries(groupPlayersByPosition(players)).map(([category, categoryPlayers], categoryIndex) => (
+                      <motion.div 
+                        key={category} 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: categoryIndex * 0.1 }}
+                        className="space-y-3"
+                      >
                         <h3 className="text-sm font-medium text-gray-700 border-b border-gray-200 pb-2">
                           {category} ({categoryPlayers.length})
                         </h3>
-                        <div className="space-y-2">
-                          {categoryPlayers.map((player, index) => (
+                        <div className="space-y-0 divide-y divide-gray-100">
+                          {categoryPlayers.map((player, playerIndex) => (
                             <motion.div
-                              key={player.id || index}
+                              key={player.id || playerIndex}
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: index * 0.02 }}
-                              className="flex items-center justify-between p-3 bg-white/40 rounded-lg border border-gray-100"
+                              transition={{ delay: (categoryIndex * 0.1) + (playerIndex * 0.05) }}
+                              className="flex items-center justify-between py-3 first:pt-0"
                             >
                               <div className="flex items-center space-x-3">
                                 {player.number && (
-                                  <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
+                                  <div className="flex items-center justify-center w-7 h-7 bg-gray-100 rounded-full flex-shrink-0">
                                     <span className="text-xs font-medium text-gray-700">
                                       {player.number}
                                     </span>
                                   </div>
                                 )}
-                                <div>
+                                <div className="min-w-0">
                                   <div className="text-sm font-medium text-gray-800">
                                     {player.name}
                                   </div>
@@ -252,7 +267,7 @@ export default function TeamDetail() {
                               </div>
                               
                               {(player.goals > 0 || player.assists > 0 || player.points > 0) && (
-                                <div className="flex items-center space-x-4 text-xs text-gray-600">
+                                <div className="flex items-center space-x-3 text-xs text-gray-600 flex-shrink-0">
                                   {player.goals > 0 && (
                                     <div className="flex items-center space-x-1">
                                       <Target className="w-3 h-3" />
@@ -276,7 +291,7 @@ export default function TeamDetail() {
                             </motion.div>
                           ))}
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 )}
@@ -346,7 +361,7 @@ export default function TeamDetail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6"
+              className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6"
             >
               <div className="flex items-center space-x-2 mb-4">
                 <Trophy className="w-4 h-4 text-gray-600" />
@@ -409,7 +424,7 @@ export default function TeamDetail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6"
+              className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6"
             >
               <h2 className="text-lg font-medium text-gray-800 mb-4">About the Team</h2>
               <div className="text-sm text-gray-600 leading-relaxed">

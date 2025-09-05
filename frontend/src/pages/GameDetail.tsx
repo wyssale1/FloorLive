@@ -110,7 +110,7 @@ export default function GameDetail() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl" data-game-date={game?.gameDate}>
 
       {/* Team Header */}
       <motion.div 
@@ -118,30 +118,36 @@ export default function GameDetail() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white/50 backdrop-blur-sm"
       >
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 sm:flex-nowrap">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+          <div className="flex items-center justify-between gap-3 sm:gap-6">
             {/* Home Team */}
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex items-center space-x-2 sm:space-x-4 flex-1 sm:flex-none justify-center sm:justify-end"
+              className="flex flex-col items-center text-center flex-1"
             >
-              <TeamLogo 
-                team={game.homeTeam} 
-                size="large" 
-                className="w-12 h-12 sm:w-16 sm:h-16"
-                showSwissUnihockeyFallback={true}
-              />
-              <div className="text-center sm:text-right">
-                <Link 
-                  to="/team/$teamId" 
-                  params={{ teamId: game.homeTeam.id }}
-                  className="text-base sm:text-xl font-medium text-gray-800 hover:text-gray-900 transition-colors"
-                >
-                  {game.homeTeam.name}
-                </Link>
-              </div>
+              <Link 
+                to="/team/$teamId" 
+                params={{ teamId: game.homeTeam.id }}
+                className="flex flex-col items-center text-center hover:opacity-90 transition-opacity"
+              >
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center mb-3 flex-shrink-0">
+                  <TeamLogo 
+                    team={game.homeTeam} 
+                    size="large" 
+                    className="w-10 h-10 sm:w-12 sm:h-12"
+                    showSwissUnihockeyFallback={true}
+                  />
+                </div>
+                <div className="w-full min-w-0">
+                  <span className="text-sm sm:text-base font-medium text-gray-700 hover:text-gray-900 transition-colors block leading-tight hyphens-auto line-clamp-2"
+                    style={{ wordBreak: 'break-word', hyphens: 'auto' }}
+                  >
+                    {game.homeTeam.name}
+                  </span>
+                </div>
+              </Link>
             </motion.div>
 
             {/* Score */}
@@ -149,50 +155,50 @@ export default function GameDetail() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
-              className="mx-4 sm:mx-8 text-center order-first sm:order-none w-full sm:w-auto"
+              className="text-center flex-shrink-0"
             >
-              <div className="text-3xl sm:text-5xl font-medium text-gray-800 mb-2">
+              <div className="text-xl sm:text-3xl font-medium text-gray-800 mb-1">
                 {game.homeScore} - {game.awayScore}
               </div>
               
               {/* Status indicators */}
-              <div className="flex items-center justify-center space-x-2 mb-2">
+              <div className="flex items-center justify-center space-x-1 mb-1">
                 {game.status === 'live' && (
                   <>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                   </>
                 )}
                 {game.status === 'today' && (
                   <>
-                    <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                    <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                    <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                   </>
                 )}
                 {game.status === 'recent' && (
                   <>
-                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                   </>
                 )}
               </div>
 
               {game.period && (
-                <div className="text-sm text-gray-600 mb-1">{game.period}</div>
+                <div className="text-xs text-gray-600 mb-1">{game.period}</div>
               )}
               
               {game.startTime && (
-                <div className="text-sm text-gray-600">
-                  <Clock className="w-4 h-4 inline mr-1" />
+                <div className="text-xs text-gray-600">
+                  <Clock className="w-3 h-3 inline mr-1" />
                   {game.startTime}
                 </div>
               )}
               
               {game.gameDate && (
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-2xs text-gray-500 mt-1">
                   {game.gameDate}
                 </div>
               )}
@@ -203,23 +209,29 @@ export default function GameDetail() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex items-center space-x-2 sm:space-x-4 flex-1 sm:flex-none justify-center sm:justify-start"
+              className="flex flex-col items-center text-center flex-1"
             >
-              <div className="text-center sm:text-left">
-                <Link 
-                  to="/team/$teamId" 
-                  params={{ teamId: game.awayTeam.id }}
-                  className="text-base sm:text-xl font-medium text-gray-800 hover:text-gray-900 transition-colors"
-                >
-                  {game.awayTeam.name}
-                </Link>
-              </div>
-              <TeamLogo 
-                team={game.awayTeam} 
-                size="large" 
-                className="w-12 h-12 sm:w-16 sm:h-16"
-                showSwissUnihockeyFallback={true}
-              />
+              <Link 
+                to="/team/$teamId" 
+                params={{ teamId: game.awayTeam.id }}
+                className="flex flex-col items-center text-center hover:opacity-90 transition-opacity"
+              >
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center mb-3 flex-shrink-0">
+                  <TeamLogo 
+                    team={game.awayTeam} 
+                    size="large" 
+                    className="w-10 h-10 sm:w-12 sm:h-12"
+                    showSwissUnihockeyFallback={true}
+                  />
+                </div>
+                <div className="w-full min-w-0">
+                  <span className="text-sm sm:text-base font-medium text-gray-700 hover:text-gray-900 transition-colors block leading-tight hyphens-auto line-clamp-2"
+                    style={{ wordBreak: 'break-word', hyphens: 'auto' }}
+                  >
+                    {game.awayTeam.name}
+                  </span>
+                </div>
+              </Link>
             </motion.div>
           </div>
         </div>
@@ -241,7 +253,7 @@ export default function GameDetail() {
       )}
 
       {/* Game Content Tabs */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
         <TabsContainer
           defaultValue="events"
           tabs={[
@@ -249,8 +261,8 @@ export default function GameDetail() {
               value: 'events',
               label: 'Events',
               content: (
-                <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
-                  <div className="flex items-center justify-between mb-6">
+                <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
+                  <div className="flex items-center justify-between mb-3 sm:mb-6">
                     <h2 className="text-lg font-medium text-gray-800">Game Timeline</h2>
                     <div className="flex items-center space-x-2">
                       <Clock className="w-4 h-4 text-gray-400" />

@@ -15,7 +15,8 @@
       "Bash(pkill:*)",
       "Bash(/dev/null)",
       "WebFetch(domain:ui.shadcn.com)",
-      "Bash(pnpm dlx:*)"
+      "Bash(pnpm dlx:*)",
+      "Bash(echo $?)"
     ],
     "deny": [],
     "ask": []

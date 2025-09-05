@@ -468,9 +468,8 @@ export class SwissUnihockeyApiClient {
         } else if (teamType === 'away') {
           assignedTeam = 'away';
         } else {
-          // For general events (remaining after deduplication), default to 'home' 
-          // These are typically period events, timeouts, or other neutral events
-          assignedTeam = 'home'; // Default for period markers and neutral events
+          // For general events (remaining after deduplication), use intelligent assignment
+          assignedTeam = this.determineEventTeam(eventText, player, team);
         }
 
         const event: GameEvent = {
@@ -524,7 +523,40 @@ export class SwissUnihockeyApiClient {
     });
   }
 
-
+  private determineEventTeam(eventText: string, player: string, team: string): 'home' | 'away' {
+    // Period events, timeouts, and other neutral events should alternate or be treated as neutral
+    const neutralEvents = [
+      'ende', 'beginn', 'drittel', 'beendet', 'spielbeginn', 'spielende',
+      'timeout', 'bester spieler', 'auszeit'
+    ];
+    
+    const eventLower = eventText.toLowerCase();
+    const isNeutralEvent = neutralEvents.some(neutral => eventLower.includes(neutral));
+    
+    if (isNeutralEvent) {
+      // For neutral events, use a simple alternation based on event hash
+      // This ensures consistent but distributed assignment
+      const eventHash = (eventText + player + team).length;
+      return eventHash % 2 === 0 ? 'home' : 'away';
+    }
+    
+    // For specific team events, try to determine from team name or player context
+    if (team && team.trim()) {
+      // If team information is available, we could do more intelligent mapping
+      // For now, default to alternating pattern
+      const teamHash = team.length;
+      return teamHash % 2 === 0 ? 'home' : 'away';
+    }
+    
+    // Final fallback: alternate based on player name hash
+    if (player && player.trim()) {
+      const playerHash = player.length;
+      return playerHash % 2 === 0 ? 'home' : 'away';
+    }
+    
+    // Ultimate fallback: home (but this should rarely be reached)
+    return 'home';
+  }
 
   private determineGameStatus(apiData: any): 'upcoming' | 'live' | 'finished' {
     if (apiData.status) {

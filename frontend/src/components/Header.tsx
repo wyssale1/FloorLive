@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { format, parseISO, isValid } from 'date-fns'
 
 // SVG Logo Component - inline for performance
 const Logo = ({ className }: { className?: string }) => (
@@ -28,14 +29,52 @@ const useBackButton = () => {
   const shouldShow = location.pathname !== '/'
   
   const goBack = () => {
-    // Use browser's back functionality to maintain the previous state
-    // This will preserve the date and scroll position
-    if (window.history.length > 1) {
+    // Check if we have browser history to go back to
+    const canGoBack = window.history.length > 1
+    
+    // Try to determine if the previous page was from the same app
+    const referrer = document.referrer
+    const currentOrigin = window.location.origin
+    const isFromSameApp = referrer.startsWith(currentOrigin)
+    
+    // If we can go back and it's from the same app, use browser back
+    if (canGoBack && isFromSameApp && referrer !== window.location.href) {
       window.history.back()
-    } else {
-      // Fallback: navigate to home if no history
-      navigate({ to: '/', search: { date: undefined } })
+      return
     }
+    
+    // Smart fallback: determine date based on current page
+    let targetDate = format(new Date(), 'yyyy-MM-dd') // Default to today
+    
+    // If we're on a game page, try to extract game date from page context
+    if (location.pathname.startsWith('/game/')) {
+      // Try to get game date from DOM or page state
+      const gameElements = document.querySelectorAll('[data-game-date]')
+      if (gameElements.length > 0) {
+        const gameDate = gameElements[0].getAttribute('data-game-date')
+        if (gameDate) {
+          // Ensure the date is in the correct format
+          try {
+            // Try to parse the date and reformat it to ensure consistency
+            const parsedDate = parseISO(gameDate)
+            if (isValid(parsedDate)) {
+              targetDate = format(parsedDate, 'yyyy-MM-dd')
+            }
+          } catch {
+            // If parsing fails, try using the date as-is if it looks like YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(gameDate)) {
+              targetDate = gameDate
+            }
+          }
+        }
+      }
+    }
+    
+    // Navigate to home with appropriate date
+    navigate({
+      to: '/',
+      search: { date: targetDate }
+    })
   }
   
   return { shouldShow, goBack }
