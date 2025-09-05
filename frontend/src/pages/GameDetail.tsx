@@ -6,6 +6,7 @@ import { apiClient, type GameEvent } from '../lib/apiClient'
 import GameTimeline from '../components/GameTimeline'
 import GameTimelineSkeleton from '../components/GameTimelineSkeleton'
 import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
+import GameOverviewSkeleton from '../components/GameOverviewSkeleton'
 import TeamLogo from '../components/TeamLogo'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
@@ -81,16 +82,7 @@ export default function GameDetail() {
 
         {/* Game Content Tabs Skeleton */}
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
-          <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
-            <div className="flex items-center justify-between mb-3 sm:mb-6">
-              <div className="h-5 w-28 bg-gray-200 rounded animate-pulse"></div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </div>
-            <GameTimelineSkeleton />
-          </div>
+          <GameOverviewSkeleton />
         </div>
       </div>
     )

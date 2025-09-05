@@ -42,14 +42,37 @@ export default function GameCardSkeleton({ count = 1, variant = 'individual' }: 
       <div className="mb-8">
         {/* Title skeleton */}
         <div className="mb-4 px-1">
-          <Skeleton className="h-6 w-32 mb-1" />
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-4 w-16" />
+          </div>
         </div>
         
-        {/* Games in one box with separators */}
+        {/* Games in one box with separators - slightly more compact */}
         <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100">
           {Array(count).fill(0).map((_, index) => (
             <div key={index}>
-              {renderSkeleton(index)}
+              <div className="p-3">
+                <div className="flex items-center">
+                  {/* Left side - Score or time */}
+                  <div className="min-w-[40px] text-center mr-3">
+                    <Skeleton className="h-4 w-8 mx-auto mb-1" />
+                    <Skeleton className="h-4 w-8 mx-auto" />
+                  </div>
+                  
+                  {/* Teams - slightly smaller for compactness */}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center space-x-3">
+                      <Skeleton className="w-5 h-5 rounded-full flex-shrink-0" />
+                      <Skeleton className="h-3.5 w-20 flex-1" />
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Skeleton className="w-5 h-5 rounded-full flex-shrink-0" />
+                      <Skeleton className="h-3.5 w-24 flex-1" />
+                    </div>
+                  </div>
+                </div>
+              </div>
               {/* Separator line between games (not after the last one) */}
               {index < count - 1 && (
                 <div className="mx-3 border-b border-gray-100"></div>

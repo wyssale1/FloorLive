@@ -56,14 +56,18 @@ export default function GameTimeline({ events }: GameTimelineProps) {
       return {
         goalNumber: homeScore, // This home team's goal number
         opponentScore: awayScore, // Away team's current score
-        currentScore: `${homeScore}-${awayScore}`, // Current game score
+        homeScore: homeScore,
+        awayScore: awayScore,
+        scoringTeam: 'home', // Who scored this goal
         playerName: event.player
       }
     } else {
       return {
         goalNumber: awayScore, // This away team's goal number  
         opponentScore: homeScore, // Home team's current score
-        currentScore: `${homeScore}-${awayScore}`, // Current game score (home-away)
+        homeScore: homeScore,
+        awayScore: awayScore,
+        scoringTeam: 'away', // Who scored this goal
         playerName: event.player
       }
     }
@@ -144,7 +148,12 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     if (goalInfo) {
       return (
         <span>
-          <span className="font-bold">{goalInfo.currentScore}</span> {goalInfo.playerName}
+          {goalInfo.scoringTeam === 'home' ? (
+            <span><span className="font-bold">{goalInfo.homeScore}</span>-{goalInfo.awayScore}</span>
+          ) : (
+            <span>{goalInfo.homeScore}-<span className="font-bold">{goalInfo.awayScore}</span></span>
+          )}
+          {' '}{goalInfo.playerName}
         </span>
       )
     }
