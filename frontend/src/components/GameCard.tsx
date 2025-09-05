@@ -8,13 +8,23 @@ import TeamLogo from './TeamLogo'
 interface GameCardProps {
   game: Game
   className?: string
+  showDate?: boolean
 }
 
 
-export default function GameCard({ game, className }: GameCardProps) {
+export default function GameCard({ game, className, showDate = false }: GameCardProps) {
   const isLive = game.status === 'live'
   const isUpcoming = game.status === 'upcoming'
   const hasScores = isLive || game.status === 'finished'
+  
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('de-CH', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric' 
+    })
+  }
 
   const renderLeftContent = () => {
     if (isUpcoming) {
@@ -74,6 +84,15 @@ export default function GameCard({ game, className }: GameCardProps) {
             {renderTeamLine(game.homeTeam)}
             {renderTeamLine(game.awayTeam)}
           </div>
+          
+          {/* Date display if enabled */}
+          {showDate && game.gameDate && (
+            <div className="ml-3">
+              <div className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 font-medium">
+                {formatDate(game.gameDate)}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Period and time info if available */}

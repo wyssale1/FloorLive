@@ -120,7 +120,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
         {loading ? (
           <GameCardSkeleton variant="list" count={3} />
         ) : headToHeadGames.length > 0 ? (
-          <GameList games={headToHeadGames} showSeparators={true} />
+          <GameList games={headToHeadGames} showSeparators={true} showDate={true} />
         ) : (
           <div className="text-center py-8">
             <div className="text-gray-400 text-sm mb-1">No recent meetings found</div>
