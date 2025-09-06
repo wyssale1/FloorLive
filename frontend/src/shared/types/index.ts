@@ -178,6 +178,24 @@ export interface Player {
   club?: {
     id: string;
     name: string;
+    logo?: string;
+  };
+  // Additional fields from rich API response
+  nationality?: string;
+  birthPlace?: string;
+  shoots?: 'L' | 'R'; // Left or Right handed
+  // Career statistics summary
+  careerStats?: {
+    totalGames: number;
+    totalGoals: number;
+    totalAssists: number;
+    totalPoints: number;
+  };
+  // Current season info
+  currentSeason?: {
+    league: string;
+    team: string;
+    jerseyNumber?: string;
   };
 }
 

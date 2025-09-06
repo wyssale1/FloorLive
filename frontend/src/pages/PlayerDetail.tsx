@@ -6,6 +6,7 @@ import { apiClient } from '../lib/apiClient'
 import type { Player, PlayerStatistics, PlayerGamePerformance } from '../shared/types'
 import { Skeleton } from '../components/ui/skeleton'
 import TabsContainer from '../components/TabsContainer'
+import PlayerImage from '../components/PlayerImage'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generatePlayerMeta } from '../hooks/useMetaTags'
 
@@ -120,17 +121,11 @@ export default function PlayerDetail() {
       >
         <div className="flex items-center gap-4 mb-4">
           {/* Player Image */}
-          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-            {player.profileImage ? (
-              <img 
-                src={player.profileImage} 
-                alt={player.name}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <User className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
-            )}
-          </div>
+          <PlayerImage 
+            player={player} 
+            size="medium" 
+            className="flex-shrink-0"
+          />
           
           {/* Player Info */}
           <div className="flex-1 min-w-0">
@@ -139,65 +134,128 @@ export default function PlayerDetail() {
             </h1>
             <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
               {player.number && (
-                <span className="flex items-center gap-1">
-                  <Hash className="w-3 h-3" />
-                  #{player.number}
-                </span>
+                <span>#{player.number}</span>
               )}
               {player.position && (
                 <span>{player.position}</span>
               )}
             </div>
             {player.club && (
-              <Link 
-                to="/team/$teamId" 
-                params={{ teamId: player.club.id }}
-                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
-              >
+              <span className="flex items-center gap-1 text-sm text-gray-600">
                 <Home className="w-3 h-3" />
                 {player.club.name}
-              </Link>
+              </span>
             )}
           </div>
         </div>
 
-        {/* Player Details Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-          {player.yearOfBirth && (
-            <div>
-              <div className="text-gray-500 mb-1">Year of Birth</div>
-              <div className="font-medium">{player.yearOfBirth}</div>
-            </div>
-          )}
-          {player.height && (
-            <div>
-              <div className="text-gray-500 mb-1">Height</div>
-              <div className="font-medium">{player.height}</div>
-            </div>
-          )}
-          {player.weight && (
-            <div>
-              <div className="text-gray-500 mb-1">Weight</div>
-              <div className="font-medium">{player.weight}</div>
-            </div>
-          )}
-          {player.licenseType && (
-            <div>
-              <div className="text-gray-500 mb-1">License</div>
-              <div className="font-medium">{player.licenseType}</div>
-            </div>
-          )}
-        </div>
       </motion.div>
 
       {/* Player Content Tabs */}
       <div className="max-w-7xl mx-auto">
         <TabsContainer
-          defaultValue="statistics"
+          defaultValue="player-info"
           tabs={[
             {
+              value: 'player-info',
+              label: 'Player Info',
+              content: (
+                <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
+                  <h2 className="text-lg font-medium text-gray-800 mb-4">Player Information</h2>
+                  
+                  <div className="space-y-6">
+                    {/* Basic Information */}
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700 mb-3">Basic Information</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                        {player.number && (
+                          <div>
+                            <div className="text-gray-500 mb-1">Jersey Number</div>
+                            <div className="font-medium">#{player.number}</div>
+                          </div>
+                        )}
+                        {player.position && (
+                          <div>
+                            <div className="text-gray-500 mb-1">Position</div>
+                            <div className="font-medium">{player.position}</div>
+                          </div>
+                        )}
+                        {player.yearOfBirth && (
+                          <div>
+                            <div className="text-gray-500 mb-1">Year of Birth</div>
+                            <div className="font-medium">{player.yearOfBirth}</div>
+                          </div>
+                        )}
+                        {player.height && (
+                          <div>
+                            <div className="text-gray-500 mb-1">Height</div>
+                            <div className="font-medium">{player.height}</div>
+                          </div>
+                        )}
+                        {player.weight && (
+                          <div>
+                            <div className="text-gray-500 mb-1">Weight</div>
+                            <div className="font-medium">{player.weight}</div>
+                          </div>
+                        )}
+                        {player.shoots && (
+                          <div>
+                            <div className="text-gray-500 mb-1">Shoots</div>
+                            <div className="font-medium">{player.shoots === 'L' ? 'Left' : 'Right'}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Current Season */}
+                    {player.currentSeason && (
+                      <div>
+                        <h3 className="text-md font-semibold text-gray-700 mb-3">Current Season</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <div className="text-gray-500 mb-1">League</div>
+                            <div className="font-medium">{player.currentSeason.league}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-500 mb-1">Team</div>
+                            <div className="font-medium">{player.currentSeason.team}</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+
+                    {/* Career Summary */}
+                    {player.careerStats && (
+                      <div>
+                        <h3 className="text-md font-semibold text-gray-700 mb-3">Career Summary</h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <div className="text-gray-500 mb-1">Games Played</div>
+                            <div className="font-bold text-lg">{player.careerStats.totalGames}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-500 mb-1">Goals</div>
+                            <div className="font-bold text-lg">{player.careerStats.totalGoals}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-500 mb-1">Assists</div>
+                            <div className="font-bold text-lg">{player.careerStats.totalAssists}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-500 mb-1">Points</div>
+                            <div className="font-bold text-lg text-blue-600">{player.careerStats.totalPoints}</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            },
+            {
               value: 'statistics',
-              label: 'Statistics',
+              label: 'Season Statistics',
               content: (
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
                   <h2 className="text-lg font-medium text-gray-800 mb-4">Season Statistics</h2>

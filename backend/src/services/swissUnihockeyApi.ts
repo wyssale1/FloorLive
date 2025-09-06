@@ -1129,47 +1129,110 @@ export class SwissUnihockeyApiClient {
       const data = apiData.data;
       
       // Extract player information from the API response
-      // The exact structure may vary, so we'll handle common patterns
-      const profileImage = data.image?.url || null;
+      // Handle the complex nested structure shown in the API example
+      // Parse the regions[0].rows[0].cells structure first to get image
+      const mainRow = data.regions?.[0]?.rows?.[0];
+      const cells = mainRow?.cells || [];
       
-      // Player details are often in regions[0].rows format
-      const rows = data.regions?.[0]?.rows || [];
+      // Extract profile image from cells[0].image.url (portrait is the first cell)
+      const profileImage = cells[0]?.image?.url || null;
+      
+      // Get the main player info from subtitle (player name)
+      const playerName = data.subtitle || data.title || '';
+      
+      // Use the already extracted cells from above
+      
       const playerInfo: any = {
         id: data.context?.player_id || '',
-        name: data.title || '',
+        name: playerName,
         profileImage
       };
 
-      // Parse additional details from rows (like club, position, etc.)
-      for (const row of rows) {
-        const cells = row.cells || [];
-        if (cells.length >= 2) {
-          const label = cells[0]?.text?.[0]?.toLowerCase() || '';
-          const value = cells[1]?.text?.[0] || '';
-          
-          if (label.includes('club') || label.includes('verein')) {
-            playerInfo.club = {
-              id: cells[1]?.link?.ids?.[0] || '',
-              name: value
-            };
-          } else if (label.includes('number') || label.includes('nummer')) {
-            playerInfo.number = value;
-          } else if (label.includes('position') || label.includes('pos')) {
-            playerInfo.position = value;
-          } else if (label.includes('birth') || label.includes('geburt')) {
-            const yearMatch = value.match(/(\d{4})/);
-            if (yearMatch) {
-              playerInfo.yearOfBirth = parseInt(yearMatch[1]);
-            }
-          } else if (label.includes('height') || label.includes('größe') || label.includes('grösse')) {
-            playerInfo.height = value;
-          } else if (label.includes('weight') || label.includes('gewicht')) {
-            playerInfo.weight = value;
-          } else if (label.includes('license') || label.includes('lizenz')) {
-            playerInfo.licenseType = value;
-          }
+      // Map cells based on the API structure we observed:
+      // cells[0] = portrait image
+      // cells[1] = club/team
+      // cells[2] = number/jersey  
+      // cells[3] = position
+      // cells[4] = year of birth
+      // cells[5] = height
+      // cells[6] = weight
+      // cells[7] = license type
+      
+      if (cells.length > 1 && cells[1]?.text?.[0]) {
+        const clubName = cells[1].text[0];
+        playerInfo.club = {
+          id: cells[1]?.link?.ids?.[0] || '',
+          name: clubName,
+          logo: cells[1]?.image?.url || null
+        };
+        
+        // Set current season info
+        playerInfo.currentSeason = {
+          league: cells[7]?.text?.[0] || 'Unknown League',
+          team: clubName,
+          jerseyNumber: cells[2]?.text?.[0] || undefined
+        };
+      }
+      
+      // Extract other fields from their respective cells
+      if (cells[2]?.text?.[0]) playerInfo.number = cells[2].text[0];
+      if (cells[3]?.text?.[0]) playerInfo.position = cells[3].text[0];
+      
+      // Parse year of birth
+      if (cells[4]?.text?.[0]) {
+        const yearText = cells[4].text[0];
+        const yearMatch = yearText.match(/(\d{4})/);
+        if (yearMatch) {
+          playerInfo.yearOfBirth = parseInt(yearMatch[1]);
         }
       }
+      
+      // Height and weight handling
+      if (cells[5]?.text?.[0] && cells[5].text[0] !== '-') {
+        playerInfo.height = cells[5].text[0];
+      }
+      if (cells[6]?.text?.[0] && cells[6].text[0] !== '-') {
+        playerInfo.weight = cells[6].text[0];
+      }
+      
+      // License type
+      if (cells[7]?.text?.[0]) {
+        playerInfo.licenseType = cells[7].text[0];
+      }
+
+      // Try to extract additional info from headers if available
+      const headers = data.headers || [];
+      const headerMap: Record<string, number> = {};
+      headers.forEach((header: any, index: number) => {
+        if (header.key) {
+          headerMap[header.key.toLowerCase()] = index;
+        }
+      });
+
+      // Use header mapping for more precise field extraction if available
+      Object.entries(headerMap).forEach(([key, cellIndex]) => {
+        const cellValue = cells[cellIndex]?.text?.[0];
+        if (!cellValue || cellValue === '-') return;
+        
+        switch (key) {
+          case 'nationality':
+          case 'nationalität':
+            playerInfo.nationality = cellValue;
+            break;
+          case 'birthplace':
+          case 'geburtsort':
+            playerInfo.birthPlace = cellValue;
+            break;
+          case 'shoots':
+          case 'schießt':
+            if (cellValue.toLowerCase().includes('left') || cellValue.toLowerCase().includes('links')) {
+              playerInfo.shoots = 'L';
+            } else if (cellValue.toLowerCase().includes('right') || cellValue.toLowerCase().includes('rechts')) {
+              playerInfo.shoots = 'R';
+            }
+            break;
+        }
+      });
 
       return playerInfo;
     } catch (error) {

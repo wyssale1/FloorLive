@@ -50,10 +50,10 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
     if (hasScores && (game.homeScore !== null || game.awayScore !== null)) {
       return (
         <div className="space-y-1">
-          <span className={`text-sm text-gray-800 block ${winner === 'home' ? 'font-bold' : 'font-medium'}`}>
+          <span className={`text-sm block ${winner === 'home' ? 'text-gray-800 font-bold' : winner === 'away' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
             {game.homeScore !== null ? game.homeScore : '0'}
           </span>
-          <span className={`text-sm text-gray-800 block ${winner === 'away' ? 'font-bold' : 'font-medium'}`}>
+          <span className={`text-sm block ${winner === 'away' ? 'text-gray-800 font-bold' : winner === 'home' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
             {game.awayScore !== null ? game.awayScore : '0'}
           </span>
         </div>
@@ -64,6 +64,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
 
   const renderTeamLine = (team: any, isHomeTeam: boolean) => {
     const isWinner = winner === (isHomeTeam ? 'home' : 'away')
+    const isLoser = winner !== null && !isWinner
     
     return (
       <div className="flex items-center space-x-3 min-w-0 flex-1">
@@ -73,7 +74,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
           className="shrink-0"
           fallbackIcon={<Shield className="w-4 h-4 text-gray-400" />}
         />
-        <span className={`text-sm text-gray-700 truncate ${isWinner ? 'font-bold' : 'font-medium'}`}>
+        <span className={`text-sm truncate ${isWinner ? 'text-gray-800 font-bold' : isLoser ? 'text-gray-500 font-medium' : 'text-gray-700 font-medium'}`}>
           {team.name}
         </span>
       </div>
