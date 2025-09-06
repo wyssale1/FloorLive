@@ -3,7 +3,29 @@ import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanki
 // Re-export types for external usage
 export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, Player, PlayerStatistics, PlayerGamePerformance, TeamStatistics };
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Dynamic API URL detection for Tailscale development
+const getApiBaseUrl = () => {
+  // First check if explicitly set via environment
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In development, detect if we're running on Tailscale network
+  if (import.meta.env.DEV) {
+    const currentHost = window.location.hostname;
+    
+    // Check if we're on a Tailscale IP (100.x.x.x range)
+    if (currentHost.startsWith('100.')) {
+      // Use the same host but port 3001 for backend
+      return `http://${currentHost}:3001/api`;
+    }
+  }
+  
+  // Default fallback
+  return 'http://localhost:3001/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiClient {
   private baseURL: string;

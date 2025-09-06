@@ -4,5 +4,8 @@ export {
   Game,
   GameEvent,
   SwissUnihockeyApiResponse,
-  GameListParams
+  GameListParams,
+  Player,
+  PlayerStatistics,
+  PlayerGamePerformance
 } from '../shared/types/index.js';

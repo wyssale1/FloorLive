@@ -10,13 +10,15 @@ interface GameCardProps {
   className?: string
   showDate?: boolean
   noPaddingOnMobile?: boolean
+  currentGameId?: string // For highlighting the currently viewed game
 }
 
 
-export default function GameCard({ game, className, showDate = false, noPaddingOnMobile = false }: GameCardProps) {
+export default function GameCard({ game, className, showDate = false, noPaddingOnMobile = false, currentGameId }: GameCardProps) {
   const isLive = game.status === 'live'
   const isUpcoming = game.status === 'upcoming'
   const hasScores = isLive || game.status === 'finished'
+  const isCurrentGame = currentGameId === game.id
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -25,21 +27,6 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       month: '2-digit', 
       year: 'numeric' 
     })
-  }
-
-  const renderLeftContent = () => {
-    if (isUpcoming) {
-      return <span className="text-gray-700 font-medium text-sm">{game.startTime}</span>
-    }
-    if (hasScores) {
-      return (
-        <div className="space-y-1">
-          <span className="text-sm font-medium text-gray-800 block">{game.homeScore !== null ? game.homeScore : '-'}</span>
-          <span className="text-sm font-medium text-gray-800 block">{game.awayScore !== null ? game.awayScore : '-'}</span>
-        </div>
-      )
-    }
-    return null
   }
 
   // Determine winner for finished games
@@ -51,6 +38,32 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
   }
   
   const winner = getWinner()
+
+  const renderLeftContent = () => {
+    if (isUpcoming) {
+      return (
+        <div className="flex flex-col items-center">
+          <span className="text-gray-700 font-medium text-sm">{game.startTime}</span>
+          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full mt-1">
+            Upcoming
+          </span>
+        </div>
+      )
+    }
+    if (hasScores && (game.homeScore !== null || game.awayScore !== null)) {
+      return (
+        <div className="space-y-1">
+          <span className={`text-sm text-gray-800 block ${winner === 'home' ? 'font-bold' : 'font-medium'}`}>
+            {game.homeScore !== null ? game.homeScore : '0'}
+          </span>
+          <span className={`text-sm text-gray-800 block ${winner === 'away' ? 'font-bold' : 'font-medium'}`}>
+            {game.awayScore !== null ? game.awayScore : '0'}
+          </span>
+        </div>
+      )
+    }
+    return null
+  }
 
   const renderTeamLine = (team: any, isHomeTeam: boolean) => {
     const isWinner = winner === (isHomeTeam ? 'home' : 'away')
@@ -77,6 +90,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
         className={cn(
           "hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg",
           noPaddingOnMobile ? "px-0 py-3 sm:p-3" : "p-3",
+          isCurrentGame && "bg-gray-50/70 ring-1 ring-gray-200/50",
           className
         )}
       >

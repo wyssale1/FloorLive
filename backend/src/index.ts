@@ -7,6 +7,7 @@ import gamesRouter from './routes/games.js';
 import teamsRouter from './routes/teams.js';
 import leaguesRouter from './routes/leagues.js';
 import logosRouter from './routes/logos.js';
+import playersRouter from './routes/players.js';
 import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
@@ -20,10 +21,22 @@ app.use(helmet({
     ? { policy: "same-origin" }
     : { policy: "cross-origin" }
 }));
+// CORS configuration - allow Tailscale access when HOST=0.0.0.0
+const corsOrigin = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return ['https://floorlive.alexander-wyss.ch', 'http://floorlive.alexander-wyss.ch'];
+  }
+  // Development mode
+  if (process.env.HOST === '0.0.0.0') {
+    // Allow all origins when binding to all interfaces (Tailscale mode)
+    return true;
+  }
+  // Standard localhost development
+  return ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
+};
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://floorlive.alexander-wyss.ch', 'http://floorlive.alexander-wyss.ch']
-    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
+  origin: corsOrigin(),
   credentials: true
 }));
 app.use(morgan('combined'));
@@ -35,6 +48,7 @@ app.use('/api/games', gamesRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/leagues', leaguesRouter);
 app.use('/api/logos', logosRouter);
+app.use('/api/players', playersRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -111,10 +125,11 @@ setupGracefulShutdown(server, {
 });
 
 // Start server
-server.listen(port, () => {
-  console.log(`🚀 FloorLive Backend running on port ${port}`);
+const host = process.env.HOST || 'localhost';
+server.listen(port, host, () => {
+  console.log(`🚀 FloorLive Backend running on ${host}:${port}`);
   console.log(`📡 WebSocket server ready`);
-  console.log(`🔗 API available at http://localhost:${port}/api`);
+  console.log(`🔗 API available at http://${host}:${port}/api`);
   console.log(`💖 Health check at http://localhost:${port}/health`);
   
   // Start scheduler after server is up

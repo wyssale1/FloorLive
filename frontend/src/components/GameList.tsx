@@ -7,16 +7,17 @@ interface GameListProps {
   className?: string
   showDate?: boolean
   noPaddingOnMobile?: boolean
+  currentGameId?: string
 }
 
-export default function GameList({ games, showSeparators = true, className = "", showDate = false, noPaddingOnMobile = false }: GameListProps) {
+export default function GameList({ games, showSeparators = true, className = "", showDate = false, noPaddingOnMobile = false, currentGameId }: GameListProps) {
   if (games.length === 0) return null
   
   return (
     <div className={className}>
       {games.map((game, index) => (
         <div key={game.id}>
-          <GameCard game={game} showDate={showDate} noPaddingOnMobile={noPaddingOnMobile} />
+          <GameCard game={game} showDate={showDate} noPaddingOnMobile={noPaddingOnMobile} currentGameId={currentGameId} />
           {/* Light separator line between games (not after the last one) */}
           {showSeparators && index < games.length - 1 && (
             <div className="border-b border-gray-100 mx-3 my-1"></div>

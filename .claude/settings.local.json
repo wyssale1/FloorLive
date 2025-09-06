@@ -17,7 +17,12 @@
       "WebFetch(domain:ui.shadcn.com)",
       "Bash(pnpm dlx:*)",
       "Bash(echo $?)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(npm view:*)",
+      "Bash(npx tsc:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []

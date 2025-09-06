@@ -761,7 +761,7 @@ export class SwissUnihockeyApiClient {
         // cells[7] = penalty minutes (SM)
 
         const player = {
-          id: row.id?.toString() || '',
+          id: row.cells[2]?.link?.ids?.[0]?.toString() || '',
           number: row.cells[0]?.text?.[0] || '',
           position: row.cells[1]?.text?.[0] || '',
           name: row.cells[2]?.text?.[0] || '',
@@ -1088,6 +1088,187 @@ export class SwissUnihockeyApiClient {
     } catch (error) {
       console.error('Error mapping rankings from API:', error);
       return null;
+    }
+  }
+
+  // Player API methods
+  async getPlayerDetails(playerId: string): Promise<any | null> {
+    try {
+      const response = await this.client.get<any>(`/players/${playerId}`);
+      return this.mapPlayerDetailsFromApi(response.data);
+    } catch (error) {
+      console.error(`Error fetching player details for ${playerId}:`, error);
+      return null;
+    }
+  }
+
+  async getPlayerStatistics(playerId: string): Promise<any[]> {
+    try {
+      const response = await this.client.get<any>(`/players/${playerId}/statistics`);
+      return this.mapPlayerStatisticsFromApi(response.data);
+    } catch (error) {
+      console.error(`Error fetching player statistics for ${playerId}:`, error);
+      return [];
+    }
+  }
+
+  async getPlayerOverview(playerId: string): Promise<any[]> {
+    try {
+      const response = await this.client.get<any>(`/players/${playerId}/overview`);
+      return this.mapPlayerOverviewFromApi(response.data);
+    } catch (error) {
+      console.error(`Error fetching player overview for ${playerId}:`, error);
+      return [];
+    }
+  }
+
+  private mapPlayerDetailsFromApi(apiData: any): any | null {
+    if (!apiData?.data) return null;
+
+    try {
+      const data = apiData.data;
+      
+      // Extract player information from the API response
+      // The exact structure may vary, so we'll handle common patterns
+      const profileImage = data.image?.url || null;
+      
+      // Player details are often in regions[0].rows format
+      const rows = data.regions?.[0]?.rows || [];
+      const playerInfo: any = {
+        id: data.context?.player_id || '',
+        name: data.title || '',
+        profileImage
+      };
+
+      // Parse additional details from rows (like club, position, etc.)
+      for (const row of rows) {
+        const cells = row.cells || [];
+        if (cells.length >= 2) {
+          const label = cells[0]?.text?.[0]?.toLowerCase() || '';
+          const value = cells[1]?.text?.[0] || '';
+          
+          if (label.includes('club') || label.includes('verein')) {
+            playerInfo.club = {
+              id: cells[1]?.link?.ids?.[0] || '',
+              name: value
+            };
+          } else if (label.includes('number') || label.includes('nummer')) {
+            playerInfo.number = value;
+          } else if (label.includes('position') || label.includes('pos')) {
+            playerInfo.position = value;
+          } else if (label.includes('birth') || label.includes('geburt')) {
+            const yearMatch = value.match(/(\d{4})/);
+            if (yearMatch) {
+              playerInfo.yearOfBirth = parseInt(yearMatch[1]);
+            }
+          } else if (label.includes('height') || label.includes('größe') || label.includes('grösse')) {
+            playerInfo.height = value;
+          } else if (label.includes('weight') || label.includes('gewicht')) {
+            playerInfo.weight = value;
+          } else if (label.includes('license') || label.includes('lizenz')) {
+            playerInfo.licenseType = value;
+          }
+        }
+      }
+
+      return playerInfo;
+    } catch (error) {
+      console.error('Error mapping player details:', error);
+      return null;
+    }
+  }
+
+  private mapPlayerStatisticsFromApi(apiData: any): any[] {
+    if (!apiData?.data?.regions?.[0]?.rows) return [];
+
+    try {
+      const rows = apiData.data.regions[0].rows;
+      const statistics: any[] = [];
+
+      for (const row of rows) {
+        if (!row.cells || !Array.isArray(row.cells)) continue;
+
+        // Common statistics structure:
+        // cells[0] = season
+        // cells[1] = league  
+        // cells[2] = team
+        // cells[3] = games played
+        // cells[4] = goals
+        // cells[5] = assists
+        // cells[6] = points
+        // cells[7+] = penalty details (2min, 5min, 10min, match penalties)
+
+        const stat = {
+          season: row.cells[0]?.text?.[0] || '',
+          league: row.cells[1]?.text?.[0] || '',
+          team: row.cells[2]?.text?.[0] || '',
+          teamId: row.cells[2]?.link?.ids?.[0]?.toString() || '',
+          games: parseInt(row.cells[3]?.text?.[0] || '0') || 0,
+          goals: parseInt(row.cells[4]?.text?.[0] || '0') || 0,
+          assists: parseInt(row.cells[5]?.text?.[0] || '0') || 0,
+          points: parseInt(row.cells[6]?.text?.[0] || '0') || 0,
+          penalties: {
+            twoMinute: parseInt(row.cells[7]?.text?.[0] || '0') || 0,
+            fiveMinute: parseInt(row.cells[8]?.text?.[0] || '0') || 0,
+            tenMinute: parseInt(row.cells[9]?.text?.[0] || '0') || 0,
+            matchPenalty: parseInt(row.cells[10]?.text?.[0] || '0') || 0
+          }
+        };
+
+        statistics.push(stat);
+      }
+
+      return statistics;
+    } catch (error) {
+      console.error('Error mapping player statistics:', error);
+      return [];
+    }
+  }
+
+  private mapPlayerOverviewFromApi(apiData: any): any[] {
+    if (!apiData?.data?.regions?.[0]?.rows) return [];
+
+    try {
+      const rows = apiData.data.regions[0].rows;
+      const overview: any[] = [];
+
+      for (const row of rows) {
+        if (!row.cells || !Array.isArray(row.cells)) continue;
+
+        // Common overview structure:
+        // cells[0] = game date
+        // cells[1] = venue/location
+        // cells[2] = game time
+        // cells[3] = home team
+        // cells[4] = away team  
+        // cells[5] = game score
+        // cells[6] = player goals
+        // cells[7] = player assists
+        // cells[8] = player points
+        // cells[9] = match penalties
+
+        const game = {
+          gameDate: row.cells[0]?.text?.[0] || '',
+          venue: row.cells[1]?.text?.[0] || '',
+          gameTime: row.cells[2]?.text?.[0] || '',
+          homeTeam: row.cells[3]?.text?.[0] || '',
+          homeTeamId: row.cells[3]?.link?.ids?.[0]?.toString() || '',
+          awayTeam: row.cells[4]?.text?.[0] || '',
+          awayTeamId: row.cells[4]?.link?.ids?.[0]?.toString() || '',
+          gameScore: row.cells[5]?.text?.[0] || '',
+          playerGoals: parseInt(row.cells[6]?.text?.[0] || '0') || 0,
+          playerAssists: parseInt(row.cells[7]?.text?.[0] || '0') || 0,
+          playerPoints: parseInt(row.cells[8]?.text?.[0] || '0') || 0,
+          matchPenalties: parseInt(row.cells[9]?.text?.[0] || '0') || 0
+        };
+
+        overview.push(game);
+      }
+
+      return overview;
+    } catch (error) {
+      console.error('Error mapping player overview:', error);
+      return [];
     }
   }
 }
