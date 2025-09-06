@@ -59,7 +59,29 @@ export default function Home() {
       setLoading(true)
       try {
         const dateString = format(selectedDate, 'yyyy-MM-dd')
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        // Dynamic API URL detection for Tailscale development
+        const getApiBaseUrl = () => {
+          // First check if explicitly set via environment
+          if (import.meta.env.VITE_API_URL) {
+            return import.meta.env.VITE_API_URL;
+          }
+          
+          // In development, detect if we're running on Tailscale network
+          if (import.meta.env.DEV) {
+            const currentHost = window.location.hostname;
+            
+            // Check if we're on a network IP (not localhost)
+            if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+              // Use Tailscale IP for backend
+              return `http://100.99.89.57:3001/api`;
+            }
+          }
+          
+          // Default fallback
+          return 'http://localhost:3001/api';
+        };
+        
+        const API_BASE_URL = getApiBaseUrl();
         const response = await fetch(`${API_BASE_URL}/games?date=${dateString}`)
         
         if (!response.ok) {

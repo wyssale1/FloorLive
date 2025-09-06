@@ -197,9 +197,31 @@ export default function GameDetail() {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="text-center flex-shrink-0"
             >
-              <div className="text-xl sm:text-3xl font-medium text-gray-800 mb-1">
-                {game.homeScore !== null ? game.homeScore : '-'} - {game.awayScore !== null ? game.awayScore : '-'}
-              </div>
+              {game.status === 'upcoming' ? (
+                <div className="mb-1">
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                    Upcoming
+                  </span>
+                </div>
+              ) : (
+                <div className="text-xl sm:text-3xl text-gray-800 mb-1">
+                  {(() => {
+                    const homeScore = game.homeScore !== null ? game.homeScore : '-'
+                    const awayScore = game.awayScore !== null ? game.awayScore : '-'
+                    const hasScores = game.homeScore !== null && game.awayScore !== null
+                    const homeWins = hasScores && game.homeScore > game.awayScore
+                    const awayWins = hasScores && game.awayScore > game.homeScore
+                    
+                    return (
+                      <>
+                        <span className={homeWins ? 'font-bold' : 'font-medium'}>{homeScore}</span>
+                        <span className="font-medium"> - </span>
+                        <span className={awayWins ? 'font-bold' : 'font-medium'}>{awayScore}</span>
+                      </>
+                    )
+                  })()}
+                </div>
+              )}
               
               {/* Status indicators */}
               <div className="flex items-center justify-center space-x-1 mb-1">

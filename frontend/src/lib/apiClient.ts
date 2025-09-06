@@ -14,10 +14,10 @@ const getApiBaseUrl = () => {
   if (import.meta.env.DEV) {
     const currentHost = window.location.hostname;
     
-    // Check if we're on a Tailscale IP (100.x.x.x range)
-    if (currentHost.startsWith('100.')) {
-      // Use the same host but port 3001 for backend
-      return `http://${currentHost}:3001/api`;
+    // Check if we're on a network IP (not localhost)
+    if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+      // Use Tailscale IP for backend
+      return `http://100.99.89.57:3001/api`;
     }
   }
   

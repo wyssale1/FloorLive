@@ -44,9 +44,6 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       return (
         <div className="flex flex-col items-center">
           <span className="text-gray-700 font-medium text-sm">{game.startTime}</span>
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full mt-1">
-            Upcoming
-          </span>
         </div>
       )
     }
@@ -90,7 +87,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
         className={cn(
           "hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg",
           noPaddingOnMobile ? "px-0 py-3 sm:p-3" : "p-3",
-          isCurrentGame && "bg-gray-50/70 ring-1 ring-gray-200/50",
+          isCurrentGame && "bg-blue-50/50",
           className
         )}
       >
