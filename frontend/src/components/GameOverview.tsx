@@ -64,7 +64,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
           </div>
 
           {/* Venue */}
-          {(game.venue?.name || game.location) && (
+          {(game.venue?.name || game.location) && game.venue?.name !== '0' && game.location !== '0' && (
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4 text-gray-400" />
               <div>
@@ -91,7 +91,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
           )}
 
           {/* Spectators */}
-          {game.spectators && game.spectators > 0 && game.status === 'finished' && (
+          {game.spectators && game.spectators > 0 && game.spectators !== '0' && game.status === 'finished' && (
             <div className="flex items-center space-x-2">
               <Users className="w-4 h-4 text-gray-400" />
               <div>

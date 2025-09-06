@@ -198,7 +198,7 @@ export default function GameDetail() {
               className="text-center flex-shrink-0"
             >
               <div className="text-xl sm:text-3xl font-medium text-gray-800 mb-1">
-                {game.homeScore} - {game.awayScore}
+                {game.homeScore !== null ? game.homeScore : '-'} - {game.awayScore !== null ? game.awayScore : '-'}
               </div>
               
               {/* Status indicators */}

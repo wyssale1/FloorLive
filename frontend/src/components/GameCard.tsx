@@ -34,27 +34,41 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
     if (hasScores) {
       return (
         <div className="space-y-1">
-          <span className="text-sm font-medium text-gray-800 block">{game.homeScore}</span>
-          <span className="text-sm font-medium text-gray-800 block">{game.awayScore}</span>
+          <span className="text-sm font-medium text-gray-800 block">{game.homeScore !== null ? game.homeScore : '-'}</span>
+          <span className="text-sm font-medium text-gray-800 block">{game.awayScore !== null ? game.awayScore : '-'}</span>
         </div>
       )
     }
     return null
   }
 
-  const renderTeamLine = (team: any) => (
-    <div className="flex items-center space-x-3 min-w-0 flex-1">
-      <TeamLogo 
-        team={team} 
-        size="small" 
-        className="shrink-0"
-        fallbackIcon={<Shield className="w-4 h-4 text-gray-400" />}
-      />
-      <span className="text-sm text-gray-700 font-medium truncate">
-        {team.name}
-      </span>
-    </div>
-  )
+  // Determine winner for finished games
+  const getWinner = () => {
+    if (game.status !== 'finished' || game.homeScore === null || game.awayScore === null) return null
+    if (game.homeScore > game.awayScore) return 'home'
+    if (game.awayScore > game.homeScore) return 'away' 
+    return null // tie
+  }
+  
+  const winner = getWinner()
+
+  const renderTeamLine = (team: any, isHomeTeam: boolean) => {
+    const isWinner = winner === (isHomeTeam ? 'home' : 'away')
+    
+    return (
+      <div className="flex items-center space-x-3 min-w-0 flex-1">
+        <TeamLogo 
+          team={team} 
+          size="small" 
+          className="shrink-0"
+          fallbackIcon={<Shield className="w-4 h-4 text-gray-400" />}
+        />
+        <span className={`text-sm text-gray-700 truncate ${isWinner ? 'font-bold' : 'font-medium'}`}>
+          {team.name}
+        </span>
+      </div>
+    )
+  }
 
   return (
     <Link to="/game/$gameId" params={{ gameId: game.id }} className="block">
@@ -83,8 +97,8 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
           
           {/* Teams */}
           <div className="flex-1 min-w-0 space-y-2">
-            {renderTeamLine(game.homeTeam)}
-            {renderTeamLine(game.awayTeam)}
+            {renderTeamLine(game.homeTeam, true)}
+            {renderTeamLine(game.awayTeam, false)}
           </div>
           
           {/* Date display if enabled */}
