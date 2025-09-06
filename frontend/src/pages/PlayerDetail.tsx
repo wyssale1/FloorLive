@@ -1,6 +1,6 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { User, Hash, Trophy, Target, Clock, Home, ArrowLeft } from 'lucide-react'
+import { Trophy, Target, Clock, Home, ArrowLeft } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../lib/apiClient'
 import type { Player, PlayerStatistics, PlayerGamePerformance } from '../shared/types'
@@ -9,6 +9,7 @@ import TabsContainer from '../components/TabsContainer'
 import PlayerImage from '../components/PlayerImage'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generatePlayerMeta } from '../hooks/useMetaTags'
+import { useEasterEggStore } from '../stores'
 
 export default function PlayerDetail() {
   const { playerId } = useParams({ from: '/player/$playerId' })
@@ -20,6 +21,28 @@ export default function PlayerDetail() {
     statistics: false,
     overview: false
   })
+
+  // Easter egg store
+  const { sequence, setSequenceStep, unlockCrown, resetSequence } = useEasterEggStore()
+
+  // Easter egg handlers for player ID 423870
+  const handleImageClick = () => {
+    if (playerId === '423870') {
+      if (sequence.step === 0) {
+        setSequenceStep(1, playerId)
+      } else {
+        resetSequence()
+      }
+    }
+  }
+
+  const handleNameClick = () => {
+    if (playerId === '423870' && sequence.step === 1 && sequence.playerId === playerId) {
+      unlockCrown()
+    } else if (playerId === '423870') {
+      resetSequence()
+    }
+  }
 
   useEffect(() => {
     const fetchPlayerData = async () => {
@@ -125,11 +148,16 @@ export default function PlayerDetail() {
             player={player} 
             size="medium" 
             className="flex-shrink-0"
+            onClick={playerId === '423870' ? handleImageClick : undefined}
+            hideCursor={playerId === '423870'}
           />
           
           {/* Player Info */}
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+            <h1 
+              className="text-xl sm:text-2xl font-bold text-gray-900 mb-1"
+              onClick={playerId === '423870' ? handleNameClick : undefined}
+            >
               {player.name}
             </h1>
             <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">

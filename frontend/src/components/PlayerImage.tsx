@@ -10,13 +10,17 @@ interface PlayerImageProps {
   size?: 'large' | 'medium' | 'small';
   className?: string;
   fallbackIcon?: React.ReactNode;
+  onClick?: () => void;
+  hideCursor?: boolean;
 }
 
 export default function PlayerImage({ 
   player, 
   size = 'medium', 
   className = '', 
-  fallbackIcon 
+  fallbackIcon,
+  onClick,
+  hideCursor = false
 }: PlayerImageProps) {
   const [imageError, setImageError] = useState(false);
 
@@ -39,9 +43,10 @@ export default function PlayerImage({
       <img
         src={player.profileImage}
         alt={`${player.name} portrait`}
-        className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${className}`}
+        className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''} ${className}`}
         loading="lazy"
         onError={() => setImageError(true)}
+        onClick={onClick}
       />
     );
   }
@@ -52,7 +57,10 @@ export default function PlayerImage({
   );
 
   return (
-    <div className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center ${className}`}>
+    <div 
+      className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center ${onClick && !hideCursor ? 'cursor-pointer' : ''} ${className}`}
+      onClick={onClick}
+    >
       {FallbackIcon}
     </div>
   );

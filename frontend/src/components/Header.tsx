@@ -2,6 +2,8 @@ import { Link, useLocation } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect } from 'react'
+import { useEasterEggStore } from '../stores'
+import Crown from './Crown'
 
 // SVG Logo Component - inline for performance
 const Logo = ({ className }: { className?: string }) => (
@@ -66,6 +68,7 @@ const useBackButton = () => {
 
 export default function Header() {
   const { shouldShow, goBack } = useBackButton()
+  const { crownUnlocked } = useEasterEggStore()
   
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
@@ -97,10 +100,50 @@ export default function Header() {
           search={{ date: undefined }}
           className="flex items-center space-x-2 transition-opacity"
         >
-          <Logo className="h-6 w-6" />
-          <span className="text-xl font-medium text-gray-900 tracking-tight">
-            FloorLive
-          </span>
+          <div className="relative">
+            <Logo className="h-5 w-5" />
+            {crownUnlocked && <Crown />}
+          </div>
+          <div className="text-xl font-medium text-gray-900 tracking-tight relative">
+            {crownUnlocked ? (
+              <div className="flex items-center">
+                <span>Floor</span>
+                <div className="relative inline-block">
+                  {/* Greyish "Live" */}
+                  <span className="text-gray-300">
+                    Live
+                  </span>
+                  {/* "King" text appearing directly over "Live" */}
+                  <motion.span 
+                    className="absolute -top-0.5 left-0 text-yellow-500 font-bold text-xl"
+                    initial={{ 
+                      opacity: 0, 
+                      scale: 0.8,
+                      rotate: 0
+                    }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1.1,
+                      rotate: -8
+                    }}
+                    transition={{ 
+                      delay: 0.3, 
+                      type: "spring", 
+                      damping: 15, 
+                      stiffness: 300 
+                    }}
+                    style={{
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                    }}
+                  >
+                    King
+                  </motion.span>
+                </div>
+              </div>
+            ) : (
+              <span>FloorLive</span>
+            )}
+          </div>
         </Link>
 
         {/* Right Section - Placeholder for future actions */}
