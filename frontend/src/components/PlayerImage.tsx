@@ -1,5 +1,5 @@
 import { User } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface PlayerImageProps {
   player: {
@@ -12,6 +12,14 @@ interface PlayerImageProps {
   fallbackIcon?: React.ReactNode;
   onClick?: () => void;
   hideCursor?: boolean;
+  imageInfo?: {
+    hasImage: boolean;
+    smallImageUrls?: {
+      avif: string;
+      webp: string;
+      png: string;
+    };
+  };
 }
 
 export default function PlayerImage({ 
@@ -20,9 +28,11 @@ export default function PlayerImage({
   className = '', 
   fallbackIcon,
   onClick,
-  hideCursor = false
+  hideCursor = false,
+  imageInfo
 }: PlayerImageProps) {
   const [imageError, setImageError] = useState(false);
+  const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null);
 
   // Size configurations
   const sizeClasses = {
@@ -37,11 +47,74 @@ export default function PlayerImage({
     small: 'w-4 h-4'
   };
 
-  // If we have a profile image and no error, show it
-  if (player.profileImage && !imageError) {
+  // Set processed image URL from team-provided data or API fallback
+  useEffect(() => {
+    // Reset state when player changes
+    setImageError(false);
+    setProcessedImageUrl(null);
+
+    if (!player.id) {
+      return;
+    }
+
+    // First priority: Use image URLs provided by team API
+    if (imageInfo?.hasImage && imageInfo.smallImageUrls) {
+      // For small size, use the small URLs provided
+      // For medium/large sizes, we still use small URLs for team lists (they're already appropriate size)
+      const preferredUrl = 
+        imageInfo.smallImageUrls.avif || 
+        imageInfo.smallImageUrls.webp || 
+        imageInfo.smallImageUrls.png;
+      
+      if (preferredUrl) {
+        setProcessedImageUrl(preferredUrl);
+        return;
+      }
+    }
+
+    // Fallback: Check individual player API (for cases where imageInfo wasn't provided)
+    if (!imageInfo?.hasImage) {
+      const checkProcessedImages = async () => {
+        try {
+          const response = await fetch(`/api/players/${player.id}/images`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.hasImage && data.imagePaths) {
+              // Try to get the best image format for the current size
+              const sizeKey = size === 'large' ? 'medium' : 'small'; // Map large to medium for processed images
+              const imagePaths = data.imagePaths[sizeKey];
+              
+              if (imagePaths) {
+                // Prefer AVIF, then WebP, then PNG
+                const preferredUrl = 
+                  imagePaths.avif || 
+                  imagePaths.webp || 
+                  imagePaths.png;
+                
+                if (preferredUrl) {
+                  setProcessedImageUrl(preferredUrl);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          // Silently fail - we'll fall back to original image or placeholder
+          console.debug('Could not fetch processed image for player:', player.id);
+        }
+      };
+
+      checkProcessedImages();
+    }
+  }, [player.id, size, imageInfo]);
+
+  // Determine which image to show (prioritize processed images)
+  const imageUrl = processedImageUrl || player.profileImage;
+  
+  // If we have an image and no error, show it
+  if (imageUrl && !imageError) {
     return (
       <img
-        src={player.profileImage}
+        src={imageUrl}
         alt={`${player.name} portrait`}
         className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''} ${className}`}
         loading="lazy"

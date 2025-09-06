@@ -11,6 +11,7 @@ import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import UpcomingGames from '../components/UpcomingGames'
 import PlayerLink from '../components/PlayerLink'
+import PlayerImage from '../components/PlayerImage'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
 
@@ -307,13 +308,21 @@ export default function TeamDetail() {
                               className="flex items-center justify-between py-3 first:pt-0"
                             >
                               <div className="flex items-center space-x-3">
-                                {player.number && (
-                                  <div className="flex items-center justify-center w-7 h-7 bg-gray-100 rounded-full flex-shrink-0">
+                                <PlayerImage 
+                                  player={{
+                                    id: player.id || '',
+                                    name: player.name || '',
+                                    profileImage: player.profileImage // Legacy fallback
+                                  }}
+                                  size="small"
+                                  className="flex-shrink-0"
+                                  imageInfo={player.imageInfo} // Pass image info from backend
+                                  fallbackIcon={player.number ? (
                                     <span className="text-xs font-medium text-gray-700">
                                       {player.number}
                                     </span>
-                                  </div>
-                                )}
+                                  ) : <User className="w-4 h-4 text-gray-400" />}
+                                />
                                 <div className="min-w-0">
                                   <div className="text-sm font-medium text-gray-800">
                                     <PlayerLink 

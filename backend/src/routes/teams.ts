@@ -1,10 +1,51 @@
 import { Router } from 'express';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
+import { playerImageService } from '../services/playerImageService.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
 const cache = new CacheService();
+
+// Helper function to process players with API details fetching
+async function processPlayersWithApiDetails(
+  teamId: string, 
+  teamName: string, 
+  playersToProcess: Array<{id: string, name: string, imageUrl?: string}>
+): Promise<{processed: number, successful: number, failed: number}> {
+  let processed = 0;
+  let successful = 0;
+  let failed = 0;
+
+  for (const [index, player] of playersToProcess.entries()) {
+    try {
+      // Add delay between API calls to be respectful (500ms)
+      if (index > 0) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      const success = await playerImageService.processPlayerWithApiFetch(
+        player.id, 
+        player.name, 
+        { teamId, teamName }
+      );
+      
+      if (success) {
+        successful++;
+      } else {
+        failed++;
+      }
+      processed++;
+      
+    } catch (error) {
+      console.error(`❌ Failed to process player ${player.name}:`, error);
+      failed++;
+      processed++;
+    }
+  }
+
+  return { processed, successful, failed };
+}
 
 // GET /api/teams/:teamId - Get team details
 router.get('/:teamId', async (req, res) => {
@@ -60,10 +101,118 @@ router.get('/:teamId/players', async (req, res) => {
       cache.set(cacheKey, players, 21600000);
     }
 
+    // Process player images directly (check timestamps and refresh if needed)
+    try {
+      const playersData = [];
+      const playersToProcess = [];
+      
+      // Extract player data and check who needs processing
+      for (const player of (players as any[])) {
+        if (player.id) {
+          const playerData = {
+            id: player.id,
+            name: player.name || `Player ${player.id}`,
+            imageUrl: player.profileImage
+          };
+          playersData.push(playerData);
+          
+          // Check if this player needs processing (older than 1 week or new)
+          const metadata = playerImageService.getPlayerMetadata(player.id);
+          if (!metadata) {
+            // New player - needs processing
+            playersToProcess.push(playerData);
+          } else {
+            // Check if data is older than 1 week
+            const lastUpdated = new Date(metadata.lastUpdated);
+            const now = new Date();
+            const daysSinceUpdate = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24);
+            
+            if (daysSinceUpdate >= 7) {
+              playersToProcess.push(playerData);
+            }
+          }
+        }
+      }
+      
+      // If there are players to process, do it in the background (don't await)
+      if (playersToProcess.length > 0) {
+        // Get team name
+        let teamName = `Team ${teamId}`;
+        try {
+          const teamCacheKey = `team:${teamId}`;
+          let teamDetails = cache.get(teamCacheKey);
+          if (!teamDetails) {
+            teamDetails = await apiClient.getTeamDetails(teamId);
+            if (teamDetails) {
+              cache.set(teamCacheKey, teamDetails, 3600000);
+            }
+          }
+          if (teamDetails && (teamDetails as any).name) {
+            teamName = (teamDetails as any).name;
+          }
+        } catch (error) {
+          console.warn('Could not get team name, using default');
+        }
+
+        // Process players in background (fire and forget)
+        processPlayersWithApiDetails(teamId, teamName, playersToProcess)
+          .then(result => {
+            console.log(`✅ Processed ${result.processed} players for team ${teamName} (${result.successful} successful, ${result.failed} failed)`);
+          })
+          .catch(error => {
+            console.error('❌ Failed to process players for team:', teamId, error);
+          });
+        
+        console.log(`🎯 Processing ${playersToProcess.length} players for team ${teamName} (${playersToProcess.length} need refresh)`);
+      }
+    } catch (error) {
+      // Don't fail the request if background processing fails
+      console.error('Error processing players for team:', teamId, error);
+    }
+
+    // Enhance players with image information
+    const playersWithImages = (players as any[]).map(player => {
+      if (!player.id) {
+        return {
+          ...player,
+          imageInfo: {
+            hasImage: false
+          }
+        };
+      }
+
+      // Check if player has processed images
+      const metadata = playerImageService.getPlayerMetadata(player.id);
+      if (metadata?.hasImage) {
+        // Generate small image URLs for team player list
+        const imagePaths = playerImageService.getPlayerImagePaths(player.id);
+        const smallImageUrls = imagePaths ? {
+          avif: imagePaths.small.avif,
+          webp: imagePaths.small.webp,
+          png: imagePaths.small.png
+        } : null;
+
+        return {
+          ...player,
+          imageInfo: {
+            hasImage: true,
+            smallImageUrls
+          }
+        };
+      }
+
+      return {
+        ...player,
+        imageInfo: {
+          hasImage: false
+        }
+      };
+    });
+
     res.json({
       teamId,
-      players,
-      count: (players as any[]).length,
+      players: playersWithImages,
+      count: playersWithImages.length,
       timestamp: new Date().toISOString()
     });
 

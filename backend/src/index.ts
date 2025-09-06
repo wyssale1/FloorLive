@@ -3,6 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { createServer } from 'http';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
 import gamesRouter from './routes/games.js';
 import teamsRouter from './routes/teams.js';
 import leaguesRouter from './routes/leagues.js';
@@ -12,8 +15,12 @@ import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
 
+// Setup __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const port = process.env.PORT || 3001;
+const port = parseInt(process.env.PORT || '3001', 10);
 
 // Middleware
 app.use(helmet({
@@ -50,12 +57,32 @@ app.use('/api/leagues', leaguesRouter);
 app.use('/api/logos', logosRouter);
 app.use('/api/players', playersRouter);
 
+// Static assets serving - use absolute path to ensure it works regardless of working directory
+app.use('/assets/players', express.static(path.join(__dirname, '..', 'assets', 'players'), {
+  maxAge: '7d', // Cache for 7 days
+  etag: true,
+  lastModified: true
+}));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
+  });
+});
+
+// Debug endpoint for assets path (remove in production)
+app.get('/debug/assets-path', (req, res) => {
+  const assetsPath = path.join(__dirname, '..', 'assets', 'players');
+  res.json({
+    assetsPath,
+    exists: fs.existsSync(assetsPath),
+    workingDirectory: process.cwd(),
+    __dirname,
+    samplePlayerPath: path.join(assetsPath, '423870'),
+    samplePlayerExists: fs.existsSync(path.join(assetsPath, '423870'))
   });
 });
 

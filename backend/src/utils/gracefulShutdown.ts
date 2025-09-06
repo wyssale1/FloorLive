@@ -10,23 +10,31 @@ interface ShutdownServices {
 }
 
 export function setupGracefulShutdown(server: Server, services: ShutdownServices = {}) {
-  const shutdown = (signal: string) => {
+  const shutdown = async (signal: string) => {
     console.log(`${signal} received, shutting down gracefully...`);
     
-    // Stop services in order
-    if (services.schedulerService) {
-      services.schedulerService.stop();
+    try {
+      // Stop services in order
+      if (services.schedulerService) {
+        console.log('Stopping scheduler service...');
+        services.schedulerService.stop();
+      }
+      
+      
+      if (services.websocketService) {
+        console.log('Cleaning up websocket service...');
+        services.websocketService.cleanup();
+      }
+      
+      // Close server
+      server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+      });
+    } catch (error) {
+      console.error('Error during graceful shutdown:', error);
+      process.exit(1);
     }
-    
-    if (services.websocketService) {
-      services.websocketService.cleanup();
-    }
-    
-    // Close server
-    server.close(() => {
-      console.log('Server closed');
-      process.exit(0);
-    });
   };
 
   process.on('SIGTERM', () => shutdown('SIGTERM'));

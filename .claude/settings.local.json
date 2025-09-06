@@ -22,7 +22,9 @@
       "Bash(git commit:*)",
       "Bash(npm view:*)",
       "Bash(npx tsc:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
