@@ -42,71 +42,96 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Date and Time */}
-          <div className="flex items-center space-x-2">
-            <Clock className="w-4 h-4 text-gray-400" />
-            <div>
-              <div className="text-sm font-medium text-gray-700">Date & Time</div>
-              <div className="text-sm text-gray-600">
-                {game.gameDate} at {game.startTime}
+          {game.gameDate && game.startTime && (
+            <div className="flex items-center space-x-2">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <div>
+                <div className="text-sm font-medium text-gray-700">Date & Time</div>
+                <div className="text-sm text-gray-600">
+                  {game.gameDate} at {game.startTime}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* League */}
-          <div className="flex items-center space-x-2">
-            <Shield className="w-4 h-4 text-gray-400" />
-            <div>
-              <div className="text-sm font-medium text-gray-700">League</div>
-              <div className="text-sm text-gray-600">
-                {game.league?.name || 'Unknown League'}
+          {game.league?.name && game.league.name !== '0' && (
+            <div className="flex items-center space-x-2">
+              <Shield className="w-4 h-4 text-gray-400" />
+              <div>
+                <div className="text-sm font-medium text-gray-700">League</div>
+                <div className="text-sm text-gray-600">
+                  {game.league.name}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Venue */}
-          {(game.venue?.name || game.location) && game.venue?.name !== '0' && game.location !== '0' && (
-            <div className="flex items-center space-x-2">
-              <MapPin className="w-4 h-4 text-gray-400" />
-              <div>
-                <div className="text-sm font-medium text-gray-700">Venue</div>
-                <div className="text-sm text-gray-600">
-                  {game.coordinates ? (
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${game.coordinates.lat},${game.coordinates.lng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 hover:underline"
-                    >
-                      {game.venue?.name || game.location}
-                    </a>
-                  ) : (
-                    <span>{game.venue?.name || game.location}</span>
-                  )}
-                  {game.venue?.address && (
-                    <div className="text-xs text-gray-500 mt-1">{game.venue.address}</div>
-                  )}
+          {(() => {
+            const venueName = game.venue?.name || game.location;
+            const isValidVenue = venueName && 
+                                venueName.trim() !== '' && 
+                                venueName !== '0' && 
+                                venueName !== 'null' && 
+                                venueName !== 'undefined';
+            
+            return isValidVenue && (
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <div>
+                  <div className="text-sm font-medium text-gray-700">Venue</div>
+                  <div className="text-sm text-gray-600">
+                    {game.coordinates ? (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${game.coordinates.lat},${game.coordinates.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        {venueName}
+                      </a>
+                    ) : (
+                      <span>{venueName}</span>
+                    )}
+                    {game.venue?.address && 
+                     game.venue.address.trim() !== '' && 
+                     game.venue.address !== '0' && 
+                     game.venue.address !== 'null' && (
+                      <div className="text-xs text-gray-500 mt-1">{game.venue.address}</div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Spectators */}
-          {game.spectators && game.spectators > 0 && game.spectators !== '0' && game.status === 'finished' && (
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 text-gray-400" />
-              <div>
-                <div className="text-sm font-medium text-gray-700">Spectators</div>
-                <div className="text-sm text-gray-600">
-                  {game.spectators.toLocaleString()} {game.spectators === 1 ? 'spectator' : 'spectators'}
+          {(() => {
+            const spectatorCount = typeof game.spectators === 'number' ? game.spectators : parseInt(game.spectators || '0');
+            return spectatorCount > 0 && game.status === 'finished' && (
+              <div className="flex items-center space-x-2">
+                <Users className="w-4 h-4 text-gray-400" />
+                <div>
+                  <div className="text-sm font-medium text-gray-700">Spectators</div>
+                  <div className="text-sm text-gray-600">
+                    {spectatorCount.toLocaleString()} {spectatorCount === 1 ? 'spectator' : 'spectators'}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Referees */}
           {(() => {
             const validReferees = [game.referees?.first, game.referees?.second]
-              .filter(ref => ref && ref.trim() !== '' && ref !== '0' && ref !== 'null');
+              .filter(ref => ref && 
+                           typeof ref === 'string' && 
+                           ref.trim() !== '' && 
+                           ref !== '0' && 
+                           ref !== 'null' && 
+                           ref !== 'undefined' &&
+                           ref.toLowerCase() !== 'null');
             return validReferees.length > 0 && (
               <div className="flex items-center space-x-2 sm:col-span-2">
                 <Shield className="w-4 h-4 text-gray-400" />

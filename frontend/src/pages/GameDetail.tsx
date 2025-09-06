@@ -54,18 +54,18 @@ export default function GameDetail() {
 
   // Set dynamic page title and meta tags when game data is loaded
   const pageTitle = game 
-    ? pageTitles.game(game.home_team?.name || 'Team', game.away_team?.name || 'Team', game.status)
+    ? pageTitles.game(game.homeTeam?.name || 'Team', game.awayTeam?.name || 'Team', game.status)
     : 'Game Details'
   usePageTitle(pageTitle)
 
   const metaOptions = game ? generateGameMeta({
-    homeTeam: game.home_team?.name || 'Team',
-    awayTeam: game.away_team?.name || 'Team', 
-    homeScore: game.home_score,
-    awayScore: game.away_score,
+    homeTeam: game.homeTeam?.name || 'Team',
+    awayTeam: game.awayTeam?.name || 'Team', 
+    homeScore: game.homeScore,
+    awayScore: game.awayScore,
     status: game.status,
-    startTime: game.start_time,
-    gameDate: game.game_date
+    startTime: game.startTime,
+    gameDate: game.gameDate
   }) : {
     title: 'Game Details',
     description: 'Swiss Unihockey game information on FloorLive',
