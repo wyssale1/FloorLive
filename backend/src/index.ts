@@ -58,11 +58,16 @@ app.use('/api/logos', logosRouter);
 app.use('/api/players', playersRouter);
 
 // Static assets serving - use absolute path to ensure it works regardless of working directory
-app.use('/assets/players', express.static(path.join(__dirname, '..', 'assets', 'players'), {
+const assetsPath = path.join(__dirname, '..', 'assets', 'players');
+const assetsOptions = {
   maxAge: '7d', // Cache for 7 days
   etag: true,
   lastModified: true
-}));
+};
+
+// Serve assets at both paths for compatibility
+app.use('/assets/players', express.static(assetsPath, assetsOptions));
+app.use('/api/assets/players', express.static(assetsPath, assetsOptions));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

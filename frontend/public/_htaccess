@@ -5,6 +5,9 @@
   RewriteCond %{REQUEST_URI} ^/api($|/)
   RewriteRule ^ - [L]
 
+  # 📸 Proxy player assets to backend
+  RewriteRule ^assets/players/(.*)$ /api/assets/players/$1 [P,L]
+
   # 🚫 Never rewrite static assets (optional, safer)
   RewriteCond %{REQUEST_URI} \.(png|jpe?g|gif|svg|css|js|ico|webp|woff2?|ttf|eot)$ [NC]
   RewriteRule ^ - [L]
