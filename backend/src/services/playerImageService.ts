@@ -16,13 +16,19 @@ interface PlayerImageMetadata {
   processedAt?: string;
   lastUpdated: string;
   sizes: {
-    small: { width: number; height: number; }; // For team player list
-    medium: { width: number; height: number; }; // For player detail page
+    small: { width: number; height: number; };     // For team player list (1x)
+    small2x: { width: number; height: number; };   // For team player list (2x retina)
+    small3x: { width: number; height: number; };   // For team player list (3x retina)
+    medium: { width: number; height: number; };    // For player detail page (1x)
+    medium2x: { width: number; height: number; };  // For player detail page (2x retina)
   };
   formats: readonly string[];
   fileSize: {
     small: Record<string, number>;
+    small2x: Record<string, number>;
+    small3x: Record<string, number>;
     medium: Record<string, number>;
+    medium2x: Record<string, number>;
   };
   hasImage: boolean; // Whether player actually has an image
 }
@@ -58,8 +64,11 @@ export class PlayerImageService {
   private readonly SEARCH_INDEX_FILE = path.join(this.ASSETS_DIR, 'search_index.json');
   private readonly FORMATS = ['avif', 'webp', 'png'] as const;
   private readonly SIZES = {
-    small: { width: 48, height: 48 },   // For team player list
-    medium: { width: 120, height: 120 } // For player detail page
+    small: { width: 48, height: 48 },     // For team player list (1x)
+    small2x: { width: 96, height: 96 },   // For team player list (2x retina)
+    small3x: { width: 144, height: 144 }, // For team player list (3x retina)
+    medium: { width: 120, height: 120 },  // For player detail page (1x)
+    medium2x: { width: 240, height: 240 } // For player detail page (2x retina)
   };
   private readonly CACHE_DURATION_DAYS = 7; // Refresh player images weekly
   
@@ -223,7 +232,10 @@ export class PlayerImageService {
         formats: this.FORMATS,
         fileSize: {
           small: {},
-          medium: {}
+          small2x: {},
+          small3x: {},
+          medium: {},
+          medium2x: {}
         },
         hasImage
       };

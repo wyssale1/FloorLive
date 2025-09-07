@@ -919,6 +919,40 @@
         }
       }
     },
+    "429626": {
+      "teamId": "429626",
+      "teamName": "",
+      "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_club_logo/vjx8ylk170fnknllolba.png",
+      "downloadedAt": "2025-09-07T09:04:53.203Z",
+      "processedAt": "2025-09-07T09:04:53.203Z",
+      "sizes": {
+        "large": {
+          "width": 200,
+          "height": 200
+        },
+        "small": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      "formats": [
+        "avif",
+        "webp",
+        "png"
+      ],
+      "fileSize": {
+        "large": {
+          "avif": 11722,
+          "webp": 12798,
+          "png": 9655
+        },
+        "small": {
+          "avif": 1405,
+          "webp": 1228,
+          "png": 1056
+        }
+      }
+    },
     "429637": {
       "teamId": "429637",
       "teamName": "",
@@ -959,6 +993,40 @@
       "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_club_logo/sp5flsaxjntpysc4smdx.png",
       "downloadedAt": "2025-09-06T11:35:58.804Z",
       "processedAt": "2025-09-06T11:35:58.804Z",
+      "sizes": {
+        "large": {
+          "width": 200,
+          "height": 200
+        },
+        "small": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      "formats": [
+        "avif",
+        "webp",
+        "png"
+      ],
+      "fileSize": {
+        "large": {
+          "avif": 11502,
+          "webp": 12062,
+          "png": 16563
+        },
+        "small": {
+          "avif": 1729,
+          "webp": 1186,
+          "png": 1824
+        }
+      }
+    },
+    "430109": {
+      "teamId": "430109",
+      "teamName": "",
+      "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_club_logo/sp5flsaxjntpysc4smdx.png",
+      "downloadedAt": "2025-09-07T09:04:53.241Z",
+      "processedAt": "2025-09-07T09:04:53.241Z",
       "sizes": {
         "large": {
           "width": 200,
@@ -1362,5 +1430,5 @@
       }
     }
   },
-  "lastUpdated": "2025-09-06T11:35:58.804Z"
+  "lastUpdated": "2025-09-07T09:04:53.241Z"
 }

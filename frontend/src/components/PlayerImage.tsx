@@ -1,5 +1,6 @@
 import { User } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useResponsiveImage } from '../hooks/useResponsiveImage';
 
 interface PlayerImageProps {
   player: {
@@ -117,6 +118,13 @@ export default function PlayerImage({
     }
   }, [player.id, size, imageInfo]);
 
+  // Use responsive images for processed images
+  const responsiveImage = useResponsiveImage({
+    baseUrl: processedImageUrl || player.profileImage || '',
+    size: size === 'large' ? 'medium' : 'small', // Map large to medium for processed images
+    playerId: processedImageUrl ? player.id : undefined // Only use responsive for processed images
+  });
+
   // Determine which image to show (prioritize processed images)
   const imageUrl = processedImageUrl || player.profileImage;
   
@@ -125,7 +133,8 @@ export default function PlayerImage({
     return (
       <div className={`relative inline-block ${className}`}>
         <img
-          src={imageUrl}
+          src={responsiveImage.src}
+          srcSet={responsiveImage.srcSet}
           alt={`${player.name} portrait`}
           className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`}
           loading="lazy"

@@ -202,12 +202,21 @@ router.get('/:teamId/players', async (req, res) => {
       // Check if player has processed images
       const metadata = playerImageService.getPlayerMetadata(player.id);
       if (metadata?.hasImage) {
-        // Generate small image URLs for team player list
+        // Generate small image URLs for team player list (including high-DPI variants)
         const imagePaths = playerImageService.getPlayerImagePaths(player.id);
         const smallImageUrls = imagePaths ? {
+          // 1x images
           avif: imagePaths.small.avif,
           webp: imagePaths.small.webp,
-          png: imagePaths.small.png
+          png: imagePaths.small.png,
+          // 2x retina images
+          avif2x: imagePaths.small2x?.avif,
+          webp2x: imagePaths.small2x?.webp,
+          png2x: imagePaths.small2x?.png,
+          // 3x retina images
+          avif3x: imagePaths.small3x?.avif,
+          webp3x: imagePaths.small3x?.webp,
+          png3x: imagePaths.small3x?.png
         } : null;
 
         return {
