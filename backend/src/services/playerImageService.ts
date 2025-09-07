@@ -80,13 +80,41 @@ export class PlayerImageService {
   };
 
   private apiClient: SwissUnihockeyApiClient;
+  private cacheInitialized = false;
 
   constructor() {
     this.apiClient = new SwissUnihockeyApiClient();
-    this.initializeCache();
+    // Initialize cache synchronously where possible
+    this.initializeCacheSync();
+  }
+
+  // Synchronous initialization attempt
+  private initializeCacheSync() {
+    try {
+      // Try to load cache synchronously if possible
+      const fs = require('fs');
+      if (fs.existsSync(this.METADATA_FILE)) {
+        const cacheData = fs.readFileSync(this.METADATA_FILE, 'utf-8');
+        const parsedCache = JSON.parse(cacheData);
+        this.cache = parsedCache; // Replace entirely, don't merge
+        this.cacheInitialized = true;
+        console.log(`📄 Loaded player cache synchronously with ${Object.keys(this.cache.players).length} players`);
+      }
+    } catch (error) {
+      console.log('📄 Could not load cache synchronously, will load async');
+      // Async initialization will happen on first use
+    }
+  }
+
+  // Ensure cache is loaded before any operations
+  private async ensureCacheLoaded(): Promise<void> {
+    if (this.cacheInitialized) return;
+    await this.initializeCache();
   }
 
   private async initializeCache() {
+    if (this.cacheInitialized) return;
+    
     try {
       console.log(`📁 Initializing cache - Assets dir: ${this.ASSETS_DIR}`);
       console.log(`📁 Metadata file: ${this.METADATA_FILE}`);
@@ -98,7 +126,7 @@ export class PlayerImageService {
       try {
         const cacheData = await fs.readFile(this.METADATA_FILE, 'utf-8');
         const parsedCache = JSON.parse(cacheData);
-        this.cache = { ...this.cache, ...parsedCache };
+        this.cache = parsedCache; // Replace entirely, don't merge
         console.log(`📄 Loaded player cache with ${Object.keys(this.cache.players).length} players`);
         console.log(`📄 Cache last updated: ${this.cache.lastUpdated}`);
         console.log(`📄 Cache version: ${this.cache.version}`);
@@ -107,8 +135,11 @@ export class PlayerImageService {
         console.log(`📄 Error loading cache: ${error}`);
         await this.saveCache();
       }
+      
+      this.cacheInitialized = true;
     } catch (error) {
       console.error('❌ Error initializing player image cache:', error);
+      this.cacheInitialized = true; // Mark as initialized even if failed
     }
   }
 
@@ -389,6 +420,7 @@ export class PlayerImageService {
 
   // Get player image paths
   getPlayerImagePaths(playerId: string): Record<string, Record<string, string>> | null {
+    // For synchronous methods, we assume cache is loaded from constructor
     const player = this.cache.players[playerId];
     if (!player || !player.hasImage) return null;
 
