@@ -38,7 +38,7 @@ function groupPlayersByPosition(players: any[]) {
 
   // Only return categories that have players
   return Object.fromEntries(
-    Object.entries(categories).filter(([_, players]) => players.length > 0)
+    Object.entries(categories).filter(([, players]) => players.length > 0)
   )
 }
 

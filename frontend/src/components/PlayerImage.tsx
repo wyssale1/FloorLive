@@ -108,7 +108,7 @@ export default function PlayerImage({
               }
             }
           }
-        } catch (error) {
+        } catch {
           // Silently fail - we'll fall back to original image or placeholder
           console.debug('Could not fetch processed image for player:', player.id);
         }
