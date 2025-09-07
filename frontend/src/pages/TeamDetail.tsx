@@ -317,11 +317,8 @@ export default function TeamDetail() {
                                   size="small"
                                   className="flex-shrink-0"
                                   imageInfo={player.imageInfo} // Pass image info from backend
-                                  fallbackIcon={player.number ? (
-                                    <span className="text-xs font-medium text-gray-700">
-                                      {player.number}
-                                    </span>
-                                  ) : <User className="w-4 h-4 text-gray-400" />}
+                                  jerseyNumber={player.number}
+                                  showNumberBadge={true}
                                 />
                                 <div className="min-w-0">
                                   <div className="text-sm font-medium text-gray-800">

@@ -170,6 +170,24 @@ router.get('/:teamId/players', async (req, res) => {
       console.error('Error processing players for team:', teamId, error);
     }
 
+    // Check for duplicate jersey numbers (debug logging)
+    const numberCounts = new Map();
+    (players as any[]).forEach(player => {
+      if (player.number) {
+        const count = numberCounts.get(player.number) || 0;
+        numberCounts.set(player.number, count + 1);
+      }
+    });
+    
+    // Log any duplicate numbers
+    for (const [number, count] of numberCounts.entries()) {
+      if (count > 1) {
+        console.warn(`⚠️  Duplicate jersey number ${number} found ${count} times in team ${teamId}`);
+        const duplicatePlayers = (players as any[]).filter(p => p.number === number);
+        duplicatePlayers.forEach(p => console.warn(`   - Player: ${p.name} (ID: ${p.id})`));
+      }
+    }
+
     // Enhance players with image information
     const playersWithImages = (players as any[]).map(player => {
       if (!player.id) {

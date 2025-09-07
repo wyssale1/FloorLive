@@ -79,16 +79,23 @@ export class PlayerImageService {
 
   private async initializeCache() {
     try {
+      console.log(`📁 Initializing cache - Assets dir: ${this.ASSETS_DIR}`);
+      console.log(`📁 Metadata file: ${this.METADATA_FILE}`);
+      
       // Ensure assets directory exists
       await fs.mkdir(this.ASSETS_DIR, { recursive: true });
       
       // Load existing cache
       try {
         const cacheData = await fs.readFile(this.METADATA_FILE, 'utf-8');
-        this.cache = { ...this.cache, ...JSON.parse(cacheData) };
+        const parsedCache = JSON.parse(cacheData);
+        this.cache = { ...this.cache, ...parsedCache };
         console.log(`📄 Loaded player cache with ${Object.keys(this.cache.players).length} players`);
+        console.log(`📄 Cache last updated: ${this.cache.lastUpdated}`);
+        console.log(`📄 Cache version: ${this.cache.version}`);
       } catch (error) {
         console.log('📄 No existing player cache found, starting fresh');
+        console.log(`📄 Error loading cache: ${error}`);
         await this.saveCache();
       }
     } catch (error) {
@@ -99,10 +106,14 @@ export class PlayerImageService {
   private async saveCache() {
     try {
       this.cache.lastUpdated = new Date().toISOString();
+      console.log(`💾 Saving cache with ${Object.keys(this.cache.players).length} players to: ${this.METADATA_FILE}`);
+      
       await fs.writeFile(this.METADATA_FILE, JSON.stringify(this.cache, null, 2));
       
       // Save search index separately for easy access
       await fs.writeFile(this.SEARCH_INDEX_FILE, JSON.stringify(this.cache.searchIndex, null, 2));
+      
+      console.log(`✅ Cache saved successfully at ${this.cache.lastUpdated}`);
     } catch (error) {
       console.error('❌ Error saving player cache:', error);
     }
@@ -112,14 +123,25 @@ export class PlayerImageService {
   private needsProcessing(playerId: string): boolean {
     const player = this.cache.players[playerId];
     
-    if (!player) return true; // New player
+    if (!player) {
+      console.log(`🔄 Player ${playerId} needs processing: NEW PLAYER`);
+      return true; // New player
+    }
     
     // Check if cache is expired (weekly refresh)
     const lastUpdated = new Date(player.lastUpdated);
     const now = new Date();
     const daysSinceUpdate = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24);
     
-    return daysSinceUpdate >= this.CACHE_DURATION_DAYS;
+    const needsUpdate = daysSinceUpdate >= this.CACHE_DURATION_DAYS;
+    
+    if (needsUpdate) {
+      console.log(`🔄 Player ${playerId} needs processing: EXPIRED (${daysSinceUpdate.toFixed(2)} days old, limit: ${this.CACHE_DURATION_DAYS} days)`);
+    } else {
+      console.log(`✅ Player ${playerId} cache valid: ${daysSinceUpdate.toFixed(2)} days old (limit: ${this.CACHE_DURATION_DAYS} days)`);
+    }
+    
+    return needsUpdate;
   }
 
   // Extract image URL from player detail response
@@ -290,6 +312,7 @@ export class PlayerImageService {
     let failedPlayers = 0;
     let newPlayers = 0;
     let updatedPlayers = 0;
+    let skippedPlayers = 0;
     const teamSearchIndex: PlayerSearchIndex[] = [];
 
     for (const player of playersData) {
@@ -315,7 +338,7 @@ export class PlayerImageService {
         } else {
           // Update team info for existing player
           this.updateSearchIndex(player.id, player.name, { teamId, teamName });
-          processedPlayers++;
+          skippedPlayers++;
         }
 
         // Add to team search index
@@ -333,8 +356,10 @@ export class PlayerImageService {
       }
     }
 
-    // Save updated cache
-    await this.saveCache();
+    // Save updated cache only if we made changes
+    if (processedPlayers > 0 || newPlayers > 0 || updatedPlayers > 0) {
+      await this.saveCache();
+    }
     
     const result: TeamProcessingResult = {
       teamId,
@@ -346,7 +371,7 @@ export class PlayerImageService {
       searchIndex: teamSearchIndex
     };
 
-    console.log(`✅ Team ${teamName} processing complete: ${processedPlayers} processed, ${failedPlayers} failed, ${newPlayers} new, ${updatedPlayers} updated`);
+    console.log(`✅ Team ${teamName} processing complete: ${processedPlayers} processed, ${failedPlayers} failed, ${newPlayers} new, ${updatedPlayers} updated, ${skippedPlayers} skipped (valid cache)`);
     return result;
   }
 

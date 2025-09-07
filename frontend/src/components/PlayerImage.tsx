@@ -12,6 +12,8 @@ interface PlayerImageProps {
   fallbackIcon?: React.ReactNode;
   onClick?: () => void;
   hideCursor?: boolean;
+  jerseyNumber?: string | number;
+  showNumberBadge?: boolean;
   imageInfo?: {
     hasImage: boolean;
     smallImageUrls?: {
@@ -29,6 +31,8 @@ export default function PlayerImage({
   fallbackIcon,
   onClick,
   hideCursor = false,
+  jerseyNumber,
+  showNumberBadge = false,
   imageInfo
 }: PlayerImageProps) {
   const [imageError, setImageError] = useState(false);
@@ -45,6 +49,12 @@ export default function PlayerImage({
     large: 'w-12 h-12 sm:w-14 sm:h-14',
     medium: 'w-8 h-8 sm:w-10 sm:h-10',
     small: 'w-4 h-4'
+  };
+
+  const badgeSizes = {
+    large: 'w-6 h-6 text-[10px]',
+    medium: 'w-5 h-5 text-[9px]',
+    small: 'w-4 h-4 text-[8px]'
   };
 
   // Set processed image URL from team-provided data or API fallback
@@ -113,21 +123,32 @@ export default function PlayerImage({
   // If we have an image and no error, show it
   if (imageUrl && !imageError) {
     return (
-      <img
-        src={imageUrl}
-        alt={`${player.name} portrait`}
-        className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''} ${className}`}
-        loading="lazy"
-        onError={() => setImageError(true)}
-        onClick={onClick}
-      />
+      <div className={`relative inline-block ${className}`}>
+        <img
+          src={imageUrl}
+          alt={`${player.name} portrait`}
+          className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`}
+          loading="lazy"
+          onError={() => setImageError(true)}
+          onClick={onClick}
+        />
+        {showNumberBadge && jerseyNumber && (
+          <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
+            {jerseyNumber}
+          </div>
+        )}
+      </div>
     );
   }
 
-  // Fallback: Icon placeholder
-  const FallbackIcon = fallbackIcon || (
+  // Fallback: Jersey number or icon
+  const FallbackIcon = fallbackIcon || (jerseyNumber ? (
+    <span className="text-xs font-medium text-gray-700">
+      {jerseyNumber}
+    </span>
+  ) : (
     <User className={`${iconSizes[size]} text-gray-400`} />
-  );
+  ));
 
   return (
     <div 
