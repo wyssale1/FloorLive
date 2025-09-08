@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { format, addDays, startOfWeek, isSameDay } from 'date-fns'
+import { format, addDays, startOfWeek, isSameDay, getDay } from 'date-fns'
 
 interface WeekPickerProps {
   selectedDate: Date
@@ -18,11 +18,27 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
   )
 
   const goToPreviousWeek = () => {
-    setCurrentWeekStart(prev => addDays(prev, -7))
+    // Calculate the same day of week in the previous week
+    const selectedDayOfWeek = getDay(selectedDate) // 0 = Sunday, 1 = Monday, etc.
+    const mondayOffset = selectedDayOfWeek === 0 ? 6 : selectedDayOfWeek - 1 // Convert to Monday = 0
+    
+    const newWeekStart = addDays(currentWeekStart, -7)
+    const newSelectedDate = addDays(newWeekStart, mondayOffset)
+    
+    setCurrentWeekStart(newWeekStart)
+    onDateSelect(newSelectedDate)
   }
 
   const goToNextWeek = () => {
-    setCurrentWeekStart(prev => addDays(prev, 7))
+    // Calculate the same day of week in the next week
+    const selectedDayOfWeek = getDay(selectedDate) // 0 = Sunday, 1 = Monday, etc.
+    const mondayOffset = selectedDayOfWeek === 0 ? 6 : selectedDayOfWeek - 1 // Convert to Monday = 0
+    
+    const newWeekStart = addDays(currentWeekStart, 7)
+    const newSelectedDate = addDays(newWeekStart, mondayOffset)
+    
+    setCurrentWeekStart(newWeekStart)
+    onDateSelect(newSelectedDate)
   }
 
   const goToToday = () => {
