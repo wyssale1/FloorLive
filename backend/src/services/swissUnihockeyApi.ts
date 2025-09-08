@@ -124,21 +124,76 @@ export class SwissUnihockeyApiClient {
   }
 
 
+  // Swiss Unihockey league name to ID mappings based on actual API structure
+  private getLeagueIdFromName(leagueName: string): number | null {
+    const leagueMap: Record<string, number> = {
+      // Main leagues from API analysis
+      'L-UPL': 24,        // L-UPL (top league)
+      'NLB Men': 2,       // NLB Men 
+      'NLB Women': 2,     // NLB Women (same league ID, different game_class)
+      'NLB': 2,           // Generic NLB
+      'HNLB': 2,          // HNLB (Herren NLB)  
+      'DNLB': 2,          // DNLB (Damen NLB)
+      '1. Liga': 3,
+      '2. Liga': 4,
+      '3. Liga': 5,
+      '4. Liga': 6,
+      '5. Liga': 7,
+      // Add more mappings as needed
+    };
+    
+    // Try direct match first
+    if (leagueMap[leagueName]) {
+      return leagueMap[leagueName];
+    }
+    
+    // Try partial matches for common patterns
+    if (leagueName.includes('L-UPL') || leagueName.includes('UPL')) return 24;
+    if (leagueName.includes('NLB') || leagueName.includes('NLA')) return 2; // Both NLA and NLB seem to use league=2
+    if (leagueName.includes('1. Liga')) return 3;
+    if (leagueName.includes('2. Liga')) return 4;
+    if (leagueName.includes('3. Liga')) return 5;
+    if (leagueName.includes('4. Liga')) return 6;
+    if (leagueName.includes('5. Liga')) return 7;
+    
+    return null;
+  }
+
   async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string } = {}): Promise<any | null> {
     try {
-      // Build clean parameter object, filtering out empty/undefined values
-      const cleanParams: Record<string, string> = {};
+      // Build clean parameter object, converting strings to proper types
+      const cleanParams: Record<string, string | number> = {};
       
       if (params.season && params.season.trim()) {
-        cleanParams.season = params.season.trim();
+        // Convert season to integer
+        const seasonNum = parseInt(params.season.trim());
+        if (!isNaN(seasonNum)) {
+          cleanParams.season = seasonNum;
+        }
       }
       
       if (params.league && params.league.trim()) {
-        cleanParams.league = params.league.trim();
+        // Try to convert league name to ID
+        const leagueId = this.getLeagueIdFromName(params.league.trim());
+        if (leagueId) {
+          cleanParams.league = leagueId;
+        } else {
+          // If it's already a number, use it directly
+          const leagueNum = parseInt(params.league.trim());
+          if (!isNaN(leagueNum)) {
+            cleanParams.league = leagueNum;
+          }
+        }
       }
       
       if (params.game_class && params.game_class.trim()) {
-        cleanParams.game_class = params.game_class.trim();
+        // Try to convert to integer
+        const gameClassNum = parseInt(params.game_class.trim());
+        if (!isNaN(gameClassNum)) {
+          cleanParams.game_class = gameClassNum;
+        } else {
+          cleanParams.game_class = params.game_class.trim();
+        }
       }
       
       if (params.group && params.group.trim()) {
@@ -166,6 +221,117 @@ export class SwissUnihockeyApiClient {
     } catch (error) {
       console.error('Error fetching head-to-head games:', error);
       return [];
+    }
+  }
+
+  async getTeamGames(teamId: string, season?: string): Promise<Game[]> {
+    try {
+      const params: any = {
+        mode: 'team',
+        team_id: parseInt(teamId)
+      };
+
+      // Use provided season or current season
+      if (season) {
+        params.season = parseInt(season);
+      } else {
+        // Default to current season (2024/25 = 2024)
+        params.season = 2024;
+      }
+
+      const response = await this.client.get<any>('/games', { params });
+      
+      return this.mapTeamGamesFromApi(response.data);
+    } catch (error) {
+      console.error('Error fetching team games:', error);
+      return [];
+    }
+  }
+
+  private mapTeamGamesFromApi(apiData: any): Game[] {
+    const rows = apiData?.data?.regions?.[0]?.rows || [];
+    if (!rows.length) return [];
+
+    return rows.map((row: any, index: number) => {
+      const cells = row.cells || [];
+      const gameId = row.link?.ids?.[0]?.toString() || `team-game-${index}`;
+      
+      // Cell structure based on Swiss Unihockey API:
+      // [0] Date/Time array, [1] Location array, [2] Home Team array, [3] Away Team array, [4] Result array
+      const dateTimeCell = cells[0]?.text || [];
+      const locationCell = cells[1]?.text || [];
+      const homeTeamCell = cells[2]?.text || [];
+      const awayTeamCell = cells[3]?.text || [];
+      const resultCell = cells[4]?.text || [];
+
+      // Parse date and time
+      const gameDate = dateTimeCell[0] || '';
+      const gameTime = dateTimeCell[1] || '';
+      
+      // Parse location
+      const venue = locationCell[0] || '';
+      const location = locationCell[1] || '';
+      
+      // Parse team names
+      const homeTeamName = homeTeamCell[0] || '';
+      const awayTeamName = awayTeamCell[0] || '';
+      
+      // Parse score and determine status
+      const scoreText = resultCell[0] || '';
+      let homeScore: number | null = null;
+      let awayScore: number | null = null;
+      let status: 'upcoming' | 'live' | 'finished' = 'upcoming';
+      
+      if (scoreText && scoreText !== '-') {
+        // Parse score like "3:2", "1:0 n.V.", "2:1 n.P."
+        const scoreMatch = scoreText.match(/(\d+):(\d+)/);
+        if (scoreMatch) {
+          homeScore = parseInt(scoreMatch[1]);
+          awayScore = parseInt(scoreMatch[2]);
+          status = 'finished';
+        }
+      }
+
+      // Convert Swiss date format (DD.MM.YYYY) to ISO format
+      const startTimeIso = this.convertSwissDateToISO(gameDate, gameTime);
+
+      return {
+        id: gameId,
+        home_team: {
+          id: '',
+          name: homeTeamName,
+          short_name: homeTeamName.length >= 3 ? homeTeamName.substring(0, 3).toUpperCase() : homeTeamName.toUpperCase(),
+          logo: ''
+        },
+        away_team: {
+          id: '',
+          name: awayTeamName,
+          short_name: awayTeamName.length >= 3 ? awayTeamName.substring(0, 3).toUpperCase() : awayTeamName.toUpperCase(),
+          logo: ''
+        },
+        home_score: homeScore,
+        away_score: awayScore,
+        status,
+        start_time: startTimeIso,
+        game_date: gameDate,
+        league: {
+          id: '',
+          name: 'Swiss Unihockey'
+        },
+        location,
+        venue: venue ? { name: venue } : undefined
+      };
+    });
+  }
+
+  private convertSwissDateToISO(dateStr: string, timeStr: string): string {
+    try {
+      // Swiss format: DD.MM.YYYY to ISO: YYYY-MM-DD
+      const [day, month, year] = dateStr.split('.');
+      const time = timeStr || '00:00';
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${time}:00`;
+    } catch {
+      return new Date().toISOString();
     }
   }
 
@@ -218,9 +384,9 @@ export class SwissUnihockeyApiClient {
   }
 
   async getTeamUpcomingGames(teamId: string): Promise<Game[]> {
-    // Team upcoming games endpoints need further investigation
-    console.log(`Team upcoming games endpoints need investigation for team ${teamId}`);
-    return [];
+    // Redirect to the new getTeamGames method
+    console.log(`getTeamUpcomingGames called for team ${teamId}, redirecting to getTeamGames`);
+    return this.getTeamGames(teamId);
   }
 
   private mapGamesFromApi(apiData: any): Game[] {

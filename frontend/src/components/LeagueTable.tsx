@@ -13,9 +13,10 @@ interface LeagueTableProps {
     standings: TeamRanking[]
   } | null
   loading?: boolean
+  currentTeamId?: string
 }
 
-export default function LeagueTable({ table, loading }: LeagueTableProps) {
+export default function LeagueTable({ table, loading, currentTeamId }: LeagueTableProps) {
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -64,14 +65,20 @@ export default function LeagueTable({ table, loading }: LeagueTableProps) {
 
       {/* Table Rows */}
       <div className="space-y-1">
-        {table.standings.map((team, index) => (
-          <motion.div
-            key={team.teamId || index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.02 }}
-            className="grid grid-cols-12 gap-2 items-center p-3 bg-white/40 rounded-lg border border-gray-100 hover:bg-white/60 transition-colors"
-          >
+        {table.standings.map((team, index) => {
+          const isCurrentTeam = currentTeamId && team.teamId === currentTeamId;
+          return (
+            <motion.div
+              key={team.teamId || index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.02 }}
+              className={`grid grid-cols-12 gap-2 items-center p-3 rounded-lg border transition-colors ${
+                isCurrentTeam 
+                  ? 'bg-blue-50/60 border-blue-200 hover:bg-blue-50/80' 
+                  : 'bg-white/40 border-gray-100 hover:bg-white/60'
+              }`}
+            >
             {/* Position */}
             <div className="col-span-1 text-sm font-medium text-gray-700">
               {team.position}
@@ -133,8 +140,9 @@ export default function LeagueTable({ table, loading }: LeagueTableProps) {
               </div>
               <div className="col-span-1 text-sm font-medium text-gray-700">{team.points}</div>
             </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   )

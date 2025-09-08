@@ -325,27 +325,30 @@ router.get('/:teamId/competitions', async (req, res) => {
   }
 });
 
-// GET /api/teams/:teamId/games - Get team upcoming games
+// GET /api/teams/:teamId/games - Get team games (all games for current season)
 router.get('/:teamId/games', async (req, res) => {
   try {
     const { teamId } = req.params;
+    const { season } = req.query;
     
     if (!teamId) {
       return res.status(400).json({ error: 'Team ID is required' });
     }
 
-    const cacheKey = `team:${teamId}:games`;
+    // Create cache key that includes season parameter
+    const cacheKey = `team:${teamId}:games:${season || 'current'}`;
     let games = cache.get(cacheKey);
     
     if (!games) {
-      games = await apiClient.getTeamUpcomingGames(teamId);
+      games = await apiClient.getTeamGames(teamId, season as string);
       
-      // Cache upcoming games for 30 minutes (they can change with schedule updates)
+      // Cache games for 30 minutes (they can change with schedule updates)
       cache.set(cacheKey, games, 1800000);
     }
 
     res.json({
       teamId,
+      season: season || 'current',
       games,
       count: (games as any[]).length,
       timestamp: new Date().toISOString()

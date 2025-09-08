@@ -411,7 +411,7 @@ export default function TeamDetail() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <LeagueTable table={table} />
+                        <LeagueTable table={table} currentTeamId={teamId} />
                       </motion.div>
                     ))}
                   </div>
