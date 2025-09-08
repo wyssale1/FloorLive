@@ -2,6 +2,47 @@ import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { format, addDays, startOfWeek, isSameDay, getDay } from 'date-fns'
 
+// Utility function to calculate the same day of week in a different week
+const calculateSameDayInWeek = (selectedDate: Date, newWeekStart: Date): Date => {
+  const selectedDayOfWeek = getDay(selectedDate) // 0 = Sunday, 1 = Monday, etc.
+  const mondayOffset = selectedDayOfWeek === 0 ? 6 : selectedDayOfWeek - 1 // Convert to Monday = 0
+  return addDays(newWeekStart, mondayOffset)
+}
+
+// Navigation button component for consistent styling
+interface NavigationButtonProps {
+  onClick: () => void
+  direction: 'previous' | 'next'
+  'aria-label': string
+}
+
+const NavigationButton = ({ onClick, direction, 'aria-label': ariaLabel }: NavigationButtonProps) => {
+  const Icon = direction === 'previous' ? ChevronLeft : ChevronRight
+  
+  return (
+    <button
+      onClick={onClick}
+      className="p-1.5 -mx-1.5 sm:-mx-1 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors duration-150 touch-manipulation flex items-center justify-center min-h-[36px] min-w-[36px]"
+      aria-label={ariaLabel}
+    >
+      <Icon className="w-5 h-5 text-gray-600" />
+    </button>
+  )
+}
+
+// Helper function for date button classes
+const getDateButtonClasses = (selected: boolean, today: boolean): string => {
+  if (selected) {
+    return 'bg-blue-500 text-white hover:bg-blue-600'
+  }
+  
+  if (today) {
+    return 'bg-blue-50/80 text-blue-700 hover:bg-blue-100/80'
+  }
+  
+  return 'hover:bg-gray-50 text-gray-700'
+}
+
 interface WeekPickerProps {
   selectedDate: Date
   onDateSelect: (date: Date) => void
@@ -18,24 +59,16 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
   )
 
   const goToPreviousWeek = () => {
-    // Calculate the same day of week in the previous week
-    const selectedDayOfWeek = getDay(selectedDate) // 0 = Sunday, 1 = Monday, etc.
-    const mondayOffset = selectedDayOfWeek === 0 ? 6 : selectedDayOfWeek - 1 // Convert to Monday = 0
-    
     const newWeekStart = addDays(currentWeekStart, -7)
-    const newSelectedDate = addDays(newWeekStart, mondayOffset)
+    const newSelectedDate = calculateSameDayInWeek(selectedDate, newWeekStart)
     
     setCurrentWeekStart(newWeekStart)
     onDateSelect(newSelectedDate)
   }
 
   const goToNextWeek = () => {
-    // Calculate the same day of week in the next week
-    const selectedDayOfWeek = getDay(selectedDate) // 0 = Sunday, 1 = Monday, etc.
-    const mondayOffset = selectedDayOfWeek === 0 ? 6 : selectedDayOfWeek - 1 // Convert to Monday = 0
-    
     const newWeekStart = addDays(currentWeekStart, 7)
-    const newSelectedDate = addDays(newWeekStart, mondayOffset)
+    const newSelectedDate = calculateSameDayInWeek(selectedDate, newWeekStart)
     
     setCurrentWeekStart(newWeekStart)
     onDateSelect(newSelectedDate)
@@ -70,18 +103,16 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
         </button>
       </div>
       
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-center">
         {/* Previous Week Button */}
-        <button
+        <NavigationButton 
           onClick={goToPreviousWeek}
-          className="p-1.5 hover:bg-gray-50 rounded-lg transition-colors"
+          direction="previous"
           aria-label="Previous week"
-        >
-          <ChevronLeft className="w-4 h-4 text-gray-600" />
-        </button>
+        />
 
         {/* Week Days */}
-        <div className="flex space-x-0.5 sm:space-x-1 flex-1 justify-center">
+        <div className="flex space-x-0.5 sm:space-x-1 justify-center mx-2">
           {weekDays.map((date) => {
             const dayName = format(date, 'EEE')
             const dayNumber = format(date, 'd')
@@ -93,45 +124,34 @@ export default function WeekPicker({ selectedDate, onDateSelect }: WeekPickerPro
                 key={date.toString()}
                 onClick={() => onDateSelect(date)}
                 className={`
-                  relative flex flex-col items-center px-2 py-1.5 rounded-md transition-colors min-w-[36px]
-                  ${selected 
-                    ? 'bg-blue-500 text-white' 
-                    : 'hover:bg-gray-50 text-gray-700'
-                  }
-                  ${today && !selected ? 'ring-1 ring-blue-300' : ''}
+                  relative flex flex-col items-center px-2 py-1.5 rounded-md transition-colors duration-150 min-w-[36px]
+                  ${getDateButtonClasses(selected, today)}
                 `}
               >
                 {/* Day name */}
                 <span className={`text-xs font-medium mb-0.5 ${
-                  selected ? 'text-white' : 'text-gray-500'
+                  selected ? 'text-white' : today ? 'text-blue-600' : 'text-gray-500'
                 }`}>
                   {dayName}
                 </span>
                 
                 {/* Day number */}
                 <span className={`text-sm font-medium ${
-                  selected ? 'text-white' : today ? 'text-blue-600' : 'text-gray-900'
+                  selected ? 'text-white' : today ? 'text-blue-700' : 'text-gray-900'
                 }`}>
                   {dayNumber}
                 </span>
-
-                {/* Today indicator */}
-                {today && !selected && (
-                  <div className="absolute -bottom-0.5 w-1 h-1 bg-blue-500 rounded-full" />
-                )}
               </button>
             )
           })}
         </div>
 
         {/* Next Week Button */}
-        <button
+        <NavigationButton 
           onClick={goToNextWeek}
-          className="p-1.5 hover:bg-gray-50 rounded-lg transition-colors"
+          direction="next"
           aria-label="Next week"
-        >
-          <ChevronRight className="w-4 h-4 text-gray-600" />
-        </button>
+        />
       </div>
     </div>
   )
