@@ -24,7 +24,9 @@
       "Bash(npx tsc:*)",
       "Bash(chmod:*)",
       "WebFetch(domain:localhost)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
