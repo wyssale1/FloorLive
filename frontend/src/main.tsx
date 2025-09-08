@@ -7,18 +7,23 @@ import Home from './pages/Home'
 import GameDetail from './pages/GameDetail'
 import TeamDetail from './pages/TeamDetail'
 import PlayerDetail from './pages/PlayerDetail'
+import NotFound from './pages/NotFound'
 import Header from './components/Header'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const queryClient = new QueryClient()
 
-// Step 1: Create a root route with Header + Outlet
+// Step 1: Create a root route with Header + Outlet wrapped in ErrorBoundary
 const rootRoute = createRootRoute({
   component: () => (
-    <div className="min-h-screen bg-gray-50/30">
-      <Header />
-      <Outlet />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50/30">
+        <Header />
+        <Outlet />
+      </div>
+    </ErrorBoundary>
   ),
+  notFoundComponent: NotFound,
 })
 
 // Step 2: Create index route (home page) with search params

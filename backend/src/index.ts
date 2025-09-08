@@ -126,9 +126,21 @@ app.get('/api', (req, res) => {
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Unhandled error:', err);
-  res.status(500).json({
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  
+  // Enhanced error response
+  const status = (err as any).status || 500;
+  res.status(status).json({
+    error: status === 500 ? 'Internal server error' : err.name || 'Error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong',
+    status,
+    timestamp: new Date().toISOString(),
+    path: `${req.method} ${req.path}`,
+    details: process.env.NODE_ENV === 'development' ? {
+      stack: err.stack,
+      body: req.body,
+      query: req.query,
+      params: req.params
+    } : undefined
   });
 });
 
@@ -136,7 +148,10 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not found',
-    message: `Route ${req.method} ${req.path} not found`
+    message: `Route ${req.method} ${req.path} not found`,
+    status: 404,
+    timestamp: new Date().toISOString(),
+    path: `${req.method} ${req.path}`
   });
 });
 
