@@ -14,7 +14,7 @@ import {
   endOfMonth,
   eachDayOfInterval,
 } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 // Utility function to calculate the same day of week in a different week
 const calculateSameDayInWeek = (
@@ -54,14 +54,14 @@ const NavigationButton = ({
 // Helper function for date button classes
 const getDateButtonClasses = (selected: boolean, today: boolean): string => {
   if (selected) {
-    return "bg-blue-500 text-white hover:bg-blue-600";
+    return "bg-blue-500 text-white hover:bg-blue-600 rounded-md";
   }
 
   if (today) {
-    return "bg-blue-50/80 text-blue-700 hover:bg-blue-100/80";
+    return "bg-blue-50/80 text-blue-700 hover:bg-blue-100/80 rounded-md";
   }
 
-  return "hover:bg-gray-50 text-gray-700";
+  return "hover:bg-gray-50 text-gray-700 rounded-md";
 };
 
 interface WeekPickerProps {
@@ -77,6 +77,8 @@ export default function WeekPicker({
     () => startOfWeek(selectedDate, { weekStartsOn: 1 }) // Monday start
   );
   const [isMonthViewExpanded, setIsMonthViewExpanded] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [shouldShowMonthUI, setShouldShowMonthUI] = useState(false); // Controls immediate UI changes (box/arrow)
 
   // Sync currentWeekStart with selectedDate changes
   useEffect(() => {
@@ -152,7 +154,20 @@ export default function WeekPicker({
   };
 
   const toggleMonthView = () => {
-    setIsMonthViewExpanded((prev) => !prev);
+    if (isMonthViewExpanded) {
+      // Start closing sequence - immediate UI changes
+      setIsClosing(true);
+      setShouldShowMonthUI(false); // Box/arrow start closing immediately
+      // After closing animation completes, actually close
+      setTimeout(() => {
+        setIsMonthViewExpanded(false);
+        setIsClosing(false);
+      }, 600); // Total animation time
+    } else {
+      // Opening - immediate UI changes
+      setShouldShowMonthUI(true); // Box/arrow start opening immediately  
+      setIsMonthViewExpanded(true);
+    }
   };
 
   const handleMonthDateSelect = (date: Date | undefined) => {
@@ -269,7 +284,7 @@ export default function WeekPicker({
         {/* Previous Week/Month Button */}
         <motion.div
           animate={{
-            y: isMonthViewExpanded ? 110 : 0 // Move down to center with month view
+            y: shouldShowMonthUI ? 110 : 0 // Move down to center with month view - immediate response
           }}
           transition={{
             duration: 0.4,
@@ -288,12 +303,13 @@ export default function WeekPicker({
         <motion.div 
           className="mx-2 flex flex-col items-center overflow-hidden"
           animate={{
-            height: isMonthViewExpanded ? 240 : 60 // Week: ~70px, Month: ~240px
+            height: shouldShowMonthUI ? 240 : 60 // Week: ~70px, Month: ~240px - immediate response
           }}
           transition={{
             duration: 0.4,
             ease: [0.4, 0, 0.2, 1],
-            type: "tween"
+            type: "tween",
+delay: 0 // No delay - box closes immediately when user clicks
           }}
         >
           {/* Static Day Names Header */}
@@ -339,10 +355,16 @@ export default function WeekPicker({
             {monthRows.map((rowDates, rowIndex) => {
               const isCurrentWeekRow = rowIndex === currentWeekRowIndex;
 
-              // Calculate stagger delay for non-current-week rows
+              // Calculate stagger delay for non-current-week rows (entrance)
               const staggerDelay =
-                isMonthViewExpanded && !isCurrentWeekRow
+                isMonthViewExpanded && !isCurrentWeekRow && !isClosing
                   ? 0.1 + Math.abs(rowIndex - currentWeekRowIndex) * 0.04 // Faster stagger timing
+                  : 0;
+
+              // Calculate closing stagger delay (reverse order - closest rows disappear first)
+              const closingStaggerDelay = 
+                isClosing && !isCurrentWeekRow
+                  ? 0.05 + Math.abs(rowIndex - currentWeekRowIndex) * 0.03
                   : 0;
 
               // In week mode, only show current week row
@@ -357,15 +379,18 @@ export default function WeekPicker({
                       : { opacity: 0, y: -10 } // Other rows start hidden and slightly above
                   }
                   animate={{
-                    opacity: 1,
-                    y: 0 // All rows animate to their natural positions
+                    opacity: isClosing && !isCurrentWeekRow ? 0 : 1, // Non-current rows fade out when closing
+                    y: isClosing && isCurrentWeekRow 
+                      ? currentWeekInitialOffset 
+                      : isClosing && !isCurrentWeekRow 
+                        ? -20 // Non-current rows move up while fading
+                        : 0 // Normal position
                   }}
-                  exit={{ opacity: 0, y: -10 }}
                   transition={{
-                    duration: 0.4,
+                    duration: isClosing && !isCurrentWeekRow ? 0.2 : 0.4,
                     ease: [0.4, 0, 0.2, 1],
                     type: "tween",
-                    delay: staggerDelay,
+                    delay: isClosing ? closingStaggerDelay : staggerDelay,
                   }}
                   className="grid grid-cols-7 gap-0.5 sm:gap-1"
                 >
@@ -389,19 +414,22 @@ export default function WeekPicker({
                             : false // Week view: no motion, use CSS classes
                         }
                         animate={
-                          // Only animate in month view
-                          isMonthViewExpanded
-                            ? { marginTop: 0, paddingTop: 0 } // All month selectors animate to normal height
-                            : false // Week view: no motion
+                          // Animate based on view state and closing state
+                          isMonthViewExpanded && !isClosing
+                            ? { marginTop: 0, paddingTop: 0 } // Opening: animate to normal height
+                            : isClosing && (selected || today)
+                              ? { marginTop: -24, paddingTop: 24 } // Closing: grow back to tall height
+                              : false // Week view: no motion
                         }
                         transition={{
                           duration: 0.4,
                           ease: [0.4, 0, 0.2, 1],
-                          type: "tween"
+                          type: "tween",
+                          delay: !shouldShowMonthUI && (selected || today) ? 0.1 : 0 // Delay for blue selector growth - you can adjust this!
                         }}
                         className={`
                           relative min-w-[36px] transition-colors duration-150
-                          flex items-center justify-center rounded-md
+                          flex items-center justify-center
                           ${
                             isMonthViewExpanded
                               ? "min-h-[36px]" // Month view height (motion handles positioning)
@@ -413,19 +441,21 @@ export default function WeekPicker({
                           ${outsideMonth ? "opacity-40" : "opacity-100"}
                         `}
                       >
-                        <span
-                          className={`text-sm font-medium ${
-                            selected
-                              ? "text-white"
-                              : today
-                              ? "text-blue-700"
-                              : outsideMonth
-                              ? "text-gray-400"
-                              : "text-gray-900"
-                          }`}
+                        <motion.span
+                          animate={{
+                            color: (selected || today) && !shouldShowMonthUI ? "#ffffff" : // White immediately when closing month view
+                                   selected ? "#ffffff" : 
+                                   today ? "#1d4ed8" : 
+                                   outsideMonth ? "#9ca3af" : "#111827"
+                          }}
+                          transition={{
+                            duration: 0.2,
+                            delay: 0 // No delay - text changes immediately when user clicks!
+                          }}
+                          className="text-sm font-medium"
                         >
                           {dayNumber}
-                        </span>
+                        </motion.span>
                       </motion.button>
                     );
                   })}
@@ -438,7 +468,7 @@ export default function WeekPicker({
         {/* Next Week/Month Button */}
         <motion.div
           animate={{
-            y: isMonthViewExpanded ? 110 : 0 // Move down to center with month view
+            y: shouldShowMonthUI ? 110 : 0 // Move down to center with month view - immediate response
           }}
           transition={{
             duration: 0.4,
