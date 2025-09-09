@@ -10,19 +10,27 @@ import PlayerDetail from './pages/PlayerDetail'
 import NotFound from './pages/NotFound'
 import Header from './components/Header'
 import ErrorBoundary from './components/ErrorBoundary'
+import { useScrollToTop } from './hooks/useScrollToTop'
 
 const queryClient = new QueryClient()
 
-// Step 1: Create a root route with Header + Outlet wrapped in ErrorBoundary
-const rootRoute = createRootRoute({
-  component: () => (
+// Root component with scroll management
+function RootComponent() {
+  useScrollToTop()
+  
+  return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50/30">
         <Header />
         <Outlet />
       </div>
     </ErrorBoundary>
-  ),
+  )
+}
+
+// Step 1: Create a root route with Header + Outlet wrapped in ErrorBoundary
+const rootRoute = createRootRoute({
+  component: RootComponent,
   notFoundComponent: NotFound,
 })
 
@@ -62,8 +70,11 @@ const playerRoute = createRoute({
 // Step 6: Create the route tree
 const routeTree = rootRoute.addChildren([indexRoute, gameRoute, teamRoute, playerRoute])
 
-// Step 7: Create the router
-const router = createRouter({ routeTree })
+// Step 7: Create the router with scroll management
+const router = createRouter({ 
+  routeTree,
+  defaultPreload: 'intent',
+})
 
 // Step 8: Register for TypeScript
 declare module '@tanstack/react-router' {
