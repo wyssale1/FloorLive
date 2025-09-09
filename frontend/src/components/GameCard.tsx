@@ -87,7 +87,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
         whileTap={{ scale: 0.995 }}
         className={cn(
           "hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg",
-          noPaddingOnMobile ? "px-0 py-3 sm:p-3" : "p-3",
+          noPaddingOnMobile ? "pl-0 pr-2 py-3 sm:p-3" : "p-3",
           isCurrentGame && "bg-blue-50/50",
           className
         )}
@@ -116,7 +116,11 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
           {/* Date display if enabled */}
           {showDate && game.gameDate && (
             <div className="ml-3 flex-shrink-0">
-              <div className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 font-medium">
+              <div className={`px-2 py-1 rounded text-xs font-medium ${
+                isCurrentGame 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
                 {formatDate(game.gameDate)}
               </div>
             </div>
