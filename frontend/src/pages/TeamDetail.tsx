@@ -4,6 +4,7 @@ import { Users, Trophy, Target, Globe, User, Hash } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../lib/apiClient'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
+import { extractLeagueId } from '../lib/utils'
 import TeamLogo from '../components/TeamLogo'
 import PlayerListSkeleton from '../components/PlayerListSkeleton'
 import { Skeleton } from '../components/ui/skeleton'
@@ -79,8 +80,9 @@ export default function TeamDetail() {
         
         // Load league tables immediately
         try {
+          const currentSeasonYear = getCurrentSeasonYear()
           const rankingsData = await apiClient.getRankings({ 
-            season: "2024" 
+            season: currentSeasonYear.toString() 
           })
           if (rankingsData) {
             setLeagueTables([rankingsData])
@@ -106,7 +108,7 @@ export default function TeamDetail() {
 
   const metaOptions = team ? generateTeamMeta({
     teamName: team.name,
-    league: team.league?.name,
+    league: extractLeagueId(team.league),
     logo: team.logo
   }) : {
     title: 'Team Details',
@@ -120,16 +122,21 @@ export default function TeamDetail() {
     
     setTabsLoading(prev => ({ ...prev, tables: true }))
     try {
-      // Use 2024 for testing league tables (2025 data not available yet)
-      const currentSeasonYear = 2024 // getCurrentSeasonYear()
+      // Use centralized season calculation (updated to September 1st)
+      const currentSeasonYear = getCurrentSeasonYear()
       
       // First try to get rankings for the team's league if available
       let rankingsData = null
-      if (team?.league?.name) {
+      const leagueId = extractLeagueId(team?.league)
+      
+      if (leagueId) {
+        console.log('Loading league table with season:', currentSeasonYear, 'league:', leagueId, 'from team league:', team?.league)
         rankingsData = await apiClient.getRankings({ 
           season: currentSeasonYear.toString(),
-          league: team.league.name 
+          league: leagueId 
         })
+      } else {
+        console.warn('No league information available for team:', team?.league)
       }
       
       // If team league rankings not available, try general current season rankings
@@ -148,7 +155,7 @@ export default function TeamDetail() {
         const tablePromises = competitionsData.map(async (competition: any) => {
           try {
             const rankingsForCompetition = await apiClient.getRankings({ 
-              season: "2024", // Hardcoded for testing
+              season: currentSeasonYear.toString(),
               league: competition.id 
             })
             return rankingsForCompetition
@@ -238,11 +245,11 @@ export default function TeamDetail() {
       >
         <div className="flex items-start space-x-6 sm:space-x-8">
           {/* Logo - Left side */}
-          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center flex-shrink-0 p-1">
+          <div className="flex-shrink-0">
             <TeamLogo 
               team={team} 
               size="large" 
-              className="w-12 h-12 sm:w-16 sm:h-16"
+              variant="square"
               showSwissUnihockeyFallback={true}
             />
           </div>
@@ -414,10 +421,12 @@ export default function TeamDetail() {
                     </div>
                   </div>
                 ) : leagueTables.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 text-sm mb-2">No league tables available</div>
-                    <div className="text-gray-500 text-xs">
-                      League standings may not be available for this team's competitions.
+                  <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 text-sm mb-2">League table not yet available</div>
+                      <div className="text-gray-500 text-xs">
+                        Tables are published after the first games of the season. Check back once the season has started.
+                      </div>
                     </div>
                   </div>
                 ) : (

@@ -1,9 +1,9 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Clock } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { apiClient, type GameEvent } from '../lib/apiClient'
-import { getSeasonInfo, getCurrentSeasonYear } from '../lib/seasonUtils'
+import { getCurrentSeasonYear, calculateSeasonYear } from '../lib/seasonUtils'
 import GameTimeline from '../components/GameTimeline'
 import GameTimelineSkeleton from '../components/GameTimelineSkeleton'
 import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
@@ -14,6 +14,7 @@ import LeagueTable from '../components/LeagueTable'
 import GameOverview from '../components/GameOverview'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
+import { extractLeagueId } from '../lib/utils'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
@@ -52,6 +53,53 @@ export default function GameDetail() {
     fetchGameData()
   }, [gameId])
 
+  const loadLeagueTable = useCallback(async () => {
+    if (leagueTable || !game) return // Already loaded or no game data
+    
+    setTabsLoading(prev => ({ ...prev, table: true }))
+    try {
+      // Use hardcoded 2024 for testing since 2025 rankings are not available yet
+      const season = "2024"
+      const leagueId = extractLeagueId(game.league)
+      
+      if (!leagueId) {
+        console.warn('No league information available for game:', game.league)
+        setTabsLoading(prev => ({ ...prev, table: false }))
+        return
+      }
+      
+      console.log('Loading league table with season:', season, 'league:', leagueId, 'from game league:', game.league)
+      
+      // Use existing rankings API that's known to work: /leagues/rankings?season=2024&league=L-UPL
+      const rankingsData = await apiClient.getRankings({
+        season: season,
+        league: leagueId
+      })
+      
+      if (rankingsData) {
+        setLeagueTable({
+          leagueId: leagueId,
+          leagueName: game.league?.name || 'League',
+          season: season,
+          standings: rankingsData.standings || [],
+          homeTeamId: game.homeTeam?.id,
+          awayTeamId: game.awayTeam?.id,
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching league table:', error)
+    } finally {
+      setTabsLoading(prev => ({ ...prev, table: false }))
+    }
+  }, [game, leagueTable])
+
+  // Auto-load league table when game data is available (same pattern as events)
+  useEffect(() => {
+    if (game && !leagueTable) {
+      loadLeagueTable()
+    }
+  }, [game, leagueTable, loadLeagueTable])
+
   // Set dynamic page title and meta tags when game data is loaded
   const pageTitle = game 
     ? pageTitles.game(game.homeTeam?.name || 'Team', game.awayTeam?.name || 'Team', game.status)
@@ -73,54 +121,6 @@ export default function GameDetail() {
   }
   useMetaTags(metaOptions)
 
-  const loadLeagueTable = async (leagueId?: string) => {
-    if (leagueTable) return // Already loaded
-    
-    setTabsLoading(prev => ({ ...prev, table: true }))
-    try {
-      // Calculate proper season based on August 1st cutoff
-      const gameDate = game?.gameDate ? game.gameDate : new Date().toISOString()
-      const gameSeasonInfo = getSeasonInfo(gameDate)
-      const currentSeasonYear = getCurrentSeasonYear()
-      
-      // Use current season if game is from current season, otherwise use historical season
-      const season = gameSeasonInfo.year === currentSeasonYear ? undefined : gameSeasonInfo.year.toString()
-      
-      // Try multiple approaches to get rankings
-      let rankingsData = null
-      
-      // First: try with league ID if available
-      if (leagueId) {
-        rankingsData = await apiClient.getRankings({ 
-          season,
-          league: leagueId 
-        })
-      }
-      
-      // Second: try with league name if no ID worked
-      if (!rankingsData && game?.league?.name) {
-        rankingsData = await apiClient.getRankings({ 
-          season,
-          league: game.league.name 
-        })
-      }
-      
-      // Third: fallback to general rankings for the season
-      if (!rankingsData) {
-        rankingsData = await apiClient.getRankings({ 
-          season 
-        })
-      }
-      
-      setLeagueTable(rankingsData)
-    } catch (error) {
-      console.error('Error fetching league table:', error)
-    } finally {
-      setTabsLoading(prev => ({ ...prev, table: false }))
-    }
-  }
-
-  
   if (loading) {
     return (
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
@@ -172,11 +172,11 @@ export default function GameDetail() {
                 params={{ teamId: game.homeTeam.id }}
                 className="flex flex-col items-center text-center hover:opacity-90 transition-opacity"
               >
-                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center mb-3 flex-shrink-0">
+                <div className="mb-3 flex-shrink-0">
                   <TeamLogo 
                     team={game.homeTeam} 
                     size="large" 
-                    className="w-10 h-10 sm:w-12 sm:h-12"
+                    variant="square"
                     showSwissUnihockeyFallback={true}
                   />
                 </div>
@@ -278,11 +278,11 @@ export default function GameDetail() {
                 params={{ teamId: game.awayTeam.id }}
                 className="flex flex-col items-center text-center hover:opacity-90 transition-opacity"
               >
-                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center mb-3 flex-shrink-0">
+                <div className="mb-3 flex-shrink-0">
                   <TeamLogo 
                     team={game.awayTeam} 
                     size="large" 
-                    className="w-10 h-10 sm:w-12 sm:h-12"
+                    variant="square"
                     showSwissUnihockeyFallback={true}
                   />
                 </div>
@@ -357,15 +357,11 @@ export default function GameDetail() {
               value: 'table',
               label: 'League Table',
               content: (
-                <div
-                  onFocus={() => loadLeagueTable(game?.league?.id)}
-                  onClick={() => loadLeagueTable(game?.league?.id)}
-                >
-                  <LeagueTable 
-                    table={leagueTable} 
-                    loading={tabsLoading.table}
-                  />
-                </div>
+                <LeagueTable 
+                  table={leagueTable} 
+                  loading={tabsLoading.table}
+                  highlightTeamIds={leagueTable ? [leagueTable.homeTeamId, leagueTable.awayTeamId].filter(Boolean) : []}
+                />
               )
             }
           ]}
