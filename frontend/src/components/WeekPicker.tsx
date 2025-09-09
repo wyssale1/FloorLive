@@ -312,43 +312,21 @@ export default function WeekPicker({
 delay: 0 // No delay - box closes immediately when user clicks
           }}
         >
-          {/* Static Day Names Header */}
-          <div className="grid grid-cols-7 gap-0.5 sm:gap-1 w-full max-w-sm">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-              (dayName, index) => {
-                // In week mode, check if this column's day is selected
-                const weekDayForColumn = weekDays[index];
-                const isColumnSelected =
-                  !isMonthViewExpanded &&
-                  weekDayForColumn &&
-                  isSelected(weekDayForColumn);
-                const isColumnToday =
-                  !isMonthViewExpanded &&
-                  weekDayForColumn &&
-                  isToday(weekDayForColumn);
-
-                return (
+          {/* Static Day Names Header - Only shown in month view */}
+          {isMonthViewExpanded && (
+            <div className="grid grid-cols-7 gap-0.5 sm:gap-1 w-full max-w-sm">
+              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                (dayName) => (
                   <div
                     key={dayName}
-                    className={`
-                    text-center text-xs font-medium py-1 min-w-[36px] transition-colors duration-150 relative z-10
-                    ${
-                      isMonthViewExpanded
-                        ? "text-gray-500"
-                        : isColumnSelected
-                        ? "text-white"
-                        : isColumnToday
-                        ? "text-blue-600"
-                        : "text-gray-500"
-                    }
-                  `}
+                    className="text-center text-xs font-medium py-1 min-w-[36px] text-gray-500"
                   >
                     {dayName}
                   </div>
-                );
-              }
-            )}
-          </div>
+                )
+              )}
+            </div>
+          )}
 
           {/* Row-Based Calendar Days */}
           <div className="w-full max-w-sm">
@@ -401,6 +379,10 @@ delay: 0 // No delay - box closes immediately when user clicks
                     const outsideMonth =
                       isMonthViewExpanded && isOutsideMonth(date);
 
+                    // Get day name for week view
+                    const dayIndex = rowDates.indexOf(date);
+                    const dayName = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dayIndex];
+
                     return (
                       <motion.button
                         key={`date-button-${isMonthViewExpanded}`}
@@ -429,16 +411,32 @@ delay: 0 // No delay - box closes immediately when user clicks
                         }}
                         className={`
                           relative min-w-[36px] transition-colors duration-150
-                          flex items-center justify-center
                           ${
                             isMonthViewExpanded
-                              ? "min-h-[36px]" // Month view height (motion handles positioning)
-                              : "min-h-[28px] -mt-6 pt-6" // Week view: all buttons have full clickable height
+                              ? "min-h-[36px] flex items-center justify-center" // Month view: center the date
+                              : "min-h-[44px] flex flex-col items-center justify-center py-1" // Week view: stack day name and date vertically
                           }
                           ${getDateButtonClasses(selected, today)}
                           ${outsideMonth ? "opacity-40" : "opacity-100"}
                         `}
                       >
+                        {/* Week view: Show day name above date */}
+                        {!isMonthViewExpanded && (
+                          <motion.span
+                            animate={{
+                              color: selected ? "#ffffff" : today ? "#1d4ed8" : "#6b7280"
+                            }}
+                            transition={{
+                              duration: 0.2,
+                              delay: 0
+                            }}
+                            className="text-xs font-medium"
+                          >
+                            {dayName}
+                          </motion.span>
+                        )}
+                        
+                        {/* Date number */}
                         <motion.span
                           animate={{
                             color: selected && !shouldShowMonthUI ? "#ffffff" : // White immediately when closing month view, but only if SELECTED
