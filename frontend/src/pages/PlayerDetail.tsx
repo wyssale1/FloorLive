@@ -7,6 +7,7 @@ import type { Player, PlayerStatistics, PlayerGamePerformance } from '../shared/
 import { Skeleton } from '../components/ui/skeleton'
 import TabsContainer from '../components/TabsContainer'
 import PlayerImage from '../components/PlayerImage'
+import PlayerStatsLegend from '../components/PlayerStatsLegend'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generatePlayerMeta } from '../hooks/useMetaTags'
 import { useEasterEggStore } from '../stores'
@@ -310,7 +311,10 @@ export default function PlayerDetail() {
               label: 'Season Statistics',
               content: (
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
-                  <h2 className="text-lg font-medium text-gray-800 mb-4">Season Statistics</h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-medium text-gray-800">Season Statistics</h2>
+                    <PlayerStatsLegend />
+                  </div>
                   
                   {tabsLoading.statistics ? (
                     <div className="space-y-3">
