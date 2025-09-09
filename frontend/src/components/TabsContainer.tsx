@@ -8,6 +8,7 @@ interface TabItem {
   label: string
   content: React.ReactNode
   disabled?: boolean
+  onTabSelect?: () => void
 }
 
 interface TabsContainerProps {
@@ -58,12 +59,19 @@ export default function TabsContainer({
   const handleTabChange = (value: string) => {
     setActiveTab(value)
     
-    // Update URL with new tab
+    // Call onTabSelect callback if provided
+    const tab = tabs.find(t => t.value === value)
+    if (tab?.onTabSelect) {
+      tab.onTabSelect()
+    }
+    
+    // Update URL with new tab - replace history to avoid tab navigation pollution
     router.navigate({
       search: (prev: any) => ({
         ...prev,
         [searchParamKey]: value
-      })
+      }),
+      replace: true // Replace current history entry instead of creating a new one
     })
   }
 
