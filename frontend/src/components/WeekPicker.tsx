@@ -267,14 +267,35 @@ export default function WeekPicker({
       {/* Navigation and Calendar Container */}
       <div className="flex items-start justify-center">
         {/* Previous Week/Month Button */}
-        <NavigationButton
-          onClick={isMonthViewExpanded ? goToPreviousMonth : goToPreviousWeek}
-          direction="previous"
-          aria-label={isMonthViewExpanded ? "Previous month" : "Previous week"}
-        />
+        <motion.div
+          animate={{
+            y: isMonthViewExpanded ? 110 : 0 // Move down to center with month view
+          }}
+          transition={{
+            duration: 0.4,
+            ease: [0.4, 0, 0.2, 1],
+            type: "tween"
+          }}
+        >
+          <NavigationButton
+            onClick={isMonthViewExpanded ? goToPreviousMonth : goToPreviousWeek}
+            direction="previous"
+            aria-label={isMonthViewExpanded ? "Previous month" : "Previous week"}
+          />
+        </motion.div>
 
         {/* Layered Animation Calendar */}
-        <div className="mx-2 flex flex-col items-center">
+        <motion.div 
+          className="mx-2 flex flex-col items-center overflow-hidden"
+          animate={{
+            height: isMonthViewExpanded ? 240 : 60 // Week: ~70px, Month: ~240px
+          }}
+          transition={{
+            duration: 0.4,
+            ease: [0.4, 0, 0.2, 1],
+            type: "tween"
+          }}
+        >
           {/* Static Day Names Header */}
           <div className="grid grid-cols-7 gap-0.5 sm:gap-1 w-full max-w-sm">
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
@@ -338,7 +359,6 @@ export default function WeekPicker({
                   animate={{
                     opacity: 1,
                     y: 0 // All rows animate to their natural positions
-                    // y: currentWeekInitialOffset,
                   }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{
@@ -413,14 +433,25 @@ export default function WeekPicker({
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Next Week/Month Button */}
-        <NavigationButton
-          onClick={isMonthViewExpanded ? goToNextMonth : goToNextWeek}
-          direction="next"
-          aria-label={isMonthViewExpanded ? "Next month" : "Next week"}
-        />
+        <motion.div
+          animate={{
+            y: isMonthViewExpanded ? 110 : 0 // Move down to center with month view
+          }}
+          transition={{
+            duration: 0.4,
+            ease: [0.4, 0, 0.2, 1],
+            type: "tween"
+          }}
+        >
+          <NavigationButton
+            onClick={isMonthViewExpanded ? goToNextMonth : goToNextWeek}
+            direction="next"
+            aria-label={isMonthViewExpanded ? "Next month" : "Next week"}
+          />
+        </motion.div>
       </div>
     </div>
   );
