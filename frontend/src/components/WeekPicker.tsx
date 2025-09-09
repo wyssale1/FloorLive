@@ -358,12 +358,12 @@ export default function WeekPicker({
 
                     return (
                       <motion.button
-                        key={`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
+                        key={`date-button-${isMonthViewExpanded}`}
                         onClick={() => onDateSelect(date)}
                         initial={
                           // Only animate in month view, week view uses CSS classes
                           isMonthViewExpanded && (selected || today)
-                            ? { marginTop: -20, paddingTop: 24 } // Start with tall height (like week view)
+                            ? { marginTop: -18, paddingTop: 24 } // Start with tall height (like week view)
                             : isMonthViewExpanded
                             ? { marginTop: 0, paddingTop: 4 } // Normal height for unselected
                             : false // Week view: no motion, use CSS classes
@@ -371,18 +371,14 @@ export default function WeekPicker({
                         animate={
                           // Only animate in month view
                           isMonthViewExpanded
-                            ? { marginTop: 0, paddingTop: 4 } // All month selectors animate to normal height
+                            ? { marginTop: 0, paddingTop: 0 } // All month selectors animate to normal height
                             : false // Week view: no motion
                         }
-                        transition={
-                          isMonthViewExpanded
-                            ? {
-                                duration: 0.4,
-                                ease: [0.4, 0, 0.2, 1],
-                                type: "tween",
-                              }
-                            : { duration: 0 } // No transition for week view
-                        }
+                        transition={{
+                          duration: 0.4,
+                          ease: [0.4, 0, 0.2, 1],
+                          type: "tween"
+                        }}
                         className={`
                           relative min-w-[36px] transition-colors duration-150
                           flex items-center justify-center rounded-md
