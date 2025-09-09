@@ -433,9 +433,7 @@ delay: 0 // No delay - box closes immediately when user clicks
                           ${
                             isMonthViewExpanded
                               ? "min-h-[36px]" // Month view height (motion handles positioning)
-                              : selected || today
-                              ? "min-h-[28px] -mt-6 pt-6" // Week view: CSS classes for tall selector
-                              : "min-h-[28px]" // Week view: normal height
+                              : "min-h-[28px] -mt-6 pt-6" // Week view: all buttons have full clickable height
                           }
                           ${getDateButtonClasses(selected, today)}
                           ${outsideMonth ? "opacity-40" : "opacity-100"}
@@ -443,7 +441,7 @@ delay: 0 // No delay - box closes immediately when user clicks
                       >
                         <motion.span
                           animate={{
-                            color: (selected || today) && !shouldShowMonthUI ? "#ffffff" : // White immediately when closing month view
+                            color: selected && !shouldShowMonthUI ? "#ffffff" : // White immediately when closing month view, but only if SELECTED
                                    selected ? "#ffffff" : 
                                    today ? "#1d4ed8" : 
                                    outsideMonth ? "#9ca3af" : "#111827"

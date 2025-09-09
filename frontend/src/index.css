@@ -129,3 +129,7 @@
 body {
   scrollbar-gutter: stable both-edges;
 }
+
+::-webkit-scrollbar {
+    display: none;
+}
