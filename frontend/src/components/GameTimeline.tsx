@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Target, AlertTriangle, Pause, Crown } from 'lucide-react'
 import type { GameEvent } from '../lib/apiClient'
+import GameEventsLegend from './GameEventsLegend'
 
 interface GameTimelineProps {
   events: GameEvent[]
@@ -9,8 +10,13 @@ interface GameTimelineProps {
 export default function GameTimeline({ events }: GameTimelineProps) {
   if (events.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No events recorded yet.
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <GameEventsLegend />
+        </div>
+        <div className="text-center py-8 text-gray-500">
+          No events recorded yet.
+        </div>
       </div>
     )
   }
@@ -75,16 +81,16 @@ export default function GameTimeline({ events }: GameTimelineProps) {
 
   const getEventIcon = (event: GameEvent) => {
     if (isBestPlayer(event)) {
-      return <Crown className="w-3 h-3 text-gray-600" />
+      return <Crown className="w-4 h-4 text-gray-600" />
     }
     if (event.type === 'goal') {
-      return <Target className="w-3 h-3 text-gray-600" />
+      return <Target className="w-4 h-4 text-gray-600" />
     }
     if (isTimeout(event)) {
-      return <Pause className="w-3 h-3 text-gray-600" />
+      return <Pause className="w-4 h-4 text-gray-600" />
     }
     if (event.type === 'penalty' && !is2MinPenalty(event)) {
-      return <AlertTriangle className="w-3 h-3 text-gray-600" />
+      return <AlertTriangle className="w-4 h-4 text-gray-600" />
     }
     return null
   }
@@ -163,9 +169,14 @@ export default function GameTimeline({ events }: GameTimelineProps) {
   }
 
   return (
-    <div className="relative">
-      {/* Central dotted line */}
-      <div className="absolute left-1/2 top-0 bottom-0 w-px border-l-2 border-dashed border-gray-300 -translate-x-0.5"></div>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <GameEventsLegend />
+      </div>
+      
+      <div className="relative">
+        {/* Central dotted line */}
+        <div className="absolute left-1/2 top-0 bottom-0 w-px border-l-2 border-dashed border-gray-300 -translate-x-0.5"></div>
       
       <div className="space-y-4 py-4">
         {sortedEvents.map((event, index) => {
@@ -274,6 +285,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
             </motion.div>
           )
         })}
+      </div>
       </div>
     </div>
   )
