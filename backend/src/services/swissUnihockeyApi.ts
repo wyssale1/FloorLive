@@ -1213,33 +1213,39 @@ export class SwissUnihockeyApiClient {
       for (const row of rows) {
         if (!row.cells || !Array.isArray(row.cells)) continue;
 
-        // Based on typical rankings API structure:
+        // Based on actual Swiss Unihockey API structure:
         // cells[0] = position/rank
-        // cells[1] = team (with name, logo, id)
-        // cells[2] = games played (SP)
-        // cells[3] = wins
-        // cells[4] = draws/ties
-        // cells[5] = losses
-        // cells[6] = goals (format like "10:5")
-        // cells[7] = goal difference
-        // cells[8] = points
+        // cells[1] = team logo (image only)
+        // cells[2] = team name (text)
+        // cells[3] = wins (W)
+        // cells[4] = draws/ties (D)
+        // cells[5] = losses (L)
+        // cells[6] = ??? (needs investigation)
+        // cells[7] = ??? (needs investigation)
+        // cells[8] = ??? (needs investigation)
+        // cells[9] = goals (format like "161:107")
+        // cells[10] = goal difference (format like "+54")
+        // cells[11] = ??? (needs investigation)
+        // cells[12] = points (total)
 
-        const goalsText = row.cells[6]?.text?.[0] || '0:0';
+        const goalsText = row.cells[9]?.text?.[0] || '0:0';
         const [goalsFor, goalsAgainst] = goalsText.split(':').map((g: string) => parseInt(g.trim()) || 0);
+        const goalDiffText = row.cells[10]?.text?.[0] || '0';
+        const goalDifference = parseInt(goalDiffText.replace('+', '')) || 0;
         
         const team = {
           position: parseInt(row.cells[0]?.text?.[0] || '0') || 0,
-          teamId: row.cells[1]?.link?.ids?.[0]?.toString() || '',
-          teamName: row.cells[1]?.text?.[0] || '',
+          teamId: row.cells[2]?.link?.ids?.[0]?.toString() || row.cells[1]?.link?.ids?.[0]?.toString() || '',
+          teamName: row.cells[2]?.text?.[0] || '',
           teamLogo: row.cells[1]?.image?.url || null,
-          games: parseInt(row.cells[2]?.text?.[0] || '0') || 0,
+          games: parseInt(row.cells[3]?.text?.[0] || '0') + parseInt(row.cells[4]?.text?.[0] || '0') + parseInt(row.cells[5]?.text?.[0] || '0') || 0, // W + D + L
           wins: parseInt(row.cells[3]?.text?.[0] || '0') || 0,
           draws: parseInt(row.cells[4]?.text?.[0] || '0') || 0,
           losses: parseInt(row.cells[5]?.text?.[0] || '0') || 0,
           goalsFor,
           goalsAgainst,
-          goalDifference: parseInt(row.cells[7]?.text?.[0] || '0') || 0,
-          points: parseInt(row.cells[8]?.text?.[0] || '0') || 0
+          goalDifference,
+          points: parseInt(row.cells[12]?.text?.[0] || '0') || 0
         };
 
         standings.push(team);

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
+import { useRouter, useSearch } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 
 interface TabItem {
   value: string
@@ -13,18 +15,57 @@ interface TabsContainerProps {
   defaultValue?: string
   className?: string
   orientation?: 'horizontal' | 'vertical'
+  searchParamKey?: string // Key to use for search param, defaults to 'tab'
 }
 
 export default function TabsContainer({ 
   tabs, 
   defaultValue, 
   className = '',
-  orientation = 'horizontal' 
+  orientation = 'horizontal',
+  searchParamKey = 'tab'
 }: TabsContainerProps) {
+  const router = useRouter()
+  const search = useSearch({ from: '__root__' })
+  
+  // Get current tab from URL search params
+  const currentTabFromUrl = (search as any)?.[searchParamKey] as string
+  
   const firstEnabledTab = tabs.find(tab => !tab.disabled)?.value
-  const initialValue = defaultValue && !tabs.find(tab => tab.value === defaultValue)?.disabled 
-    ? defaultValue 
-    : firstEnabledTab
+  
+  // Determine active tab: URL param > defaultValue > first enabled tab
+  const getActiveTab = () => {
+    if (currentTabFromUrl && !tabs.find(tab => tab.value === currentTabFromUrl)?.disabled) {
+      return currentTabFromUrl
+    }
+    if (defaultValue && !tabs.find(tab => tab.value === defaultValue)?.disabled) {
+      return defaultValue
+    }
+    return firstEnabledTab
+  }
+  
+  const [activeTab, setActiveTab] = useState(getActiveTab())
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    const newActiveTab = getActiveTab()
+    if (newActiveTab && newActiveTab !== activeTab) {
+      setActiveTab(newActiveTab)
+    }
+  }, [currentTabFromUrl, defaultValue, tabs])
+
+  // Handle tab change - update URL search params
+  const handleTabChange = (value: string) => {
+    setActiveTab(value)
+    
+    // Update URL with new tab
+    router.navigate({
+      search: (prev: any) => ({
+        ...prev,
+        [searchParamKey]: value
+      })
+    })
+  }
 
   return (
     <motion.div
@@ -34,7 +75,8 @@ export default function TabsContainer({
       className={className}
     >
       <Tabs 
-        defaultValue={initialValue} 
+        value={activeTab} 
+        onValueChange={handleTabChange}
         className="w-full"
         orientation={orientation}
       >

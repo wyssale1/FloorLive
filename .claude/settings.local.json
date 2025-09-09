@@ -26,7 +26,10 @@
       "WebFetch(domain:localhost)",
       "Bash(cat:*)",
       "Bash(git checkout:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(open http://localhost:5174)",
+      "Bash(open http://localhost:5174/team/1072853)",
+      "Bash(open http://localhost:5174/team/429603)"
     ],
     "deny": [],
     "ask": []

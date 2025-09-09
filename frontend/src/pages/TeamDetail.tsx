@@ -72,6 +72,24 @@ export default function TeamDetail() {
         // Also load statistics for team info
         const statsData = await apiClient.getTeamStatistics(teamId)
         setStatistics(statsData)
+        
+        // Automatically load league tables when team data is available
+        // No need for setTimeout since we can call it directly
+        setTabsLoading(prev => ({ ...prev, tables: true }))
+        
+        // Load league tables immediately
+        try {
+          const rankingsData = await apiClient.getRankings({ 
+            season: "2024" 
+          })
+          if (rankingsData) {
+            setLeagueTables([rankingsData])
+          }
+        } catch (error) {
+          console.error('Error auto-loading league tables:', error)
+        } finally {
+          setTabsLoading(prev => ({ ...prev, tables: false }))
+        }
       } catch (error) {
         console.error('Error fetching team data:', error)
       } finally {
@@ -98,12 +116,12 @@ export default function TeamDetail() {
   useMetaTags(metaOptions)
 
   const loadLeagueTables = async () => {
-    if (leagueTables.length > 0) return // Already loaded
+    if (leagueTables.length > 0 || tabsLoading.tables) return // Already loaded or loading
     
     setTabsLoading(prev => ({ ...prev, tables: true }))
     try {
-      // Get current season rankings using season calculation utility
-      const currentSeasonYear = getCurrentSeasonYear()
+      // Use 2024 for testing league tables (2025 data not available yet)
+      const currentSeasonYear = 2024 // getCurrentSeasonYear()
       
       // First try to get rankings for the team's league if available
       let rankingsData = null
@@ -130,7 +148,7 @@ export default function TeamDetail() {
         const tablePromises = competitionsData.map(async (competition: any) => {
           try {
             const rankingsForCompetition = await apiClient.getRankings({ 
-              season: currentSeasonYear.toString(),
+              season: "2024", // Hardcoded for testing
               league: competition.id 
             })
             return rankingsForCompetition
