@@ -64,7 +64,7 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
       {/* Header Row */}
       <div className="flex items-center justify-between py-2 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wide">
         <div className="flex items-center space-x-3">
-          <div className="w-6"></div> {/* Position space */}
+          <div className="w-8 pl-1"></div> {/* Position space with left padding */}
           <div className="w-8"></div> {/* Logo space */}
           <div>Team</div>
         </div>
@@ -112,8 +112,8 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
             >
               <div className="flex items-center space-x-3 min-w-0 flex-1">
                 {/* Position Number */}
-                <div className="flex-shrink-0 w-6 text-center">
-                  <span className="text-lg font-medium text-gray-500">{team.position}</span>
+                <div className="flex-shrink-0 w-8 pl-1">
+                  <span className="text-sm font-medium text-gray-600 bg-gray-50 rounded-full w-5 h-5 flex items-center justify-center text-xs">{team.position}</span>
                 </div>
                 
                 {/* Team Logo */}
