@@ -193,7 +193,15 @@ export default function PlayerDetail() {
                   
                   <div className="space-y-6">
                     {/* Basic Information */}
-                    <div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.4,
+                        delay: 0 * 0.05,
+                        ease: [0.25, 0.46, 0.45, 0.94]
+                      }}
+                    >
                       <h3 className="text-md font-semibold text-gray-700 mb-3">Basic Information</h3>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
                         {player.number && (
@@ -233,11 +241,19 @@ export default function PlayerDetail() {
                           </div>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
 
                     {/* Current Season */}
                     {player.currentSeason && (
-                      <div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          duration: 0.4,
+                          delay: 1 * 0.05,
+                          ease: [0.25, 0.46, 0.45, 0.94]
+                        }}
+                      >
                         <h3 className="text-md font-semibold text-gray-700 mb-3">Current Season</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                           <div>
@@ -249,13 +265,21 @@ export default function PlayerDetail() {
                             <div className="font-medium">{player.currentSeason.team}</div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     )}
 
 
                     {/* Career Summary */}
                     {player.careerStats && (
-                      <div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          duration: 0.4,
+                          delay: 2 * 0.05,
+                          ease: [0.25, 0.46, 0.45, 0.94]
+                        }}
+                      >
                         <h3 className="text-md font-semibold text-gray-700 mb-3">Career Summary</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                           <div>
@@ -275,7 +299,7 @@ export default function PlayerDetail() {
                             <div className="font-bold text-lg text-blue-600">{player.careerStats.totalPoints}</div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                   </div>
                 </div>
@@ -311,7 +335,17 @@ export default function PlayerDetail() {
                         </thead>
                         <tbody>
                           {statistics.map((stat, index) => (
-                            <tr key={index} className="border-b border-gray-100">
+                            <motion.tr 
+                              key={index} 
+                              className="border-b border-gray-100"
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ 
+                                duration: 0.4,
+                                delay: index * 0.05,
+                                ease: [0.25, 0.46, 0.45, 0.94]
+                              }}
+                            >
                               <td className="py-3 px-1 font-medium">{stat.season}</td>
                               <td className="py-3 px-1 text-gray-600">{stat.league}</td>
                               <td className="py-3 px-1 text-gray-600">
@@ -334,7 +368,7 @@ export default function PlayerDetail() {
                               <td className="py-3 px-1 text-center text-gray-600">
                                 {stat.penalties.twoMinute + stat.penalties.fiveMinute + stat.penalties.tenMinute}
                               </td>
-                            </tr>
+                            </motion.tr>
                           ))}
                         </tbody>
                       </table>

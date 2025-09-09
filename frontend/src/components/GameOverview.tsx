@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { MapPin, Clock, Users, Shield } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { apiClient } from '../lib/apiClient'
 import GameList from './GameList'
 import GameCardSkeleton from './GameCardSkeleton'
@@ -34,6 +35,134 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
     fetchHeadToHeadGames()
   }, [gameId])
 
+  // Prepare game information items for staggered animation
+  const gameInfoItems = []
+  let itemIndex = 0
+
+  // Date and Time
+  if (game.gameDate && game.startTime) {
+    gameInfoItems.push({
+      key: 'datetime',
+      content: (
+        <div className="flex items-center space-x-2">
+          <Clock className="w-4 h-4 text-gray-400" />
+          <div>
+            <div className="text-sm font-medium text-gray-700">Date & Time</div>
+            <div className="text-sm text-gray-600">
+              {game.gameDate} at {game.startTime}
+            </div>
+          </div>
+        </div>
+      )
+    })
+  }
+
+  // League
+  if (game.league?.name && game.league.name !== '0') {
+    gameInfoItems.push({
+      key: 'league',
+      content: (
+        <div className="flex items-center space-x-2">
+          <Shield className="w-4 h-4 text-gray-400" />
+          <div>
+            <div className="text-sm font-medium text-gray-700">League</div>
+            <div className="text-sm text-gray-600">
+              {game.league.name}
+            </div>
+          </div>
+        </div>
+      )
+    })
+  }
+
+  // Venue
+  const venueName = game.venue?.name || game.location
+  const isValidVenue = venueName && 
+                      venueName.trim() !== '' && 
+                      venueName !== '0' && 
+                      venueName !== 'null' && 
+                      venueName !== 'undefined'
+  if (isValidVenue) {
+    gameInfoItems.push({
+      key: 'venue',
+      content: (
+        <div className="flex items-center space-x-2">
+          <MapPin className="w-4 h-4 text-gray-400" />
+          <div>
+            <div className="text-sm font-medium text-gray-700">Venue</div>
+            <div className="text-sm text-gray-600">
+              {game.coordinates ? (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${game.coordinates.lat},${game.coordinates.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  {venueName}
+                </a>
+              ) : (
+                <span>{venueName}</span>
+              )}
+              {game.venue?.address && 
+               game.venue.address.trim() !== '' && 
+               game.venue.address !== '0' && 
+               game.venue.address !== 'null' && (
+                <div className="text-xs text-gray-500 mt-1">{game.venue.address}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    })
+  }
+
+  // Spectators
+  const spectatorCount = typeof game.spectators === 'number' ? game.spectators : parseInt(game.spectators || '0')
+  if (spectatorCount > 0 && game.status === 'finished') {
+    gameInfoItems.push({
+      key: 'spectators',
+      content: (
+        <div className="flex items-center space-x-2">
+          <Users className="w-4 h-4 text-gray-400" />
+          <div>
+            <div className="text-sm font-medium text-gray-700">Spectators</div>
+            <div className="text-sm text-gray-600">
+              {spectatorCount.toLocaleString()} {spectatorCount === 1 ? 'spectator' : 'spectators'}
+            </div>
+          </div>
+        </div>
+      )
+    })
+  }
+
+  // Referees
+  const validReferees = [game.referees?.first, game.referees?.second]
+    .filter(ref => ref && 
+                 typeof ref === 'string' && 
+                 ref.trim() !== '' && 
+                 ref !== '0' && 
+                 ref !== 'null' && 
+                 ref !== 'undefined' &&
+                 ref.toLowerCase() !== 'null')
+  if (validReferees.length > 0) {
+    gameInfoItems.push({
+      key: 'referees',
+      content: (
+        <div className="flex items-center space-x-2 sm:col-span-2">
+          <Shield className="w-4 h-4 text-gray-400" />
+          <div>
+            <div className="text-sm font-medium text-gray-700">
+              {validReferees.length === 1 ? 'Referee' : 'Referees'}
+            </div>
+            <div className="text-sm text-gray-600">
+              {validReferees.join(', ')}
+            </div>
+          </div>
+        </div>
+      )
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Game Information Section */}
@@ -41,111 +170,20 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
         <h2 className="text-lg font-medium text-gray-800 mb-4">Game Information</h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Date and Time */}
-          {game.gameDate && game.startTime && (
-            <div className="flex items-center space-x-2">
-              <Clock className="w-4 h-4 text-gray-400" />
-              <div>
-                <div className="text-sm font-medium text-gray-700">Date & Time</div>
-                <div className="text-sm text-gray-600">
-                  {game.gameDate} at {game.startTime}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* League */}
-          {game.league?.name && game.league.name !== '0' && (
-            <div className="flex items-center space-x-2">
-              <Shield className="w-4 h-4 text-gray-400" />
-              <div>
-                <div className="text-sm font-medium text-gray-700">League</div>
-                <div className="text-sm text-gray-600">
-                  {game.league.name}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Venue */}
-          {(() => {
-            const venueName = game.venue?.name || game.location;
-            const isValidVenue = venueName && 
-                                venueName.trim() !== '' && 
-                                venueName !== '0' && 
-                                venueName !== 'null' && 
-                                venueName !== 'undefined';
-            
-            return isValidVenue && (
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-gray-700">Venue</div>
-                  <div className="text-sm text-gray-600">
-                    {game.coordinates ? (
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${game.coordinates.lat},${game.coordinates.lng}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        {venueName}
-                      </a>
-                    ) : (
-                      <span>{venueName}</span>
-                    )}
-                    {game.venue?.address && 
-                     game.venue.address.trim() !== '' && 
-                     game.venue.address !== '0' && 
-                     game.venue.address !== 'null' && (
-                      <div className="text-xs text-gray-500 mt-1">{game.venue.address}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Spectators */}
-          {(() => {
-            const spectatorCount = typeof game.spectators === 'number' ? game.spectators : parseInt(game.spectators || '0');
-            return spectatorCount > 0 && game.status === 'finished' && (
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-gray-700">Spectators</div>
-                  <div className="text-sm text-gray-600">
-                    {spectatorCount.toLocaleString()} {spectatorCount === 1 ? 'spectator' : 'spectators'}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Referees */}
-          {(() => {
-            const validReferees = [game.referees?.first, game.referees?.second]
-              .filter(ref => ref && 
-                           typeof ref === 'string' && 
-                           ref.trim() !== '' && 
-                           ref !== '0' && 
-                           ref !== 'null' && 
-                           ref !== 'undefined' &&
-                           ref.toLowerCase() !== 'null');
-            return validReferees.length > 0 && (
-              <div className="flex items-center space-x-2 sm:col-span-2">
-                <Shield className="w-4 h-4 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-gray-700">
-                    {validReferees.length === 1 ? 'Referee' : 'Referees'}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {validReferees.join(', ')}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
+          {gameInfoItems.map((item, index) => (
+            <motion.div
+              key={item.key}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.4,
+                delay: index * 0.05,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+            >
+              {item.content}
+            </motion.div>
+          ))}
         </div>
       </div>
 
