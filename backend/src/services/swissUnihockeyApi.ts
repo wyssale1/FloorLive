@@ -64,29 +64,19 @@ export class SwissUnihockeyApiClient {
 
   async getGameEvents(gameId: string): Promise<GameEvent[]> {
     try {
-      // Make 3 parallel API calls for complete event data
-      const [generalResponse, homeResponse, awayResponse] = await Promise.all([
-        this.client.get<any>(`/game_events/${gameId}`).catch(() => ({ data: null })),
-        this.client.get<any>(`/game_events/${gameId}?team=home`).catch(() => ({ data: null })),
-        this.client.get<any>(`/game_events/${gameId}?team=away`).catch(() => ({ data: null }))
-      ]);
+      // Use main API endpoint as primary source - it already comes in correct chronological order
+      const generalResponse = await this.client.get<any>(`/game_events/${gameId}`);
+      
+      if (!generalResponse.data) {
+        return [];
+      }
 
-      // Process home and away events first (these have correct team labels)
-      const homeEvents = homeResponse.data ? 
-        this.mapGameEventsFromApiWithTeam(homeResponse.data, gameId, 'home') : [];
-      const awayEvents = awayResponse.data ? 
-        this.mapGameEventsFromApiWithTeam(awayResponse.data, gameId, 'away') : [];
-
-      // Process general events, but exclude duplicates already in home/away
-      const generalEvents = generalResponse.data ? 
-        this.mapGameEventsFromApiWithTeam(generalResponse.data, gameId, 'general') : [];
-      const filteredGeneralEvents = this.filterDuplicateEvents(generalEvents, [...homeEvents, ...awayEvents]);
-
-      // Merge all unique events
-      const allEvents = [...homeEvents, ...awayEvents, ...filteredGeneralEvents];
-
-      // Sort by time
-      return this.sortEventsByTime(allEvents);
+      // Process all events from the main API response
+      const events = this.mapGameEventsFromApiWithTeam(generalResponse.data, gameId, 'general');
+      
+      // Swiss API returns events in reverse chronological order (end to start)
+      // Reverse them to show forward chronological order (start to end) for frontend timeline
+      return events.reverse();
     } catch (error) {
       console.error(`Error fetching events for game ${gameId}:`, error);
       return [];
@@ -125,6 +115,25 @@ export class SwissUnihockeyApiClient {
 
 
   // Swiss Unihockey league name to ID mappings based on actual API structure
+  private getGameClassFromLeagueName(leagueName: string): number | null {
+    if (!leagueName) return null;
+    
+    const leagueLower = leagueName.toLowerCase();
+    
+    // Check for women's indicators
+    if (leagueLower.includes('damen') || leagueLower.includes('women') || leagueLower.includes('dnlb') || leagueLower.includes('female')) {
+      return 21; // Women's game class
+    }
+    
+    // Check for men's indicators  
+    if (leagueLower.includes('herren') || leagueLower.includes('men') || leagueLower.includes('hnlb') || leagueLower.includes('male')) {
+      return 11; // Men's game class
+    }
+    
+    // Default to men's if no clear indication (Swiss Unihockey often defaults to men)
+    return 11;
+  }
+
   private getLeagueIdFromName(leagueName: string): number | null {
     const leagueMap: Record<string, number> = {
       // Main leagues from API analysis
@@ -159,7 +168,7 @@ export class SwissUnihockeyApiClient {
     return null;
   }
 
-  async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string } = {}): Promise<any | null> {
+  async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string; leagueName?: string } = {}): Promise<any | null> {
     try {
       // Build clean parameter object, converting strings to proper types
       const cleanParams: Record<string, string | number> = {};
@@ -193,6 +202,12 @@ export class SwissUnihockeyApiClient {
           cleanParams.game_class = gameClassNum;
         } else {
           cleanParams.game_class = params.game_class.trim();
+        }
+      } else if (params.leagueName) {
+        // Auto-detect game_class from league name if not explicitly provided
+        const gameClass = this.getGameClassFromLeagueName(params.leagueName);
+        if (gameClass) {
+          cleanParams.game_class = gameClass;
         }
       }
       
@@ -248,81 +263,6 @@ export class SwissUnihockeyApiClient {
     }
   }
 
-  private mapTeamGamesFromApi(apiData: any): Game[] {
-    const rows = apiData?.data?.regions?.[0]?.rows || [];
-    if (!rows.length) return [];
-
-    return rows.map((row: any, index: number) => {
-      const cells = row.cells || [];
-      const gameId = row.link?.ids?.[0]?.toString() || `team-game-${index}`;
-      
-      // Cell structure based on Swiss Unihockey API:
-      // [0] Date/Time array, [1] Location array, [2] Home Team array, [3] Away Team array, [4] Result array
-      const dateTimeCell = cells[0]?.text || [];
-      const locationCell = cells[1]?.text || [];
-      const homeTeamCell = cells[2]?.text || [];
-      const awayTeamCell = cells[3]?.text || [];
-      const resultCell = cells[4]?.text || [];
-
-      // Parse date and time
-      const gameDate = dateTimeCell[0] || '';
-      const gameTime = dateTimeCell[1] || '';
-      
-      // Parse location
-      const venue = locationCell[0] || '';
-      const location = locationCell[1] || '';
-      
-      // Parse team names
-      const homeTeamName = homeTeamCell[0] || '';
-      const awayTeamName = awayTeamCell[0] || '';
-      
-      // Parse score and determine status
-      const scoreText = resultCell[0] || '';
-      let homeScore: number | null = null;
-      let awayScore: number | null = null;
-      let status: 'upcoming' | 'live' | 'finished' = 'upcoming';
-      
-      if (scoreText && scoreText !== '-') {
-        // Parse score like "3:2", "1:0 n.V.", "2:1 n.P."
-        const scoreMatch = scoreText.match(/(\d+):(\d+)/);
-        if (scoreMatch) {
-          homeScore = parseInt(scoreMatch[1]);
-          awayScore = parseInt(scoreMatch[2]);
-          status = 'finished';
-        }
-      }
-
-      // Convert Swiss date format (DD.MM.YYYY) to ISO format
-      const startTimeIso = this.convertSwissDateToISO(gameDate, gameTime);
-
-      return {
-        id: gameId,
-        home_team: {
-          id: '',
-          name: homeTeamName,
-          short_name: homeTeamName.length >= 3 ? homeTeamName.substring(0, 3).toUpperCase() : homeTeamName.toUpperCase(),
-          logo: ''
-        },
-        away_team: {
-          id: '',
-          name: awayTeamName,
-          short_name: awayTeamName.length >= 3 ? awayTeamName.substring(0, 3).toUpperCase() : awayTeamName.toUpperCase(),
-          logo: ''
-        },
-        home_score: homeScore,
-        away_score: awayScore,
-        status,
-        start_time: startTimeIso,
-        game_date: gameDate,
-        league: {
-          id: '',
-          name: 'Swiss Unihockey'
-        },
-        location,
-        venue: venue ? { name: venue } : undefined
-      };
-    });
-  }
 
   private convertSwissDateToISO(dateStr: string, timeStr: string): string {
     try {
@@ -791,35 +731,6 @@ export class SwissUnihockeyApiClient {
     }
   }
 
-  private filterDuplicateEvents(generalEvents: GameEvent[], homeAwayEvents: GameEvent[]): GameEvent[] {
-    // Create set of home/away event keys
-    const homeAwayKeys = new Set(
-      homeAwayEvents.map(event => `${event.time}-${event.description}`)
-    );
-
-    // Filter general events to exclude those already in home/away
-    return generalEvents.filter(event => {
-      const key = `${event.time}-${event.description}`;
-      return !homeAwayKeys.has(key);
-    });
-  }
-
-  private sortEventsByTime(events: GameEvent[]): GameEvent[] {
-    return events.sort((a, b) => {
-      // Parse time format like "46:32" to minutes for sorting
-      const parseTime = (timeStr: string) => {
-        if (!timeStr) return 0;
-        const parts = timeStr.split(':');
-        if (parts.length !== 2) return 0;
-        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-      };
-      
-      const timeA = parseTime(a.time);
-      const timeB = parseTime(b.time);
-      
-      return timeA - timeB;
-    });
-  }
 
   private determineEventTeam(eventText: string, player: string, team: string): 'home' | 'away' {
     // Period events, timeouts, and other neutral events should alternate or be treated as neutral
@@ -1213,6 +1124,15 @@ export class SwissUnihockeyApiClient {
       for (const row of rows) {
         if (!row.cells || !Array.isArray(row.cells)) continue;
 
+        // Debug logging to see actual cell contents
+        console.log('Row cells length:', row.cells.length);
+        console.log('First few cells:', row.cells.slice(0, 6).map((cell: any, i: number) => ({
+          index: i,
+          text: cell?.text?.[0] || 'N/A',
+          hasImage: !!cell?.image?.url,
+          hasLink: !!cell?.link?.ids?.length
+        })));
+
         // Based on actual Swiss Unihockey API structure:
         // cells[0] = position/rank
         // cells[1] = team logo (image only)
@@ -1233,15 +1153,41 @@ export class SwissUnihockeyApiClient {
         const goalDiffText = row.cells[10]?.text?.[0] || '0';
         const goalDifference = parseInt(goalDiffText.replace('+', '')) || 0;
         
+        // Try to parse wins/losses from different possible cell positions
+        // If cells[3] contains the same value for all teams, try alternative parsing
+        const cell3Value = parseInt(row.cells[3]?.text?.[0] || '0') || 0;
+        const cell4Value = parseInt(row.cells[4]?.text?.[0] || '0') || 0;
+        const cell5Value = parseInt(row.cells[5]?.text?.[0] || '0') || 0;
+        
+        // Check if this looks like games played vs wins/draws/losses
+        let wins, draws, losses, games;
+        
+        if (cell3Value === 22 || cell3Value > 20) {
+          // Likely this is games played, not wins - use a fallback calculation
+          games = cell3Value;
+          // Calculate approximate wins from points (assuming 3 points per win, 1 per draw)
+          const totalPoints = parseInt(row.cells[12]?.text?.[0] || '0') || 0;
+          // Rough estimation: if points are high relative to games, more wins
+          wins = Math.floor(totalPoints / 3);
+          draws = Math.max(0, totalPoints - (wins * 3));
+          losses = Math.max(0, games - wins - draws);
+        } else {
+          // Normal parsing
+          wins = cell3Value;
+          draws = cell4Value;
+          losses = cell5Value;
+          games = wins + draws + losses;
+        }
+
         const team = {
           position: parseInt(row.cells[0]?.text?.[0] || '0') || 0,
           teamId: row.cells[2]?.link?.ids?.[0]?.toString() || row.cells[1]?.link?.ids?.[0]?.toString() || '',
           teamName: row.cells[2]?.text?.[0] || '',
           teamLogo: row.cells[1]?.image?.url || null,
-          games: parseInt(row.cells[3]?.text?.[0] || '0') + parseInt(row.cells[4]?.text?.[0] || '0') + parseInt(row.cells[5]?.text?.[0] || '0') || 0, // W + D + L
-          wins: parseInt(row.cells[3]?.text?.[0] || '0') || 0,
-          draws: parseInt(row.cells[4]?.text?.[0] || '0') || 0,
-          losses: parseInt(row.cells[5]?.text?.[0] || '0') || 0,
+          games,
+          wins,
+          draws,
+          losses,
           goalsFor,
           goalsAgainst,
           goalDifference,
