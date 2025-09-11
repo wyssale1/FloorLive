@@ -108,13 +108,21 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       }
       
       return (
-        <div className="space-y-1">
-          <span className={`text-sm block ${winner === 'home' ? 'text-gray-800 font-bold' : winner === 'away' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
-            {homeScore !== null ? homeScore : '-'}
-          </span>
-          <span className={`text-sm block ${winner === 'away' ? 'text-gray-800 font-bold' : winner === 'home' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
-            {awayScore !== null ? awayScore : '-'}
-          </span>
+        <div className="flex items-center space-x-2">
+          <div className="space-y-1">
+            <span className={`text-sm block ${winner === 'home' ? 'text-gray-800 font-bold' : winner === 'away' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
+              {homeScore !== null ? homeScore : '-'}
+            </span>
+            <span className={`text-sm block ${winner === 'away' ? 'text-gray-800 font-bold' : winner === 'home' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
+              {awayScore !== null ? awayScore : '-'}
+            </span>
+          </div>
+          {/* Live indicator next to score */}
+          {isLive && (
+            <div className="flex items-center">
+              <LiveBadge liveStatus={liveStatus} variant="dot-only" />
+            </div>
+          )}
         </div>
       )
     }
@@ -151,12 +159,6 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
           className
         )}
       >
-        {/* Live indicator - just a pulsating dot in top right corner */}
-        {isLive && (
-          <div className="absolute top-2 right-2">
-            <LiveBadge liveStatus={liveStatus} variant="dot-only" />
-          </div>
-        )}
         
         {/* Main content */}
         <div className="flex items-center">

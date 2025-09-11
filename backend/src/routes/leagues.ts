@@ -24,11 +24,18 @@ router.get('/:leagueId/table', async (req, res) => {
       const params: any = { league: leagueId };
       if (season) params.season = season.toString();
       
-      table = await apiClient.getRankings(params);
+      const rankingsResult = await apiClient.getRankings(params);
       
-      if (!table) {
+      if (!rankingsResult) {
         return res.status(404).json({ error: 'League table not found' });
       }
+
+      // Transform new rankings format to old table format for backward compatibility
+      table = rankingsResult.standings || {
+        standings: [],
+        leagueId: leagueId,
+        leagueName: 'Unknown League'
+      };
 
       // Cache league table for 30 minutes (standings can change after games)
       cache.set(cacheKey, table, 1800000);
@@ -52,7 +59,7 @@ router.get('/:leagueId/table', async (req, res) => {
 // GET /api/leagues/rankings - Get league rankings/standings
 router.get('/rankings', async (req, res) => {
   try {
-    const { season, league, game_class, group, leagueName } = req.query;
+    const { season, league, game_class, group, leagueName, teamNames } = req.query;
     
     // Build cache key from all parameters including leagueName for gender differentiation
     const cacheKey = `rankings:${season || 'current'}:${league || 'default'}:${game_class || 'default'}:${group || 'default'}:${leagueName || 'default'}`;
@@ -65,6 +72,10 @@ router.get('/rankings', async (req, res) => {
       if (game_class) params.game_class = game_class.toString();
       if (group) params.group = group.toString();
       if (leagueName) params.leagueName = leagueName.toString();
+      if (teamNames) {
+        // Handle both single string and array cases
+        params.teamNames = Array.isArray(teamNames) ? teamNames.map(name => name.toString()) : [teamNames.toString()];
+      }
       
       rankings = await apiClient.getRankings(params);
       

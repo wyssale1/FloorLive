@@ -245,8 +245,8 @@ export default function GameDetail() {
                       const awayScore = awayScoreValue !== null && !isNaN(awayScoreValue) ? awayScoreValue : '-'
                       
                       const hasScores = homeScoreValue !== null && awayScoreValue !== null && !isNaN(homeScoreValue) && !isNaN(awayScoreValue)
-                      const homeWins = hasScores && homeScoreValue > awayScoreValue
-                      const awayWins = hasScores && awayScoreValue > homeScoreValue
+                      const homeWins = hasScores && homeScoreValue !== null && awayScoreValue !== null && homeScoreValue > awayScoreValue
+                      const awayWins = hasScores && homeScoreValue !== null && awayScoreValue !== null && awayScoreValue > homeScoreValue
                       
                       return (
                         <>

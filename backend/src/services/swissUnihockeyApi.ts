@@ -181,59 +181,205 @@ export class SwissUnihockeyApiClient {
     return null;
   }
 
-  async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string; leagueName?: string } = {}): Promise<any | null> {
+  async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string; leagueName?: string; teamNames?: string[] } = {}): Promise<any | null> {
     try {
-      // Build clean parameter object, converting strings to proper types
-      const cleanParams: Record<string, string | number> = {};
+      // Note: API ignores parameters, so we fetch all rankings and filter server-side
+      const apiParams: Record<string, string | number> = {};
       
       if (params.season && params.season.trim()) {
-        // Convert season to integer
         const seasonNum = parseInt(params.season.trim());
         if (!isNaN(seasonNum)) {
-          cleanParams.season = seasonNum;
+          apiParams.season = seasonNum;
         }
       }
       
-      if (params.league && params.league.trim()) {
-        // Try to convert league name to ID
-        const leagueId = this.getLeagueIdFromName(params.league.trim());
-        if (leagueId) {
-          cleanParams.league = leagueId;
-        } else {
-          // If it's already a number, use it directly
-          const leagueNum = parseInt(params.league.trim());
-          if (!isNaN(leagueNum)) {
-            cleanParams.league = leagueNum;
-          }
-        }
-      }
+      const response = await this.client.get<any>('/rankings', { params: apiParams });
       
-      if (params.game_class && params.game_class.trim()) {
-        // Try to convert to integer
-        const gameClassNum = parseInt(params.game_class.trim());
-        if (!isNaN(gameClassNum)) {
-          cleanParams.game_class = gameClassNum;
-        } else {
-          cleanParams.game_class = params.game_class.trim();
-        }
-      } else if (params.leagueName) {
-        // Auto-detect game_class from league name if not explicitly provided
-        const gameClass = this.getGameClassFromLeagueName(params.leagueName);
-        if (gameClass) {
-          cleanParams.game_class = gameClass;
-        }
-      }
+      // Parse all available rankings from the response
+      const allRankings = this.parseAvailableRankings(response.data);
       
-      if (params.group && params.group.trim()) {
-        cleanParams.group = params.group.trim();
-      }
-      
-      const response = await this.client.get<any>('/rankings', { params: cleanParams });
-      return this.mapRankingsFromApi(response.data);
+      // Apply server-side filtering based on params
+      return await this.filterRankings(allRankings, params);
     } catch (error) {
       console.error('Error fetching rankings:', error);
       return null;
     }
+  }
+
+  private parseAvailableRankings(apiData: any): any[] {
+    if (!apiData?.data?.tabs) return [];
+
+    const rankings: any[] = [];
+    
+    for (const tab of apiData.data.tabs) {
+      if (!tab.link?.set_in_context) continue;
+
+      const context = tab.link.set_in_context;
+      const tabTexts = tab.text || [];
+      
+      // Extract league and division info from tab text
+      const leagueName = tabTexts[0] || '';
+      const divisionName = tabTexts[1] || '';
+      
+      rankings.push({
+        leagueId: context.league,
+        gameClass: context.game_class,
+        group: context.group,
+        leagueName,
+        divisionName,
+        fullName: `${leagueName} ${divisionName}`.trim(),
+        context: context
+      });
+    }
+
+    return rankings;
+  }
+
+  private async filterRankings(allRankings: any[], params: any): Promise<any> {
+    let filteredRankings = allRankings;
+
+    // Filter by league ID
+    if (params.league) {
+      const leagueId = this.parseLeagueParam(params.league);
+      if (leagueId) {
+        filteredRankings = filteredRankings.filter(r => r.leagueId === leagueId);
+      }
+    }
+
+    // Filter by game class
+    if (params.game_class) {
+      const gameClass = this.parseGameClassParam(params.game_class);
+      if (gameClass) {
+        filteredRankings = filteredRankings.filter(r => r.gameClass === gameClass);
+      }
+    }
+
+    // Filter by league name (enhanced with gender detection)
+    if (params.leagueName) {
+      const leagueNameLower = params.leagueName.toLowerCase();
+      
+      // First try exact/partial name matching
+      let nameFiltered = filteredRankings.filter(r => 
+        r.leagueName.toLowerCase().includes(leagueNameLower) ||
+        r.fullName.toLowerCase().includes(leagueNameLower)
+      );
+      
+      // If we have multiple matches, try to detect gender from league name
+      if (nameFiltered.length > 1) {
+        // Check for women's indicators in league name
+        if (leagueNameLower.includes('damen') || 
+            leagueNameLower.includes('women') || 
+            leagueNameLower.includes('female') ||
+            leagueNameLower.includes('frauen') ||
+            leagueNameLower.includes('dnla') ||
+            leagueNameLower.includes('dnlb')) {
+          const womenFiltered = nameFiltered.filter(r => r.gameClass === 21);
+          if (womenFiltered.length > 0) nameFiltered = womenFiltered;
+        }
+        // Check for men's indicators in league name  
+        else if (leagueNameLower.includes('herren') || 
+                 leagueNameLower.includes('men') || 
+                 leagueNameLower.includes('male') ||
+                 leagueNameLower.includes('hnla') ||
+                 leagueNameLower.includes('hnlb')) {
+          const menFiltered = nameFiltered.filter(r => r.gameClass === 11);
+          if (menFiltered.length > 0) nameFiltered = menFiltered;
+        }
+      }
+      
+      filteredRankings = nameFiltered;
+    }
+
+    // Filter by group
+    if (params.group) {
+      filteredRankings = filteredRankings.filter(r => r.group === params.group);
+    }
+
+    // Additional gender detection using team names (if provided)
+    if (filteredRankings.length > 1 && params.teamNames && params.teamNames.length > 0) {
+      const teamNamesLower = params.teamNames.map((name: string) => name.toLowerCase());
+      const hasWomenIndicators = teamNamesLower.some((name: string) => 
+        name.includes('damen') || 
+        name.includes('women') || 
+        name.includes('ladies') ||
+        name.includes('female') ||
+        name.includes('frauen')
+      );
+      
+      if (hasWomenIndicators) {
+        const womenFiltered = filteredRankings.filter(r => r.gameClass === 21);
+        if (womenFiltered.length > 0) filteredRankings = womenFiltered;
+      }
+    }
+
+    // If no specific ranking matches, return all available rankings with metadata
+    if (filteredRankings.length === 0) {
+      return {
+        availableRankings: allRankings,
+        filteredRankings: [],
+        message: 'No rankings match the specified criteria'
+      };
+    }
+
+    // Fetch the actual standings for the first matching ranking
+    const targetRanking = filteredRankings[0];
+    const specificRankings = await this.fetchSpecificRankings(params.season || '2024', targetRanking.context);
+
+    return {
+      availableRankings: allRankings,
+      filteredRankings: filteredRankings,
+      requestedRanking: targetRanking,
+      standings: specificRankings
+    };
+  }
+
+  private async fetchSpecificRankings(season: string, context: any): Promise<any | null> {
+    try {
+      const params: Record<string, string | number> = {
+        season: parseInt(season),
+        league: context.league,
+        game_class: context.game_class
+      };
+
+      if (context.group !== null && context.group !== undefined) {
+        params.group = context.group;
+      }
+
+      const response = await this.client.get<any>('/rankings', { params });
+      return this.mapRankingsFromApi(response.data);
+    } catch (error) {
+      console.error('Error fetching specific rankings:', error);
+      return null;
+    }
+  }
+
+  private parseLeagueParam(league: string): number | null {
+    // First try to parse as number
+    const leagueNum = parseInt(league);
+    if (!isNaN(leagueNum)) {
+      return leagueNum;
+    }
+
+    // Then try to map from name using existing method
+    return this.getLeagueIdFromName(league);
+  }
+
+  private parseGameClassParam(gameClass: string): number | null {
+    const gameClassNum = parseInt(gameClass);
+    if (!isNaN(gameClassNum)) {
+      return gameClassNum;
+    }
+
+    // Map common names to game class IDs
+    const gameClassLower = gameClass.toLowerCase();
+    if (gameClassLower.includes('men') || gameClassLower.includes('herren') || gameClassLower.includes('male')) {
+      return 11;
+    }
+    if (gameClassLower.includes('women') || gameClassLower.includes('damen') || gameClassLower.includes('female')) {
+      return 21;
+    }
+
+    return null;
   }
 
   async getHeadToHeadGames(gameId: string): Promise<Game[]> {
