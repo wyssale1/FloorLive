@@ -217,18 +217,29 @@ export default function GameDetail() {
 
               {/* Score/Status - aligned with team names */}
               <div className="mt-12 mb-3">
-                {liveStatus.status === 'pre-game' ? (
+                {game.status === 'upcoming' ? (
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                     Upcoming
                   </span>
                 ) : (
                   <div className="text-xl sm:text-3xl text-gray-800">
                     {(() => {
-                      // Use live scores if available, fallback to game scores
-                      const homeScoreValue = liveStatus.homeScore !== null ? liveStatus.homeScore : 
-                        (game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : null)
-                      const awayScoreValue = liveStatus.awayScore !== null ? liveStatus.awayScore : 
-                        (game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : null)
+                      // For live games, use live scores; for finished games, prefer original scores
+                      let homeScoreValue, awayScoreValue
+                      
+                      if (liveStatus.isLive) {
+                        // Live game: use live scores if available, fallback to game scores
+                        homeScoreValue = liveStatus.homeScore !== null ? liveStatus.homeScore : 
+                          (game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : null)
+                        awayScoreValue = liveStatus.awayScore !== null ? liveStatus.awayScore : 
+                          (game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : null)
+                      } else {
+                        // Finished/non-live game: use original game scores first, then live scores as fallback
+                        homeScoreValue = (game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : 
+                          (liveStatus.homeScore !== null ? liveStatus.homeScore : null))
+                        awayScoreValue = (game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : 
+                          (liveStatus.awayScore !== null ? liveStatus.awayScore : null))
+                      }
                       
                       const homeScore = homeScoreValue !== null && !isNaN(homeScoreValue) ? homeScoreValue : '-'
                       const awayScore = awayScoreValue !== null && !isNaN(awayScoreValue) ? awayScoreValue : '-'

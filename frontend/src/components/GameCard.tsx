@@ -51,8 +51,8 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
   }, [game.id, game.startTime, game.gameDate])
 
   const isLive = liveStatus.isLive
-  const isUpcoming = liveStatus.status === 'pre-game'
-  const hasScores = isLive || liveStatus.status === 'finished' || (liveStatus.homeScore !== null && liveStatus.awayScore !== null)
+  const isUpcoming = game.status === 'upcoming'
+  const hasScores = isLive || game.status === 'finished' || (game.homeScore !== null || game.awayScore !== null)
   const isCurrentGame = currentGameId === game.id
   
   const formatDate = (dateString: string) => {
@@ -64,12 +64,21 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
     })
   }
 
-  // Determine winner for finished games - use live scores if available
+  // Determine winner for finished games
   const getWinner = () => {
-    const homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
-    const awayScore = liveStatus.awayScore !== null ? liveStatus.awayScore : game.awayScore
+    let homeScore, awayScore
     
-    if (liveStatus.status === 'pre-game' || homeScore === null || awayScore === null) return null
+    if (isLive) {
+      // For live games, prefer live scores
+      homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
+      awayScore = liveStatus.awayScore !== null ? liveStatus.awayScore : game.awayScore
+    } else {
+      // For finished games, use original game scores first
+      homeScore = game.homeScore !== null ? game.homeScore : liveStatus.homeScore
+      awayScore = game.awayScore !== null ? game.awayScore : liveStatus.awayScore
+    }
+    
+    if (game.status === 'upcoming' || homeScore === null || awayScore === null) return null
     if (homeScore > awayScore) return 'home'
     if (awayScore > homeScore) return 'away' 
     return null // tie
@@ -86,8 +95,17 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       )
     }
     if (hasScores) {
-      const homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
-      const awayScore = liveStatus.awayScore !== null ? liveStatus.awayScore : game.awayScore
+      let homeScore, awayScore
+      
+      if (isLive) {
+        // For live games, prefer live scores
+        homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
+        awayScore = liveStatus.awayScore !== null ? liveStatus.awayScore : game.awayScore
+      } else {
+        // For finished games, use original game scores first
+        homeScore = game.homeScore !== null ? game.homeScore : liveStatus.homeScore
+        awayScore = game.awayScore !== null ? game.awayScore : liveStatus.awayScore
+      }
       
       return (
         <div className="space-y-1">
