@@ -12,14 +12,21 @@ export interface ApiErrorResponse {
 }
 
 export class AppError extends Error {
+  status: number
+  code: string
+  details?: any
+
   constructor(
     message: string,
-    public status: number = 500,
-    public code: string = 'UNKNOWN_ERROR',
-    public details?: any
+    status: number = 500,
+    code: string = 'UNKNOWN_ERROR',
+    details?: any
   ) {
     super(message)
     this.name = 'AppError'
+    this.status = status
+    this.code = code
+    this.details = details
   }
 }
 

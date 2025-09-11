@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
-import { useRouter, useSearch } from '@tanstack/react-router'
+import { useSearch } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
 interface TabItem {
@@ -26,7 +26,6 @@ export default function TabsContainer({
   orientation = 'horizontal',
   searchParamKey = 'tab'
 }: TabsContainerProps) {
-  const router = useRouter()
   const search = useSearch({ from: '__root__' })
   
   // Get current tab from URL search params
@@ -66,13 +65,9 @@ export default function TabsContainer({
     }
     
     // Update URL with new tab - replace history to avoid tab navigation pollution
-    router.navigate({
-      search: (prev: any) => ({
-        ...prev,
-        [searchParamKey]: value
-      }),
-      replace: true // Replace current history entry instead of creating a new one
-    })
+    const url = new URL(window.location.href)
+    url.searchParams.set(searchParamKey, value)
+    window.history.replaceState(null, '', url.toString())
   }
 
   return (

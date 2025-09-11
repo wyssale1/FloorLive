@@ -18,13 +18,13 @@ export function useErrorHandler() {
       // Route to appropriate error page based on error type
       switch (errorInfo.type) {
         case 'network':
-          navigate({ to: '/network-error' })
+          navigate({ to: '/', search: { date: undefined } })
           break
         case '404':
-          navigate({ to: '/not-found' })
+          navigate({ to: '/', search: { date: undefined } })
           break
         case '500':
-          navigate({ to: '/server-error' })
+          navigate({ to: '/', search: { date: undefined } })
           break
         default:
           // For other errors, show a toast or stay on current page

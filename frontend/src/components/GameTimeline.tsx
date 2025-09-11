@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion'
-import { Target, AlertTriangle, Pause, Crown, Clock, Play, Zap, Star, X, Info } from 'lucide-react'
+import { Target, AlertTriangle, Pause, Crown, Clock, Play, Zap, X, Info } from 'lucide-react'
 import type { GameEvent } from '../lib/apiClient'
 import GameEventsLegend from './GameEventsLegend'
+
+// Extended GameEvent type for combined events
+interface ExtendedGameEvent extends GameEvent {
+  bestPlayerEvents?: GameEvent[]
+}
 
 interface GameTimelineProps {
   events: GameEvent[]
@@ -26,7 +31,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
 
   // Combine best player events into a single entry
   const combineBestPlayerEvents = (events: GameEvent[]) => {
-    const processedEvents: GameEvent[] = []
+    const processedEvents: ExtendedGameEvent[] = []
     const bestPlayerEvents: GameEvent[] = []
 
     events.forEach(event => {
@@ -40,7 +45,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     // If we have best player events, combine them
     if (bestPlayerEvents.length > 0) {
       // Create a combined best player event
-      const combinedEvent: GameEvent = {
+      const combinedEvent: ExtendedGameEvent = {
         id: `combined-best-players-${bestPlayerEvents[0].game_id}`,
         game_id: bestPlayerEvents[0].game_id,
         time: bestPlayerEvents[0].time,
@@ -187,9 +192,10 @@ export default function GameTimeline({ events }: GameTimelineProps) {
           // Handle neutral events (like best player) in center
           if (isNeutralEvent) {
             // Special handling for combined best player events
-            if (event.event_type === 'best_player_combined' && event.bestPlayerEvents) {
-              const homeBestPlayer = event.bestPlayerEvents.find(e => e.team_side === 'home')?.player || '';
-              const awayBestPlayer = event.bestPlayerEvents.find(e => e.team_side === 'away')?.player || '';
+            if (event.event_type === 'best_player_combined' && (event as ExtendedGameEvent).bestPlayerEvents) {
+              const extendedEvent = event as ExtendedGameEvent;
+              const homeBestPlayer = extendedEvent.bestPlayerEvents?.find((e: GameEvent) => e.team_side === 'home')?.player || '';
+              const awayBestPlayer = extendedEvent.bestPlayerEvents?.find((e: GameEvent) => e.team_side === 'away')?.player || '';
               
               return (
                 <motion.div

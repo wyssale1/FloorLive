@@ -108,7 +108,7 @@ export default function TeamDetail() {
 
   const metaOptions = team ? generateTeamMeta({
     teamName: team.name,
-    league: extractLeagueId(team.league),
+    league: extractLeagueId(team.league) || undefined,
     logo: team.logo
   }) : {
     title: 'Team Details',

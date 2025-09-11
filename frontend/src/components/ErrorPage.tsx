@@ -63,7 +63,7 @@ export default function ErrorPage({
   }
 
   const handleHome = () => {
-    navigate({ to: '/' })
+    navigate({ to: '/', search: { date: undefined } })
   }
 
   const handleRetry = () => {

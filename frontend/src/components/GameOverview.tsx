@@ -37,7 +37,6 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
 
   // Prepare game information items for staggered animation
   const gameInfoItems = []
-  let itemIndex = 0
 
   // Date and Time
   if (game.gameDate && game.startTime) {

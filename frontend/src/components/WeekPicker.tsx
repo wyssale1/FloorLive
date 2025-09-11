@@ -107,7 +107,6 @@ export default function WeekPicker({
   };
 
   const monthDays = isMonthViewExpanded ? getMonthDays() : [];
-  const displayDays = isMonthViewExpanded ? monthDays : weekDays;
 
   const goToPreviousWeek = () => {
     const newWeekStart = addDays(currentWeekStart, -7);
@@ -170,13 +169,6 @@ export default function WeekPicker({
     }
   };
 
-  const handleMonthDateSelect = (date: Date | undefined) => {
-    if (date) {
-      setCurrentWeekStart(startOfWeek(date, { weekStartsOn: 1 }));
-      onDateSelect(date);
-      // Keep month view open for easier navigation
-    }
-  };
 
   const isToday = (date: Date) => isSameDay(date, new Date());
   const isSelected = (date: Date) => isSameDay(date, selectedDate);
@@ -186,9 +178,6 @@ export default function WeekPicker({
     return date.getMonth() !== currentMonth;
   };
 
-  const isInSelectedWeek = (date: Date) => {
-    return weekDays.some((weekDay) => isSameDay(weekDay, date));
-  };
 
   // Calculate which row in the month grid contains the current week
   const getCurrentWeekRowIndex = () => {
