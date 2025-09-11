@@ -52,7 +52,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
 
   const isLive = liveStatus.isLive
   const isUpcoming = game.status === 'upcoming'
-  const hasScores = isLive || game.status === 'finished' || (game.homeScore !== null || game.awayScore !== null)
+  const hasScores = isLive || game.status === 'finished' || (game.homeScore !== null || game.awayScore !== null) || (liveStatus.homeScore !== null || liveStatus.awayScore !== null)
   const isCurrentGame = currentGameId === game.id
   
   const formatDate = (dateString: string) => {

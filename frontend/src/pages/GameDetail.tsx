@@ -11,7 +11,7 @@ import TeamLogo from '../components/TeamLogo'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import GameOverview from '../components/GameOverview'
-import LiveBadge, { PeriodBadge } from '../components/LiveBadge'
+import { PeriodBadge } from '../components/LiveBadge'
 import { useLiveGame } from '../hooks/useLiveGame'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
@@ -208,12 +208,6 @@ export default function GameDetail() {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="text-center flex-shrink-0 flex flex-col"
             >
-              {/* Live Badge */}
-              {liveStatus.isLive && (
-                <div className="mb-3">
-                  <LiveBadge liveStatus={liveStatus} variant="default" />
-                </div>
-              )}
 
               {/* Score/Status - aligned with team names */}
               <div className="mt-12 mb-3">

@@ -11,7 +11,10 @@ export interface LiveGameStatus {
 }
 
 /**
- * Determines if a game is currently live based on timing and events
+ * Determines if a game is currently live based on user's logic:
+ * 1. Check time range (game time to +3 hours)
+ * 2. If we already have scores AND in time range = finished game, use existing scores
+ * 3. If no scores BUT in time range = potentially live, use event scores
  */
 export function determineGameLiveStatus(
   game: any,
@@ -21,32 +24,47 @@ export function determineGameLiveStatus(
   // Initialize default status
   const status: LiveGameStatus = {
     isLive: false,
-    homeScore: game?.home_score || null,
-    awayScore: game?.away_score || null,
+    homeScore: game?.homeScore || game?.home_score || null,
+    awayScore: game?.awayScore || game?.away_score || null,
     status: 'pre-game'
   }
 
-  // Parse latest scores from events
-  const latestScore = parseLatestScoreFromEvents(events)
-  if (latestScore) {
-    status.homeScore = latestScore.home
-    status.awayScore = latestScore.away
-  }
-
-  // Check if game has started based on events
-  const gameEvents = analyzeGameEvents(events)
+  // Check time-based status first
+  const timeStatus = determineGameTimeStatus(game, currentTime)
   
-  // If we have game events, determine live status
-  if (gameEvents.hasGameStarted) {
-    status.status = gameEvents.hasGameEnded ? 'finished' : 'live'
-    status.isLive = !gameEvents.hasGameEnded
-    status.currentPeriod = gameEvents.currentPeriod
-    status.lastEventTime = gameEvents.lastEventTime
+  // User's logic: if we already have scores AND we're in time range, game is finished
+  const hasExistingScores = (status.homeScore !== null && status.awayScore !== null)
+  
+  if (timeStatus.shouldBeLive) {
+    if (hasExistingScores) {
+      // We have scores and we're in time range = game is finished, use existing scores
+      status.status = 'finished'
+      status.isLive = false
+    } else {
+      // No scores but in time range = potentially live, check events for scores
+      const latestScore = parseLatestScoreFromEvents(events)
+      if (latestScore) {
+        status.homeScore = latestScore.home
+        status.awayScore = latestScore.away
+      }
+      
+      // Check if game has started/ended based on events
+      const gameEvents = analyzeGameEvents(events)
+      if (gameEvents.hasGameStarted) {
+        status.status = gameEvents.hasGameEnded ? 'finished' : 'live'
+        status.isLive = !gameEvents.hasGameEnded
+        status.currentPeriod = gameEvents.currentPeriod
+        status.lastEventTime = gameEvents.lastEventTime
+      } else {
+        // In time range but no clear events = assume live
+        status.status = 'live'
+        status.isLive = true
+      }
+    }
   } else {
-    // Fallback to time-based detection
-    const timeStatus = determineGameTimeStatus(game, currentTime)
-    status.isLive = timeStatus.shouldBeLive
+    // Outside time range
     status.status = timeStatus.status
+    status.isLive = false
   }
 
   return status
@@ -147,10 +165,11 @@ export function analyzeGameEvents(events: GameEvent[]) {
 }
 
 /**
- * Time-based live detection fallback
+ * Time-based live detection - matches user's logic:
+ * Game time to +3 hours = potential live game
  */
 export function determineGameTimeStatus(game: any, currentTime: Date) {
-  if (!game?.start_time || !game?.game_date) {
+  if (!game?.startTime || !game?.gameDate) {
     return { shouldBeLive: false, status: 'pre-game' as const }
   }
 
@@ -158,18 +177,18 @@ export function determineGameTimeStatus(game: any, currentTime: Date) {
     // Handle different date formats
     let gameDateTime: Date
     
-    if (game.game_date === 'heute') {
+    if (game.gameDate === 'heute') {
       // Today's game
       gameDateTime = new Date()
-      const [hours, minutes] = game.start_time.split(':')
+      const [hours, minutes] = game.startTime.split(':')
       gameDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0)
     } else {
       // Parse date format (assuming DD.MM.YYYY)
-      const dateParts = game.game_date.split('.')
+      const dateParts = game.gameDate.split('.')
       if (dateParts.length === 3) {
         const [day, month, year] = dateParts
         gameDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-        const [hours, minutes] = game.start_time.split(':')
+        const [hours, minutes] = game.startTime.split(':')
         gameDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0)
       } else {
         return { shouldBeLive: false, status: 'pre-game' as const }
@@ -179,14 +198,14 @@ export function determineGameTimeStatus(game: any, currentTime: Date) {
     const timeDiff = currentTime.getTime() - gameDateTime.getTime()
     const minutesDiff = timeDiff / (1000 * 60)
 
-    // Game should be live if it started within the last 3 hours (180 minutes)
-    // and hasn't been going for more than 4 hours (in case of delays/overtime)
-    const shouldBeLive = minutesDiff >= -15 && minutesDiff <= 240
+    // User's logic: game time to +3 hours (180 minutes) = potential live game
+    // If current time is between game start and +3 hours, it could be live
+    const shouldBeLive = minutesDiff >= 0 && minutesDiff <= 180
 
     let status: 'pre-game' | 'live' | 'finished'
-    if (minutesDiff < -15) {
+    if (minutesDiff < 0) {
       status = 'pre-game'
-    } else if (minutesDiff > 240) {
+    } else if (minutesDiff > 180) {
       status = 'finished'  
     } else {
       status = 'live'
