@@ -11,6 +11,8 @@ import TeamLogo from '../components/TeamLogo'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import GameOverview from '../components/GameOverview'
+import LiveBadge, { PeriodBadge } from '../components/LiveBadge'
+import { useLiveGame } from '../hooks/useLiveGame'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
 import { extractLeagueId } from '../lib/utils'
@@ -24,6 +26,14 @@ export default function GameDetail() {
   const [tabsLoading, setTabsLoading] = useState({
     events: false,
     table: false
+  })
+
+  // Live game detection and polling
+  const { liveStatus, isPolling } = useLiveGame({
+    gameId,
+    initialGame: game,
+    initialEvents: events,
+    enabled: true
   })
   
   useEffect(() => {
@@ -73,7 +83,8 @@ export default function GameDetail() {
       const rankingsData = await apiClient.getRankings({
         season: season,
         league: leagueId,
-        leagueName: game.league?.name // Pass league name for gender detection
+        leagueName: game.league?.name, // Pass league name for gender detection
+        teamNames: [game.homeTeam?.name, game.awayTeam?.name].filter(Boolean) // Pass team names for additional gender context
       })
       
       if (rankingsData) {
@@ -81,7 +92,7 @@ export default function GameDetail() {
           leagueId: leagueId,
           leagueName: game.league?.name || 'League',
           season: season,
-          standings: rankingsData.standings || [],
+          standings: rankingsData.standings?.standings || [],
           homeTeamId: game.homeTeam?.id,
           awayTeamId: game.awayTeam?.id,
         })
@@ -197,33 +208,30 @@ export default function GameDetail() {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="text-center flex-shrink-0 flex flex-col"
             >
+              {/* Live Badge */}
+              {liveStatus.isLive && (
+                <div className="mb-3">
+                  <LiveBadge liveStatus={liveStatus} variant="default" />
+                </div>
+              )}
+
               {/* Score/Status - aligned with team names */}
               <div className="mt-12 mb-3">
-                {game.status === 'upcoming' ? (
+                {liveStatus.status === 'pre-game' ? (
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                     Upcoming
                   </span>
                 ) : (
                   <div className="text-xl sm:text-3xl text-gray-800">
                     {(() => {
-                      // Debug: Log the actual score values
-                      console.log('Debug - Raw scores:', { 
-                        homeScore: game.homeScore, 
-                        awayScore: game.awayScore,
-                        homeScoreType: typeof game.homeScore,
-                        awayScoreType: typeof game.awayScore 
-                      })
-                      
-                      // Handle scores more robustly - check for null/undefined and convert to numbers
-                      const homeScoreValue = game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : null
-                      const awayScoreValue = game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : null
-                      
-                      console.log('Debug - Converted scores:', { homeScoreValue, awayScoreValue })
+                      // Use live scores if available, fallback to game scores
+                      const homeScoreValue = liveStatus.homeScore !== null ? liveStatus.homeScore : 
+                        (game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : null)
+                      const awayScoreValue = liveStatus.awayScore !== null ? liveStatus.awayScore : 
+                        (game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : null)
                       
                       const homeScore = homeScoreValue !== null && !isNaN(homeScoreValue) ? homeScoreValue : '-'
                       const awayScore = awayScoreValue !== null && !isNaN(awayScoreValue) ? awayScoreValue : '-'
-                      
-                      console.log('Debug - Final display scores:', { homeScore, awayScore })
                       
                       const hasScores = homeScoreValue !== null && awayScoreValue !== null && !isNaN(homeScoreValue) && !isNaN(awayScoreValue)
                       const homeWins = hasScores && homeScoreValue > awayScoreValue
@@ -240,39 +248,33 @@ export default function GameDetail() {
                   </div>
                 )}
               </div>
+
+              {/* Period Badge */}
+              {liveStatus.currentPeriod && (
+                <div className="mb-2">
+                  <PeriodBadge 
+                    period={liveStatus.currentPeriod} 
+                    isIntermission={liveStatus.status === 'intermission'} 
+                    variant="compact"
+                  />
+                </div>
+              )}
               
               {/* Additional information below */}
               <div className="space-y-1">
-                {/* Status indicators */}
-                <div className="flex items-center justify-center space-x-1">
-                  {game.status === 'live' && (
-                    <>
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    </>
-                  )}
-                  {game.status === 'today' && (
-                    <>
-                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    </>
-                  )}
-                  {game.status === 'recent' && (
-                    <>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    </>
-                  )}
-                </div>
-
-                {game.period && (
-                  <div className="text-xs text-gray-600">{game.period}</div>
+                {/* Polling indicator for live games */}
+                {isPolling && (
+                  <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      className="w-3 h-3 border border-gray-400 border-t-blue-500 rounded-full"
+                    />
+                    <span>Live updates</span>
+                  </div>
                 )}
                 
-                {game.startTime && (
+                {game.startTime && !liveStatus.isLive && (
                   <div className="text-xs text-gray-600">
                     <Clock className="w-3 h-3 inline mr-1" />
                     {game.startTime}
@@ -282,6 +284,12 @@ export default function GameDetail() {
                 {game.gameDate && (
                   <div className="text-2xs text-gray-500">
                     {game.gameDate}
+                  </div>
+                )}
+
+                {liveStatus.lastEventTime && liveStatus.isLive && (
+                  <div className="text-xs text-gray-500">
+                    Last event: {liveStatus.lastEventTime}
                   </div>
                 )}
               </div>

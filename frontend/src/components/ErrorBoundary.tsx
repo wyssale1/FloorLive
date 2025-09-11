@@ -51,22 +51,18 @@ export default class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback
       }
 
-      // Default error UI
-      const errorDetails = process.env.NODE_ENV === 'development' && this.state.error
-        ? `${this.state.error.name}: ${this.state.error.message}\n\nStack trace:\n${this.state.error.stack}`
-        : undefined
-
+      // Default error UI - no technical details shown to users
       return (
         <div className="container mx-auto px-4 py-8">
           <ErrorPage
             type="generic"
-            title="Something went wrong"
-            message="A technical error occurred while loading this page. Please try refreshing or go back to the home page."
+            title="Oops! FloorLive had a whoopsie!"
+            message={undefined} // Let ErrorPage use its random funny message
             showBackButton={true}
             showHomeButton={true}
             showRetryButton={true}
             onRetry={this.handleRetry}
-            details={errorDetails}
+            details={undefined} // Never show technical details to users
           />
         </div>
       )

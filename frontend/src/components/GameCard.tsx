@@ -1,9 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Shield } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import type { Game } from '../lib/mockData'
 import { cn } from '../lib/utils'
+import { determineGameLiveStatus, shouldPollGameForUpdates, type LiveGameStatus } from '../lib/liveGameUtils'
+import { apiClient } from '../lib/apiClient'
 import TeamLogo from './TeamLogo'
+import LiveBadge from './LiveBadge'
 
 interface GameCardProps {
   game: Game
@@ -15,9 +19,40 @@ interface GameCardProps {
 
 
 export default function GameCard({ game, className, showDate = false, noPaddingOnMobile = false, currentGameId }: GameCardProps) {
-  const isLive = game.status === 'live'
-  const isUpcoming = game.status === 'upcoming'
-  const hasScores = isLive || game.status === 'finished'
+  const [liveStatus, setLiveStatus] = useState<LiveGameStatus>(() => 
+    determineGameLiveStatus(game, [])
+  )
+
+  // Check for live status on mount and when game changes
+  useEffect(() => {
+    const checkLiveStatus = async () => {
+      try {
+        const initialStatus = determineGameLiveStatus(game, [])
+        
+        // If game might be live, fetch events for accurate detection
+        if (shouldPollGameForUpdates(initialStatus) || initialStatus.status === 'live') {
+          try {
+            const events = await apiClient.getGameEvents(game.id)
+            const liveStatusWithEvents = determineGameLiveStatus(game, events)
+            setLiveStatus(liveStatusWithEvents)
+          } catch (error) {
+            console.error('Error checking live status for game', game.id, error)
+            setLiveStatus(initialStatus)
+          }
+        } else {
+          setLiveStatus(initialStatus)
+        }
+      } catch (error) {
+        console.error('Error determining live status:', error)
+      }
+    }
+
+    checkLiveStatus()
+  }, [game.id, game.startTime, game.gameDate])
+
+  const isLive = liveStatus.isLive
+  const isUpcoming = liveStatus.status === 'pre-game'
+  const hasScores = isLive || liveStatus.status === 'finished' || (liveStatus.homeScore !== null && liveStatus.awayScore !== null)
   const isCurrentGame = currentGameId === game.id
   
   const formatDate = (dateString: string) => {
@@ -29,11 +64,14 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
     })
   }
 
-  // Determine winner for finished games
+  // Determine winner for finished games - use live scores if available
   const getWinner = () => {
-    if (game.status !== 'finished' || game.homeScore === null || game.awayScore === null) return null
-    if (game.homeScore > game.awayScore) return 'home'
-    if (game.awayScore > game.homeScore) return 'away' 
+    const homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
+    const awayScore = liveStatus.awayScore !== null ? liveStatus.awayScore : game.awayScore
+    
+    if (liveStatus.status === 'pre-game' || homeScore === null || awayScore === null) return null
+    if (homeScore > awayScore) return 'home'
+    if (awayScore > homeScore) return 'away' 
     return null // tie
   }
   
@@ -47,14 +85,17 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
         </div>
       )
     }
-    if (hasScores && (game.homeScore !== null || game.awayScore !== null)) {
+    if (hasScores) {
+      const homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
+      const awayScore = liveStatus.awayScore !== null ? liveStatus.awayScore : game.awayScore
+      
       return (
         <div className="space-y-1">
           <span className={`text-sm block ${winner === 'home' ? 'text-gray-800 font-bold' : winner === 'away' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
-            {game.homeScore !== null ? game.homeScore : '0'}
+            {homeScore !== null ? homeScore : '-'}
           </span>
           <span className={`text-sm block ${winner === 'away' ? 'text-gray-800 font-bold' : winner === 'home' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
-            {game.awayScore !== null ? game.awayScore : '0'}
+            {awayScore !== null ? awayScore : '-'}
           </span>
         </div>
       )
@@ -86,17 +127,16 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       <motion.div
         whileTap={{ scale: 0.995 }}
         className={cn(
-          "hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg",
+          "hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg relative",
           noPaddingOnMobile ? "pl-0 pr-2 py-3 sm:p-3" : "p-3",
           isCurrentGame && "bg-blue-50/50",
           className
         )}
       >
-        {/* Live indicator */}
+        {/* Live indicator - just a pulsating dot in top right corner */}
         {isLive && (
-          <div className="flex items-center justify-center space-x-1 mb-2">
-            <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-red-600 font-medium text-xs">LIVE</span>
+          <div className="absolute top-2 right-2">
+            <LiveBadge liveStatus={liveStatus} variant="dot-only" />
           </div>
         )}
         

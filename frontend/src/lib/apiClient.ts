@@ -191,7 +191,7 @@ class ApiClient {
   }
 
 
-  async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string; leagueName?: string } = {}): Promise<any | null> {
+  async getRankings(params: { season?: string; league?: string; game_class?: string; group?: string; leagueName?: string; teamNames?: string[] } = {}): Promise<any | null> {
     try {
       const searchParams = new URLSearchParams();
       if (params.season) searchParams.append('season', params.season);
@@ -199,6 +199,11 @@ class ApiClient {
       if (params.game_class) searchParams.append('game_class', params.game_class);
       if (params.group) searchParams.append('group', params.group);
       if (params.leagueName) searchParams.append('leagueName', params.leagueName);
+      if (params.teamNames) {
+        params.teamNames.forEach(teamName => {
+          searchParams.append('teamNames', teamName);
+        });
+      }
 
       const url = `${this.baseURL}/leagues/rankings${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
       const response = await fetch(url);

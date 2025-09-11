@@ -84,8 +84,8 @@ export default function TeamDetail() {
           const rankingsData = await apiClient.getRankings({ 
             season: currentSeasonYear.toString() 
           })
-          if (rankingsData) {
-            setLeagueTables([rankingsData])
+          if (rankingsData && rankingsData.standings) {
+            setLeagueTables([rankingsData.standings])
           }
         } catch (error) {
           console.error('Error auto-loading league tables:', error)
@@ -146,8 +146,8 @@ export default function TeamDetail() {
         })
       }
       
-      if (rankingsData) {
-        setLeagueTables([rankingsData])
+      if (rankingsData && rankingsData.standings) {
+        setLeagueTables([rankingsData.standings])
       } else {
         // Fallback: try competitions approach if main ranking methods fail
         const competitionsData = await apiClient.getTeamCompetitions(teamId)

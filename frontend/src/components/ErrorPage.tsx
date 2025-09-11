@@ -13,6 +13,24 @@ export interface ErrorPageProps {
   details?: string
 }
 
+// Funny error messages for a bit of levity during frustrating moments
+const funnyMessages = [
+  "Oops! Even robots have bad days. This one's having a particularly rough Tuesday.",
+  "Something went sideways faster than a floorball shot! Don't worry, we're on it.",
+  "The hamsters powering our servers decided to take a coffee break. ☕",
+  "Error 404: Brain cells not found. Please try again when we find them.",
+  "Our code is having an identity crisis. It thinks it's a toaster.",
+  "Plot twist: The bug found a bug in the bug-finding code. 🐛",
+  "This error message is brought to you by Murphy's Law: 'Anything that can go wrong, will.'",
+  "Congratulations! You've discovered a rare digital Pokémon called 'Crashomon'.",
+  "The Swiss precision seems to have taken a vacation. We'll bring it back soon!",
+  "Houston, we have a problem... and Houston's not answering either. 🚀"
+];
+
+const getRandomFunnyMessage = () => {
+  return funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+};
+
 const errorConfig = {
   '404': {
     icon: AlertCircle,
@@ -38,7 +56,7 @@ const errorConfig = {
   'generic': {
     icon: AlertCircle,
     title: 'Something went wrong',
-    message: 'An unexpected error occurred. Please try again.',
+    message: getRandomFunnyMessage(),
     color: 'text-gray-500',
     bgColor: 'bg-gray-50'
   }
