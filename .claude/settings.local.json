@@ -29,7 +29,9 @@
       "Bash(git restore:*)",
       "Bash(open http://localhost:5174)",
       "Bash(open http://localhost:5174/team/1072853)",
-      "Bash(open http://localhost:5174/team/429603)"
+      "Bash(open http://localhost:5174/team/429603)",
+      "Bash(open http://localhost:5174/game/1072576)",
+      "Bash(open:*)"
     ],
     "deny": [],
     "ask": []

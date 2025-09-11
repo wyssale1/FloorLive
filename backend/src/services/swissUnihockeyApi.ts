@@ -64,19 +64,32 @@ export class SwissUnihockeyApiClient {
 
   async getGameEvents(gameId: string): Promise<GameEvent[]> {
     try {
-      // Use main API endpoint as primary source - it already comes in correct chronological order
-      const generalResponse = await this.client.get<any>(`/game_events/${gameId}`);
-      
-      if (!generalResponse.data) {
+      // Get game details first to extract home/away team names
+      const gameDetails = await this.getGameDetails(gameId);
+      if (!gameDetails) {
+        console.error(`Could not get game details for ${gameId}`);
         return [];
       }
 
-      // Process all events from the main API response
-      const events = this.mapGameEventsFromApiWithTeam(generalResponse.data, gameId, 'general');
+      const homeTeamName = gameDetails.home_team?.name || '';
+      const awayTeamName = gameDetails.away_team?.name || '';
+
+      // Get game events from Swiss API
+      const eventsResponse = await this.client.get<any>(`/game_events/${gameId}`);
       
-      // Swiss API returns events in reverse chronological order (end to start)
-      // Reverse them to show forward chronological order (start to end) for frontend timeline
-      return events.reverse();
+      if (!eventsResponse.data) {
+        return [];
+      }
+
+      // Console log: Raw Swiss API response
+      // Process events from Swiss API
+
+      // Process events using new mapping function
+      const events = this.mapGameEventsFromApi(eventsResponse.data, gameId, homeTeamName, awayTeamName);
+      
+      // Return events in their original order (Swiss API returns reverse chronological)
+      // The reverse operation will be handled in the API route at the last moment
+      return events;
     } catch (error) {
       console.error(`Error fetching events for game ${gameId}:`, error);
       return [];
@@ -679,7 +692,40 @@ export class SwissUnihockeyApiClient {
     }
   }
 
-  private mapGameEventsFromApiWithTeam(apiData: any, gameId: string, teamType: 'home' | 'away' | 'general'): GameEvent[] {
+  // Event classification lookup table - easily extensible
+  private readonly EVENT_CLASSIFICATIONS = {
+    // Goals
+    'Torschütze': { type: 'goal', icon: 'goal', displayAs: 'inline' },
+    
+    // Penalties
+    "2'-Strafe": { type: 'penalty', icon: 'penalty', displayAs: 'inline' },
+    "5'-Strafe": { type: 'penalty', icon: 'penalty', displayAs: 'inline' },
+    "10'-Strafe": { type: 'penalty', icon: 'penalty', displayAs: 'inline' },
+    
+    // Penalty shots
+    'Penalty verschossen': { type: 'penalty_miss', icon: 'no_goal', displayAs: 'inline' },
+    'Penalty verwandelt': { type: 'penalty_goal', icon: 'goal', displayAs: 'inline' },
+    
+    // Game flow - displayed as badges
+    'Spielbeginn': { type: 'game_start', icon: 'whistle', displayAs: 'badge' },
+    'Spielende': { type: 'game_end', icon: 'whistle', displayAs: 'badge' },
+    'Ende 1. Drittel': { type: 'period_end', icon: 'clock', displayAs: 'badge' },
+    'Ende 2. Drittel': { type: 'period_end', icon: 'clock', displayAs: 'badge' },
+    'Ende 3. Drittel': { type: 'period_end', icon: 'clock', displayAs: 'badge' },
+    'Beginn 1. Drittel': { type: 'period_start', icon: 'clock', displayAs: 'badge' },
+    'Beginn 2. Drittel': { type: 'period_start', icon: 'clock', displayAs: 'badge' },
+    'Beginn 3. Drittel': { type: 'period_start', icon: 'clock', displayAs: 'badge' },
+    'Beginn Verlängerung': { type: 'overtime_start', icon: 'clock', displayAs: 'badge' },
+    'Ende Verlängerung': { type: 'overtime_end', icon: 'clock', displayAs: 'badge' },
+    'Penaltyschiessen': { type: 'penalty_shootout', icon: 'penalty_shootout', displayAs: 'badge' },
+    
+    // Special events
+    'Bester Spieler': { type: 'best_player', icon: 'star', displayAs: 'inline' },
+    'Timeout': { type: 'timeout', icon: 'pause', displayAs: 'inline' },
+    'Auszeit': { type: 'timeout', icon: 'pause', displayAs: 'inline' }
+  } as const;
+
+  private mapGameEventsFromApi(apiData: any, gameId: string, homeTeamName: string, awayTeamName: string): GameEvent[] {
     if (!apiData || !Array.isArray(apiData.data?.regions?.[0]?.rows)) {
       return [];
     }
@@ -688,37 +734,44 @@ export class SwissUnihockeyApiClient {
       const events: GameEvent[] = [];
       const rows = apiData.data.regions[0].rows;
 
-      for (const row of rows) {
+      for (let index = 0; index < rows.length; index++) {
+        const row = rows[index];
         if (!row.cells || !Array.isArray(row.cells)) continue;
 
+        // Extract raw data from Swiss API structure
         const time = row.cells[0]?.text?.[0] || '';
-        const eventText = row.cells[1]?.text?.[0] || '';
-        const team = row.cells[2]?.text?.[0] || '';
+        const description = row.cells[1]?.text?.[0] || '';
+        const teamName = row.cells[2]?.text?.[0] || '';
         const player = row.cells[3]?.text?.[0] || '';
 
         // Skip empty events
-        if (!eventText.trim()) continue;
+        if (!description.trim()) continue;
 
-        // Assign team based on API call type, with fallback for general events
-        let assignedTeam: 'home' | 'away';
-        if (teamType === 'home') {
-          assignedTeam = 'home';
-        } else if (teamType === 'away') {
-          assignedTeam = 'away';
-        } else {
-          // For general events (remaining after deduplication), use intelligent assignment
-          assignedTeam = this.determineEventTeam(eventText, player, team);
-        }
+        // Classify event type
+        const classification = this.classifyEvent(description);
+        
+        // Determine team side
+        const teamSide = this.determineTeamSide(teamName, homeTeamName, awayTeamName);
+        
+        // Parse player and assist
+        const { playerName, assist } = this.parsePlayerAndAssist(player);
 
         const event: GameEvent = {
-          id: `${gameId}-${teamType}-${events.length}`,
+          id: `${gameId}-${index}`,
           game_id: gameId,
           time,
-          type: this.mapEventType(eventText),
-          player: this.extractPlayerName(player),
-          assist: this.extractAssist(player),
-          description: eventText,
-          team: assignedTeam
+          description,
+          team_name: teamName,
+          team_side: teamSide,
+          player: playerName,
+          assist,
+          // Classification metadata
+          event_type: classification.type,
+          icon: classification.icon,
+          display_as: classification.displayAs,
+          // Legacy fields for compatibility
+          type: this.mapEventTypeForLegacy(description),
+          team: teamSide === 'neutral' ? 'home' : teamSide
         };
 
         events.push(event);
@@ -731,40 +784,48 @@ export class SwissUnihockeyApiClient {
     }
   }
 
+  private classifyEvent(description: string): { type: string; icon: string; displayAs: string } {
+    // Look for exact matches first
+    for (const [key, classification] of Object.entries(this.EVENT_CLASSIFICATIONS)) {
+      if (description.includes(key)) {
+        return classification;
+      }
+    }
+    
+    // Default classification for unknown events
+    return { type: 'other', icon: 'info', displayAs: 'inline' };
+  }
 
-  private determineEventTeam(eventText: string, player: string, team: string): 'home' | 'away' {
-    // Period events, timeouts, and other neutral events should alternate or be treated as neutral
-    const neutralEvents = [
-      'ende', 'beginn', 'drittel', 'beendet', 'spielbeginn', 'spielende',
-      'timeout', 'bester spieler', 'auszeit'
-    ];
-    
-    const eventLower = eventText.toLowerCase();
-    const isNeutralEvent = neutralEvents.some(neutral => eventLower.includes(neutral));
-    
-    if (isNeutralEvent) {
-      // For neutral events, use a simple alternation based on event hash
-      // This ensures consistent but distributed assignment
-      const eventHash = (eventText + player + team).length;
-      return eventHash % 2 === 0 ? 'home' : 'away';
+  private determineTeamSide(teamName: string, homeTeamName: string, awayTeamName: string): 'home' | 'away' | 'neutral' {
+    if (!teamName || teamName.trim() === '') return 'neutral';
+    if (teamName === homeTeamName) return 'home';
+    if (teamName === awayTeamName) return 'away';
+    return 'neutral'; // fallback for unknown team names
+  }
+
+  private parsePlayerAndAssist(playerText: string): { playerName: string; assist?: string } {
+    if (!playerText || !playerText.trim()) {
+      return { playerName: '' };
     }
-    
-    // For specific team events, try to determine from team name or player context
-    if (team && team.trim()) {
-      // If team information is available, we could do more intelligent mapping
-      // For now, default to alternating pattern
-      const teamHash = team.length;
-      return teamHash % 2 === 0 ? 'home' : 'away';
+
+    // Check if assist is in parentheses: "Player Name (Assistant Name)"
+    const assistMatch = playerText.match(/^(.+?)\s*\((.+?)\)$/);
+    if (assistMatch) {
+      return {
+        playerName: assistMatch[1].trim(),
+        assist: assistMatch[2].trim()
+      };
     }
-    
-    // Final fallback: alternate based on player name hash
-    if (player && player.trim()) {
-      const playerHash = player.length;
-      return playerHash % 2 === 0 ? 'home' : 'away';
-    }
-    
-    // Ultimate fallback: home (but this should rarely be reached)
-    return 'home';
+
+    return { playerName: playerText.trim() };
+  }
+
+  private mapEventTypeForLegacy(description: string): 'goal' | 'penalty' | 'timeout' | 'other' {
+    const descLower = description.toLowerCase();
+    if (descLower.includes('torschütze') || descLower.includes('goal')) return 'goal';
+    if (descLower.includes('strafe') || descLower.includes('penalty')) return 'penalty';
+    if (descLower.includes('timeout') || descLower.includes('auszeit')) return 'timeout';
+    return 'other';
   }
 
   private determineGameStatus(apiData: any): 'upcoming' | 'live' | 'finished' {

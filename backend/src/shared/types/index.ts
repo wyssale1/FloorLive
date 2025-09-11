@@ -51,6 +51,12 @@ export interface GameEvent {
   assist?: string;
   description?: string;
   team: 'home' | 'away';
+  // New fields for enhanced event processing
+  team_name?: string;
+  team_side?: 'home' | 'away' | 'neutral';
+  event_type?: string;
+  icon?: string;
+  display_as?: string;
 }
 
 export interface SwissUnihockeyApiResponse<T> {

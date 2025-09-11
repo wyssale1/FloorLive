@@ -176,10 +176,14 @@ router.get('/:gameId/events', async (req, res) => {
       cache.set(cacheKey, events, 30000);
     }
 
+    // Swiss API returns events in reverse chronological order (newest first) 
+    // Keep this order for timeline display: "Spielende" at top, "Spielbeginn" at bottom
+    const timelineEvents = [...(events as any[])];
+
     res.json({
       gameId,
-      events,
-      count: (events as any[]).length,
+      events: timelineEvents,
+      count: timelineEvents.length,
       timestamp: new Date().toISOString()
     });
 

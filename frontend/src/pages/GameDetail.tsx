@@ -73,7 +73,8 @@ export default function GameDetail() {
       // Use existing rankings API that's known to work: /leagues/rankings?season=2024&league=L-UPL
       const rankingsData = await apiClient.getRankings({
         season: season,
-        league: leagueId
+        league: leagueId,
+        leagueName: game.league?.name // Pass league name for gender detection
       })
       
       if (rankingsData) {
@@ -159,7 +160,7 @@ export default function GameDetail() {
         className="bg-white/50 backdrop-blur-sm"
       >
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-          <div className="flex items-center justify-between gap-3 sm:gap-6">
+          <div className="flex items-start justify-between gap-3 sm:gap-6">
             {/* Home Team */}
             <motion.div 
               initial={{ opacity: 0 }}
@@ -195,75 +196,96 @@ export default function GameDetail() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="text-center flex-shrink-0"
+              className="text-center flex-shrink-0 flex flex-col"
             >
-              {game.status === 'upcoming' ? (
-                <div className="mb-1">
+              {/* Score/Status - aligned with team names */}
+              <div className="mt-12 mb-3">
+                {game.status === 'upcoming' ? (
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                     Upcoming
                   </span>
-                </div>
-              ) : (
-                <div className="text-xl sm:text-3xl text-gray-800 mb-1">
-                  {(() => {
-                    const homeScore = game.homeScore !== null ? game.homeScore : '-'
-                    const awayScore = game.awayScore !== null ? game.awayScore : '-'
-                    const hasScores = game.homeScore !== null && game.awayScore !== null
-                    const homeWins = hasScores && game.homeScore > game.awayScore
-                    const awayWins = hasScores && game.awayScore > game.homeScore
-                    
-                    return (
-                      <>
-                        <span className={homeWins ? 'font-bold' : 'font-medium'}>{homeScore}</span>
-                        <span className="font-medium"> - </span>
-                        <span className={awayWins ? 'font-bold' : 'font-medium'}>{awayScore}</span>
-                      </>
-                    )
-                  })()}
-                </div>
-              )}
-              
-              {/* Status indicators */}
-              <div className="flex items-center justify-center space-x-1 mb-1">
-                {game.status === 'live' && (
-                  <>
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                  </>
-                )}
-                {game.status === 'today' && (
-                  <>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                  </>
-                )}
-                {game.status === 'recent' && (
-                  <>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  </>
+                ) : (
+                  <div className="text-xl sm:text-3xl text-gray-800">
+                    {(() => {
+                      // Debug: Log the actual score values
+                      console.log('Debug - Raw scores:', { 
+                        homeScore: game.homeScore, 
+                        awayScore: game.awayScore,
+                        homeScoreType: typeof game.homeScore,
+                        awayScoreType: typeof game.awayScore 
+                      })
+                      
+                      // Handle scores more robustly - check for null/undefined and convert to numbers
+                      const homeScoreValue = game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : null
+                      const awayScoreValue = game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : null
+                      
+                      console.log('Debug - Converted scores:', { homeScoreValue, awayScoreValue })
+                      
+                      const homeScore = homeScoreValue !== null && !isNaN(homeScoreValue) ? homeScoreValue : '-'
+                      const awayScore = awayScoreValue !== null && !isNaN(awayScoreValue) ? awayScoreValue : '-'
+                      
+                      console.log('Debug - Final display scores:', { homeScore, awayScore })
+                      
+                      const hasScores = homeScoreValue !== null && awayScoreValue !== null && !isNaN(homeScoreValue) && !isNaN(awayScoreValue)
+                      const homeWins = hasScores && homeScoreValue > awayScoreValue
+                      const awayWins = hasScores && awayScoreValue > homeScoreValue
+                      
+                      return (
+                        <>
+                          <span className={homeWins ? 'font-bold' : 'font-medium'}>{homeScore}</span>
+                          <span className="font-medium"> - </span>
+                          <span className={awayWins ? 'font-bold' : 'font-medium'}>{awayScore}</span>
+                        </>
+                      )
+                    })()}
+                  </div>
                 )}
               </div>
+              
+              {/* Additional information below */}
+              <div className="space-y-1">
+                {/* Status indicators */}
+                <div className="flex items-center justify-center space-x-1">
+                  {game.status === 'live' && (
+                    <>
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                    </>
+                  )}
+                  {game.status === 'today' && (
+                    <>
+                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                    </>
+                  )}
+                  {game.status === 'recent' && (
+                    <>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    </>
+                  )}
+                </div>
 
-              {game.period && (
-                <div className="text-xs text-gray-600 mb-1">{game.period}</div>
-              )}
-              
-              {game.startTime && (
-                <div className="text-xs text-gray-600">
-                  <Clock className="w-3 h-3 inline mr-1" />
-                  {game.startTime}
-                </div>
-              )}
-              
-              {game.gameDate && (
-                <div className="text-2xs text-gray-500 mt-1">
-                  {game.gameDate}
-                </div>
-              )}
+                {game.period && (
+                  <div className="text-xs text-gray-600">{game.period}</div>
+                )}
+                
+                {game.startTime && (
+                  <div className="text-xs text-gray-600">
+                    <Clock className="w-3 h-3 inline mr-1" />
+                    {game.startTime}
+                  </div>
+                )}
+                
+                {game.gameDate && (
+                  <div className="text-2xs text-gray-500">
+                    {game.gameDate}
+                  </div>
+                )}
+              </div>
             </motion.div>
 
             {/* Away Team */}

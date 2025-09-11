@@ -52,10 +52,10 @@ router.get('/:leagueId/table', async (req, res) => {
 // GET /api/leagues/rankings - Get league rankings/standings
 router.get('/rankings', async (req, res) => {
   try {
-    const { season, league, game_class, group } = req.query;
+    const { season, league, game_class, group, leagueName } = req.query;
     
-    // Build cache key from all parameters
-    const cacheKey = `rankings:${season || 'current'}:${league || 'default'}:${game_class || 'default'}:${group || 'default'}`;
+    // Build cache key from all parameters including leagueName for gender differentiation
+    const cacheKey = `rankings:${season || 'current'}:${league || 'default'}:${game_class || 'default'}:${group || 'default'}:${leagueName || 'default'}`;
     let rankings = cache.get(cacheKey);
     
     if (!rankings) {
@@ -64,6 +64,7 @@ router.get('/rankings', async (req, res) => {
       if (league) params.league = league.toString();
       if (game_class) params.game_class = game_class.toString();
       if (group) params.group = group.toString();
+      if (leagueName) params.leagueName = leagueName.toString();
       
       rankings = await apiClient.getRankings(params);
       
