@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Target, AlertTriangle, Pause, Crown } from 'lucide-react'
+import { Target, AlertTriangle, Pause, Crown, Clock, Play, Zap, Star, X, Info } from 'lucide-react'
 import type { GameEvent } from '../lib/apiClient'
 import GameEventsLegend from './GameEventsLegend'
 
@@ -21,33 +21,62 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     )
   }
 
-  const isPeriodEvent = (event: GameEvent) => {
-    return event.type === 'other' && (
-      event.description?.includes('Ende') || 
-      event.description?.includes('Beginn') ||
-      event.description?.includes('Drittel') ||
-      event.description?.includes('beendet') ||
-      event.description?.includes('Spielbeginn') ||
-      event.description?.includes('Spielende')
-    )
+  // Backend already provides events in correct chronological order - no sorting needed!
+  let sortedEvents = events
+
+  // Combine best player events into a single entry
+  const combineBestPlayerEvents = (events: GameEvent[]) => {
+    const processedEvents: GameEvent[] = []
+    const bestPlayerEvents: GameEvent[] = []
+
+    events.forEach(event => {
+      if (event.event_type === 'best_player') {
+        bestPlayerEvents.push(event)
+      } else {
+        processedEvents.push(event)
+      }
+    })
+
+    // If we have best player events, combine them
+    if (bestPlayerEvents.length > 0) {
+      // Create a combined best player event
+      const combinedEvent: GameEvent = {
+        id: `combined-best-players-${bestPlayerEvents[0].game_id}`,
+        game_id: bestPlayerEvents[0].game_id,
+        time: bestPlayerEvents[0].time,
+        type: 'other',
+        player: '',
+        team: 'home',
+        team_side: 'neutral',
+        event_type: 'best_player_combined',
+        icon: 'star',
+        display_as: 'neutral',
+        description: 'Beste Spieler',
+        // Store the individual events for rendering
+        bestPlayerEvents: bestPlayerEvents
+      }
+
+      // Find "Spielende" event and insert best players just after it (so they appear before it visually)
+      const spielendeIndex = processedEvents.findIndex(e => 
+        e.description === 'Spielende' || e.event_type === 'game_end'
+      )
+      
+      if (spielendeIndex !== -1) {
+        // Insert right after "Spielende" (which puts it visually before due to reverse order)
+        processedEvents.splice(spielendeIndex + 1, 0, combinedEvent)
+      } else {
+        // If no "Spielende" found, insert at the beginning (top of timeline)
+        processedEvents.unshift(combinedEvent)
+      }
+    }
+
+    return processedEvents
   }
 
-  const is2MinPenalty = (event: GameEvent) => {
-    return event.type === 'penalty' && 
-           (event.description?.includes('2min') || event.description?.includes("2'"))
-  }
-
-  const isTimeout = (event: GameEvent) => {
-    return event.type === 'timeout' || 
-           (event.type === 'other' && event.description?.toLowerCase().includes('timeout'))
-  }
-
-  const isBestPlayer = (event: GameEvent) => {
-    return event.description?.includes('Bester Spieler') || false
-  }
+  sortedEvents = combineBestPlayerEvents(sortedEvents)
 
   const parseGoalInfo = (event: GameEvent) => {
-    if (event.type !== 'goal') return null
+    if (event.event_type !== 'goal') return null
     
     // Extract score from description like "Torschütze 4:4"
     const scoreMatch = event.description?.match(/(\d+):(\d+)/)
@@ -56,99 +85,51 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     const homeScore = parseInt(scoreMatch[1])
     const awayScore = parseInt(scoreMatch[2])
     
-    // The API provides score in home:away format consistently
-    // We need to display it as "currentScore after this goal"
-    if (event.team === 'home') {
-      return {
-        goalNumber: homeScore, // This home team's goal number
-        opponentScore: awayScore, // Away team's current score
-        homeScore: homeScore,
-        awayScore: awayScore,
-        scoringTeam: 'home', // Who scored this goal
-        playerName: event.player
-      }
-    } else {
-      return {
-        goalNumber: awayScore, // This away team's goal number  
-        opponentScore: homeScore, // Home team's current score
-        homeScore: homeScore,
-        awayScore: awayScore,
-        scoringTeam: 'away', // Who scored this goal
-        playerName: event.player
-      }
+    // Use team_side instead of team for proper assignment
+    const scoringTeam = event.team_side === 'home' ? 'home' : 'away'
+    
+    return {
+      goalNumber: scoringTeam === 'home' ? homeScore : awayScore,
+      opponentScore: scoringTeam === 'home' ? awayScore : homeScore,
+      homeScore: homeScore,
+      awayScore: awayScore,
+      scoringTeam: scoringTeam,
+      playerName: event.player
     }
   }
 
   const getEventIcon = (event: GameEvent) => {
-    if (isBestPlayer(event)) {
-      return <Crown className="w-4 h-4 text-gray-600" />
+    // Use backend's icon classification - all icons in neutral gray
+    switch (event.icon) {
+      case 'goal':
+        return <Target className="w-4 h-4 text-gray-600" />
+      case 'no_goal':
+        return <X className="w-4 h-4 text-gray-600" />
+      case 'penalty':
+        return <AlertTriangle className="w-4 h-4 text-gray-600" />
+      case 'whistle':
+        return <Play className="w-4 h-4 text-gray-600" />
+      case 'clock':
+        return <Clock className="w-4 h-4 text-gray-600" />
+      case 'penalty_shootout':
+        return <Zap className="w-4 h-4 text-gray-600" />
+      case 'star':
+        return <Crown className="w-4 h-4 text-gray-600" />
+      case 'pause':
+        return <Pause className="w-4 h-4 text-gray-600" />
+      default:
+        return <Info className="w-4 h-4 text-gray-600" />
     }
-    if (event.type === 'goal') {
-      return <Target className="w-4 h-4 text-gray-600" />
-    }
-    if (isTimeout(event)) {
-      return <Pause className="w-4 h-4 text-gray-600" />
-    }
-    if (event.type === 'penalty' && !is2MinPenalty(event)) {
-      return <AlertTriangle className="w-4 h-4 text-gray-600" />
-    }
-    return null
   }
 
-  // Helper function to parse time string to minutes for sorting
-  const parseTimeToMinutes = (timeStr: string) => {
-    if (!timeStr) return 0
-    const parts = timeStr.split(':')
-    if (parts.length !== 2) return 0
-    return parseInt(parts[0]) * 60 + parseInt(parts[1])
+  const is2MinPenalty = (event: GameEvent) => {
+    return event.event_type === 'penalty' && 
+           (event.description?.includes('2min') || event.description?.includes("2'"))
   }
-
-  // Deduplicate consecutive identical period events first
-  const deduplicatedEvents = events.reduce((acc: GameEvent[], event: GameEvent) => {
-    // For period events, check if it's identical to the previous period event
-    if (isPeriodEvent(event)) {
-      const lastEvent = acc[acc.length - 1]
-      // Skip if the last event was the same period event
-      if (lastEvent && isPeriodEvent(lastEvent) && 
-          lastEvent.description === event.description) {
-        return acc // Skip this duplicate
-      }
-    }
-    acc.push(event)
-    return acc
-  }, [])
-
-  // Separate events into categories for proper 3-tier sorting
-  const bestPlayerEvents = deduplicatedEvents.filter(isBestPlayer)
-  const gameEndEvents = deduplicatedEvents.filter(e => 
-    isPeriodEvent(e) && e.description?.includes('Spielende')
-  )
-  const regularEvents = deduplicatedEvents.filter(e => 
-    !isBestPlayer(e) && !(isPeriodEvent(e) && e.description?.includes('Spielende'))
-  )
-  
-  // Sort regular events in reverse chronological order (latest first)
-  const sortedRegularEvents = regularEvents.sort((a, b) => {
-    const timeA = parseTimeToMinutes(a.time)
-    const timeB = parseTimeToMinutes(b.time)
-    
-    // If both have no time (like some period events), keep original order
-    if (timeA === 0 && timeB === 0) return 0
-    
-    // Events with time come before events without time
-    if (timeA === 0) return 1
-    if (timeB === 0) return -1
-    
-    // Regular sorting: reverse chronological (latest first)
-    return timeB - timeA
-  })
-  
-  // Combine: best players first, then game end events, then regular events
-  const sortedEvents = [...bestPlayerEvents, ...gameEndEvents, ...sortedRegularEvents]
 
 
   const renderPlayerInfo = (event: GameEvent) => {
-    if (isTimeout(event)) {
+    if (event.event_type === 'timeout') {
       return "Timeout"
     }
     const goalInfo = parseGoalInfo(event)
@@ -180,8 +161,8 @@ export default function GameTimeline({ events }: GameTimelineProps) {
       
       <div className="space-y-4 py-4">
         {sortedEvents.map((event, index) => {
-          // Check if this is a period marker event
-          if (isPeriodEvent(event)) {
+          // Use backend's display_as field to determine layout
+          if (event.display_as === 'badge') {
             return (
               <motion.div
                 key={event.id}
@@ -199,7 +180,118 @@ export default function GameTimeline({ events }: GameTimelineProps) {
             )
           }
 
-          const isHomeTeam = event.team === 'home'
+          // Inline events - use team_side instead of team
+          const isHomeTeam = event.team_side === 'home'
+          const isNeutralEvent = event.team_side === 'neutral'
+          
+          // Handle neutral events (like best player) in center
+          if (isNeutralEvent) {
+            // Special handling for combined best player events
+            if (event.event_type === 'best_player_combined' && event.bestPlayerEvents) {
+              const homeBestPlayer = event.bestPlayerEvents.find(e => e.team_side === 'home')?.player || '';
+              const awayBestPlayer = event.bestPlayerEvents.find(e => e.team_side === 'away')?.player || '';
+              
+              return (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="relative my-4"
+                >
+                  {/* Desktop layout: names on sides */}
+                  <div className="hidden sm:flex items-center min-h-12">
+                    {/* Home best player on left */}
+                    <div className="flex-1 flex justify-end pr-4">
+                      <div className="text-right">
+                        {homeBestPlayer && (
+                          <div className="text-sm text-gray-700 font-medium">
+                            {homeBestPlayer}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Central badge */}
+                    <div className="relative z-10 flex items-center justify-center">
+                      <div className="bg-yellow-50 px-3 py-2 border border-yellow-200 rounded-lg">
+                        <div className="text-sm font-medium text-gray-700 text-center flex items-center gap-2">
+                          {getEventIcon(event)}
+                          <span>{event.description}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Away best player on right */}
+                    <div className="flex-1 flex justify-start pl-4">
+                      <div className="text-left">
+                        {awayBestPlayer && (
+                          <div className="text-sm text-gray-700 font-medium">
+                            {awayBestPlayer}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mobile layout: same as desktop but smaller */}
+                  <div className="sm:hidden flex items-center min-h-12">
+                    {/* Home best player on left */}
+                    <div className="flex-1 flex justify-end pr-2">
+                      <div className="text-right">
+                        {homeBestPlayer && (
+                          <div className="text-xs text-gray-700 font-medium">
+                            {homeBestPlayer}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Central badge */}
+                    <div className="relative z-10 flex items-center justify-center px-2">
+                      <div className="bg-yellow-50 px-2 py-1 border border-yellow-200 rounded-lg">
+                        <div className="text-xs font-medium text-gray-700 text-center flex items-center gap-1">
+                          {getEventIcon(event)}
+                          <span className="hidden xs:inline">{event.description}</span>
+                          <span className="xs:hidden">Beste</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Away best player on right */}
+                    <div className="flex-1 flex justify-start pl-2">
+                      <div className="text-left">
+                        {awayBestPlayer && (
+                          <div className="text-xs text-gray-700 font-medium">
+                            {awayBestPlayer}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            }
+            
+            // Default neutral event handling
+            return (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="relative flex justify-center my-4"
+              >
+                <div className="bg-yellow-50 px-3 py-2 border border-yellow-200 rounded-lg">
+                  <div className="text-sm font-medium text-gray-700 text-center flex items-center gap-2">
+                    {getEventIcon(event)}
+                    <span>{event.description}</span>
+                    {event.player && <span className="font-bold">- {event.player}</span>}
+                  </div>
+                </div>
+              </motion.div>
+            )
+          }
           
           return (
             <motion.div
@@ -220,6 +312,12 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                       {event.assist && (
                         <div className="text-xs text-gray-500 mt-0.5">
                           Assist: {event.assist}
+                        </div>
+                      )}
+                      {/* Show full penalty description */}
+                      {event.event_type === 'penalty' && event.description && (
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {event.description}
                         </div>
                       )}
                     </div>
@@ -276,6 +374,12 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                       {event.assist && (
                         <div className="text-xs text-gray-500 mt-0.5">
                           Assist: {event.assist}
+                        </div>
+                      )}
+                      {/* Show full penalty description */}
+                      {event.event_type === 'penalty' && event.description && (
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {event.description}
                         </div>
                       )}
                     </div>
