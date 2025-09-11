@@ -28,7 +28,7 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
     )
   }
 
-  if (!table || table.standings.length === 0) {
+  if (!table || !table.standings || !Array.isArray(table.standings) || table.standings.length === 0) {
     return (
       <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-4">
@@ -66,10 +66,10 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
         <div className="flex items-center space-x-3">
           <div className="w-8 pl-1"></div> {/* Position space with left padding */}
           <div className="w-8"></div> {/* Logo space */}
-          <div>Team</div>
+          <div className="pl-0">Team</div> {/* Align with team name text */}
         </div>
-        <div className="flex items-center space-x-4 flex-shrink-0">
-          <div className="text-center w-8">Pts</div>
+        <div className="flex items-center space-x-4 flex-shrink-0 pr-1">
+          <div className="text-center w-8 -mr-1">Pts</div> {/* Center with points values */}
           <div className="hidden sm:block text-center w-8">Diff</div>
           <div className="hidden md:block text-center w-8">GP</div>
         </div>
@@ -77,7 +77,7 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
 
       {/* Table Rows - Simple List Style */}
       <div className="space-y-0 divide-y divide-gray-200">
-        {table.standings.map((team, index) => {
+        {(table.standings || []).map((team, index) => {
           const isCurrentTeam = currentTeamId && team.teamId === currentTeamId
           const isHighlightedTeam = highlightTeamIds.includes(team.teamId)
           const isHomeTeam = table.homeTeamId && team.teamId === table.homeTeamId
@@ -163,25 +163,31 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
                   </div>
                   <div className="text-xs text-gray-600">
                     {team.wins}W-{team.losses}L • {team.goalsFor}:{team.goalsAgainst}
+                    {/* Show goal difference on mobile */}
+                    <span className="sm:hidden ml-2">
+                      <span className={diffColor}>
+                        {diffDisplay}
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>
               
               {/* Right Side Stats */}
-              <div className="flex items-center space-x-4 text-sm flex-shrink-0">
+              <div className="flex items-center space-x-4 text-sm flex-shrink-0 pr-1">
                 {/* Points - Always visible */}
-                <div className="text-center w-8">
+                <div className="text-center w-8 -mr-1">
                   <div className="font-bold text-gray-900">{team.points}</div>
                 </div>
                 
-                {/* Goal Difference - Hidden on mobile */}
+                {/* Goal Difference - Hidden on mobile (shown inline in team info) */}
                 <div className="hidden sm:block text-center w-8">
                   <div className={`font-medium ${diffColor}`}>
                     {diffDisplay}
                   </div>
                 </div>
                 
-                {/* Games Played - Hidden on mobile */}
+                {/* Games Played - Hidden on tablet, shown on desktop */}
                 <div className="hidden md:block text-center w-8">
                   <div className="font-medium text-gray-700">{team.games}</div>
                 </div>
