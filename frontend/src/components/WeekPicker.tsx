@@ -20,16 +20,16 @@ import { motion } from "framer-motion";
 const WEEK_PICKER_CONSTANTS = {
   // Day names array (single source of truth)
   DAY_NAMES: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const,
-  
+
   // Colors (centralized color palette)
   COLORS: {
     WHITE: "#ffffff",
     BLUE_PRIMARY: "#1d4ed8",
-    GRAY_600: "#6b7280", 
+    GRAY_600: "#6b7280",
     GRAY_400: "#9ca3af",
     GRAY_900: "#111827",
   } as const,
-  
+
   // Dimensions
   DIMENSIONS: {
     MONTH_ROW_HEIGHT: 44,
@@ -40,7 +40,7 @@ const WEEK_PICKER_CONSTANTS = {
     WEEK_BUTTON_MIN_HEIGHT: 44,
     MONTH_BUTTON_MIN_HEIGHT: 36,
   } as const,
-  
+
   // Animation configurations
   ANIMATIONS: {
     DEFAULT_DURATION: 0.4,
@@ -52,15 +52,15 @@ const WEEK_PICKER_CONSTANTS = {
     CLOSING_STAGGER_BASE: 0.05,
     CLOSING_STAGGER_INCREMENT: 0.03,
   } as const,
-  
+
   // Week row offset lookup table
   WEEK_ROW_OFFSETS: {
     0: -12, // First week of month
-    1: -4,  // Second week of month  
-    2: 4,   // Third week of month
-    3: 12,  // Fourth week of month
-    4: 20,  // Fifth week of month
-    5: 28,  // Sixth week of month (rare)
+    1: -4, // Second week of month
+    2: 4, // Third week of month
+    3: 12, // Fourth week of month
+    4: 20, // Fifth week of month
+    5: 28, // Sixth week of month (rare)
   } as const,
 } as const;
 
@@ -140,17 +140,21 @@ const getDateButtonClasses = (selected: boolean, today: boolean): string => {
 // Custom Hooks
 
 // Hook for date calculations and state
-const useWeekPickerDateCalculations = (selectedDate: Date, currentWeekStart: Date, isMonthViewExpanded: boolean) => {
+const useWeekPickerDateCalculations = (
+  selectedDate: Date,
+  currentWeekStart: Date,
+  isMonthViewExpanded: boolean
+) => {
   // Get all 7 days of the current week (memoized)
-  const weekDays = useMemo(() => 
-    Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i)),
+  const weekDays = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i)),
     [currentWeekStart]
   );
 
   // Get all days for the full month view (memoized and only when needed)
   const monthDays = useMemo(() => {
     if (!isMonthViewExpanded) return [];
-    
+
     const monthStart = startOfMonth(selectedDate);
     const monthEnd = endOfMonth(selectedDate);
     const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
@@ -192,12 +196,18 @@ const useWeekPickerDateCalculations = (selectedDate: Date, currentWeekStart: Dat
 
   // Helper functions (memoized)
   const isToday = useCallback((date: Date) => isSameDay(date, new Date()), []);
-  const isSelected = useCallback((date: Date) => isSameDay(date, selectedDate), [selectedDate]);
+  const isSelected = useCallback(
+    (date: Date) => isSameDay(date, selectedDate),
+    [selectedDate]
+  );
   const isTodaySelected = useMemo(() => isSelected(new Date()), [isSelected]);
-  const isOutsideMonth = useCallback((date: Date) => {
-    const currentMonth = selectedDate.getMonth();
-    return date.getMonth() !== currentMonth;
-  }, [selectedDate]);
+  const isOutsideMonth = useCallback(
+    (date: Date) => {
+      const currentMonth = selectedDate.getMonth();
+      return date.getMonth() !== currentMonth;
+    },
+    [selectedDate]
+  );
 
   return {
     weekDays,
@@ -213,8 +223,8 @@ const useWeekPickerDateCalculations = (selectedDate: Date, currentWeekStart: Dat
 
 // Hook for navigation handlers
 const useWeekPickerNavigation = (
-  selectedDate: Date, 
-  currentWeekStart: Date, 
+  selectedDate: Date,
+  currentWeekStart: Date,
   setCurrentWeekStart: (date: Date) => void,
   onDateSelect: (date: Date) => void,
   isMonthViewExpanded: boolean,
@@ -288,7 +298,13 @@ const useWeekPickerNavigation = (
         setIsOpening(false);
       }, WEEK_PICKER_CONSTANTS.ANIMATIONS.TOTAL_CLOSE_DURATION);
     }
-  }, [isMonthViewExpanded, setIsClosing, setIsOpening, setShouldShowMonthUI, setIsMonthViewExpanded]);
+  }, [
+    isMonthViewExpanded,
+    setIsClosing,
+    setIsOpening,
+    setShouldShowMonthUI,
+    setIsMonthViewExpanded,
+  ]);
 
   return {
     goToPreviousWeek,
@@ -303,34 +319,49 @@ const useWeekPickerNavigation = (
 // Helper Functions
 
 // Calculate offset to make current week start at exact week view position
-const calculateCurrentWeekOffset = (isMonthViewExpanded: boolean, currentWeekRowIndex: number): number => {
+const calculateCurrentWeekOffset = (
+  isMonthViewExpanded: boolean,
+  currentWeekRowIndex: number
+): number => {
   if (!isMonthViewExpanded) return 0;
 
-  const finetuneOffset = WEEK_PICKER_CONSTANTS.WEEK_ROW_OFFSETS[currentWeekRowIndex as keyof typeof WEEK_PICKER_CONSTANTS.WEEK_ROW_OFFSETS] ?? 2;
+  const finetuneOffset =
+    WEEK_PICKER_CONSTANTS.WEEK_ROW_OFFSETS[
+      currentWeekRowIndex as keyof typeof WEEK_PICKER_CONSTANTS.WEEK_ROW_OFFSETS
+    ] ?? 2;
 
   // In week view, current week sits at y=0 (first row position)
   // In month view, current week sits at y=(currentWeekRowIndex * monthRowHeight)
   // So we need to offset it back to y=0 to match week view position
-  return -(currentWeekRowIndex * WEEK_PICKER_CONSTANTS.DIMENSIONS.MONTH_ROW_HEIGHT) + finetuneOffset;
+  return (
+    -(currentWeekRowIndex * WEEK_PICKER_CONSTANTS.DIMENSIONS.MONTH_ROW_HEIGHT) +
+    finetuneOffset
+  );
 };
 
 // Calculate stagger delays for animations
 const calculateStaggerDelays = (
-  isMonthViewExpanded: boolean, 
-  isCurrentWeekRow: boolean, 
-  isClosing: boolean, 
-  rowIndex: number, 
+  isMonthViewExpanded: boolean,
+  isCurrentWeekRow: boolean,
+  isClosing: boolean,
+  rowIndex: number,
   currentWeekRowIndex: number
 ) => {
   // Calculate stagger delay for non-current-week rows (entrance)
-  const staggerDelay = isMonthViewExpanded && !isCurrentWeekRow && !isClosing
-    ? WEEK_PICKER_CONSTANTS.ANIMATIONS.STAGGER_BASE_DELAY + Math.abs(rowIndex - currentWeekRowIndex) * WEEK_PICKER_CONSTANTS.ANIMATIONS.STAGGER_INCREMENT
-    : 0;
+  const staggerDelay =
+    isMonthViewExpanded && !isCurrentWeekRow && !isClosing
+      ? WEEK_PICKER_CONSTANTS.ANIMATIONS.STAGGER_BASE_DELAY +
+        Math.abs(rowIndex - currentWeekRowIndex) *
+          WEEK_PICKER_CONSTANTS.ANIMATIONS.STAGGER_INCREMENT
+      : 0;
 
   // Calculate closing stagger delay (reverse order - closest rows disappear first)
-  const closingStaggerDelay = isClosing && !isCurrentWeekRow
-    ? WEEK_PICKER_CONSTANTS.ANIMATIONS.CLOSING_STAGGER_BASE + Math.abs(rowIndex - currentWeekRowIndex) * WEEK_PICKER_CONSTANTS.ANIMATIONS.CLOSING_STAGGER_INCREMENT
-    : 0;
+  const closingStaggerDelay =
+    isClosing && !isCurrentWeekRow
+      ? WEEK_PICKER_CONSTANTS.ANIMATIONS.CLOSING_STAGGER_BASE +
+        Math.abs(rowIndex - currentWeekRowIndex) *
+          WEEK_PICKER_CONSTANTS.ANIMATIONS.CLOSING_STAGGER_INCREMENT
+      : 0;
 
   return { staggerDelay, closingStaggerDelay };
 };
@@ -349,9 +380,9 @@ const createAnimationTransition = (
 
 // Get color for date text based on state
 const getDateTextColor = (
-  selected: boolean, 
-  today: boolean, 
-  outsideMonth: boolean, 
+  selected: boolean,
+  today: boolean,
+  outsideMonth: boolean,
   shouldShowMonthUI: boolean
 ): string => {
   if (selected && !shouldShowMonthUI) {
@@ -369,7 +400,7 @@ const getDateTextColor = (
   return WEEK_PICKER_CONSTANTS.COLORS.GRAY_900;
 };
 
-// Get color for day name text based on state  
+// Get color for day name text based on state
 const getDayNameColor = (selected: boolean, today: boolean): string => {
   if (selected) {
     return WEEK_PICKER_CONSTANTS.COLORS.WHITE;
@@ -396,12 +427,12 @@ const getDayNamesHeaderColor = (
       ? WEEK_PICKER_CONSTANTS.COLORS.BLUE_PRIMARY
       : WEEK_PICKER_CONSTANTS.COLORS.GRAY_600;
   }
-  
+
   // Opening animation: selected starts white, today starts blue, both fade to gray
   if (isMonthViewExpanded && isOpening) {
     return WEEK_PICKER_CONSTANTS.COLORS.GRAY_600; // Target color for opening
   }
-  
+
   // Default state
   return WEEK_PICKER_CONSTANTS.COLORS.GRAY_600;
 };
@@ -416,21 +447,30 @@ interface NavigationWrapperProps {
   ariaLabel: string;
 }
 
-const NavigationWrapper = memo(({ shouldShowMonthUI, onClick, direction, ariaLabel }: NavigationWrapperProps) => (
-  <motion.div
-    animate={{
-      y: shouldShowMonthUI ? WEEK_PICKER_CONSTANTS.DIMENSIONS.NAVIGATION_OFFSET : 0,
-    }}
-    transition={createAnimationTransition()}
-  >
-    <NavigationButton
-      onClick={onClick}
-      direction={direction}
-      aria-label={ariaLabel}
-    />
-  </motion.div>
-));
-NavigationWrapper.displayName = 'NavigationWrapper';
+const NavigationWrapper = memo(
+  ({
+    shouldShowMonthUI,
+    onClick,
+    direction,
+    ariaLabel,
+  }: NavigationWrapperProps) => (
+    <motion.div
+      animate={{
+        y: shouldShowMonthUI
+          ? WEEK_PICKER_CONSTANTS.DIMENSIONS.NAVIGATION_OFFSET
+          : 0,
+      }}
+      transition={createAnimationTransition()}
+    >
+      <NavigationButton
+        onClick={onClick}
+        direction={direction}
+        aria-label={ariaLabel}
+      />
+    </motion.div>
+  )
+);
+NavigationWrapper.displayName = "NavigationWrapper";
 
 // Day names header component
 interface DayNamesHeaderProps {
@@ -442,49 +482,70 @@ interface DayNamesHeaderProps {
   isToday: (date: Date) => boolean;
 }
 
-const DayNamesHeader = memo(({ isMonthViewExpanded, isClosing, isOpening, weekDays, isSelected, isToday }: DayNamesHeaderProps) => {
-  if (!isMonthViewExpanded) return null;
-  
-  return (
-    <div className="grid grid-cols-7 gap-0.5 sm:gap-1 w-full max-w-sm z-10">
-      {WEEK_PICKER_CONSTANTS.DAY_NAMES.map((dayName, index) => {
-        // Calculate which day names should be highlighted based on selected/today
-        const dayDate = weekDays[index];
-        const isDaySelected = dayDate && isSelected(dayDate);
-        const isDayToday = dayDate && isToday(dayDate);
+const DayNamesHeader = memo(
+  ({
+    isMonthViewExpanded,
+    isClosing,
+    isOpening,
+    weekDays,
+    isSelected,
+    isToday,
+  }: DayNamesHeaderProps) => {
+    if (!isMonthViewExpanded) return null;
 
-        // Calculate initial color for opening animation
-        const getInitialColor = () => {
-          if (isOpening && isDaySelected) {
-            return WEEK_PICKER_CONSTANTS.COLORS.WHITE; // Start white for selected
-          }
-          if (isOpening && isDayToday) {
-            return WEEK_PICKER_CONSTANTS.COLORS.BLUE_PRIMARY; // Start blue for today
-          }
-          return WEEK_PICKER_CONSTANTS.COLORS.GRAY_600; // Default gray
-        };
+    return (
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-1 w-full max-w-sm z-10">
+        {WEEK_PICKER_CONSTANTS.DAY_NAMES.map((dayName, index) => {
+          // Calculate which day names should be highlighted based on selected/today
+          const dayDate = weekDays[index];
+          const isDaySelected = dayDate && isSelected(dayDate);
+          const isDayToday = dayDate && isToday(dayDate);
 
-        return (
-          <motion.div
-            initial={{ color: getInitialColor() }}
-            animate={{
-              color: getDayNamesHeaderColor(isMonthViewExpanded, isClosing, isOpening, isDaySelected, isDayToday),
-            }}
-            transition={createAnimationTransition(
-              isOpening ? WEEK_PICKER_CONSTANTS.ANIMATIONS.FAST_DURATION : WEEK_PICKER_CONSTANTS.ANIMATIONS.DEFAULT_DURATION,
-              isClosing ? 0.1 : isOpening && (isDaySelected || isDayToday) ? 0.05 : 0
-            )}
-            key={dayName}
-            className="text-center text-xs font-medium py-1 min-w-[36px]"
-          >
-            {dayName}
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-});
-DayNamesHeader.displayName = 'DayNamesHeader';
+          // Calculate initial color for opening animation
+          const getInitialColor = () => {
+            if (isOpening && isDaySelected) {
+              return WEEK_PICKER_CONSTANTS.COLORS.WHITE; // Start white for selected
+            }
+            if (isOpening && isDayToday) {
+              return WEEK_PICKER_CONSTANTS.COLORS.BLUE_PRIMARY; // Start blue for today
+            }
+            return WEEK_PICKER_CONSTANTS.COLORS.GRAY_600; // Default gray
+          };
+
+          return (
+            <motion.div
+              initial={{ color: getInitialColor() }}
+              animate={{
+                color: getDayNamesHeaderColor(
+                  isMonthViewExpanded,
+                  isClosing,
+                  isOpening,
+                  isDaySelected,
+                  isDayToday
+                ),
+              }}
+              transition={createAnimationTransition(
+                isOpening
+                  ? WEEK_PICKER_CONSTANTS.ANIMATIONS.FAST_DURATION
+                  : WEEK_PICKER_CONSTANTS.ANIMATIONS.DEFAULT_DURATION,
+                isClosing
+                  ? 0.1
+                  : isOpening && (isDaySelected || isDayToday)
+                  ? 0.05
+                  : 0
+              )}
+              key={dayName}
+              className="text-center text-xs font-medium py-1 min-w-[36px]"
+            >
+              {dayName}
+            </motion.div>
+          );
+        })}
+      </div>
+    );
+  }
+);
+DayNamesHeader.displayName = "DayNamesHeader";
 
 interface WeekPickerProps {
   selectedDate: Date;
@@ -513,10 +574,14 @@ export default function WeekPicker({
   }, [selectedDate, currentWeekStart]);
 
   // Custom hooks for extracted logic
-  const dateCalculations = useWeekPickerDateCalculations(selectedDate, currentWeekStart, isMonthViewExpanded);
+  const dateCalculations = useWeekPickerDateCalculations(
+    selectedDate,
+    currentWeekStart,
+    isMonthViewExpanded
+  );
   const navigation = useWeekPickerNavigation(
     selectedDate,
-    currentWeekStart, 
+    currentWeekStart,
     setCurrentWeekStart,
     onDateSelect,
     isMonthViewExpanded,
@@ -527,27 +592,30 @@ export default function WeekPicker({
   );
 
   // Destructure for convenience
-  const { 
-    weekDays, 
-    monthRows, 
+  const {
+    weekDays,
+    monthRows,
     currentWeekRowIndex,
     isToday,
     isSelected,
     isTodaySelected,
-    isOutsideMonth 
+    isOutsideMonth,
   } = dateCalculations;
-  
+
   const {
     goToPreviousWeek,
-    goToNextWeek, 
+    goToNextWeek,
     goToPreviousMonth,
     goToNextMonth,
     goToToday,
-    toggleMonthView
+    toggleMonthView,
   } = navigation;
 
   // Calculate offset using helper function
-  const currentWeekInitialOffset = calculateCurrentWeekOffset(isMonthViewExpanded, currentWeekRowIndex);
+  const currentWeekInitialOffset = calculateCurrentWeekOffset(
+    isMonthViewExpanded,
+    currentWeekRowIndex
+  );
 
   return (
     <div className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-4 mb-6">
@@ -595,9 +663,14 @@ export default function WeekPicker({
         <motion.div
           className="mx-2 flex flex-col items-center overflow-hidden"
           animate={{
-            height: shouldShowMonthUI ? WEEK_PICKER_CONSTANTS.DIMENSIONS.MONTH_VIEW_HEIGHT : WEEK_PICKER_CONSTANTS.DIMENSIONS.WEEK_VIEW_HEIGHT, // Week: ~70px, Month: ~240px - immediate response
+            height: shouldShowMonthUI
+              ? WEEK_PICKER_CONSTANTS.DIMENSIONS.MONTH_VIEW_HEIGHT
+              : WEEK_PICKER_CONSTANTS.DIMENSIONS.WEEK_VIEW_HEIGHT, // Week: ~70px, Month: ~240px - immediate response
           }}
-          transition={createAnimationTransition(WEEK_PICKER_CONSTANTS.ANIMATIONS.DEFAULT_DURATION, 0)}
+          transition={createAnimationTransition(
+            WEEK_PICKER_CONSTANTS.ANIMATIONS.DEFAULT_DURATION,
+            0
+          )}
         >
           {/* Static Day Names Header - Only shown in month view */}
           <DayNamesHeader
@@ -615,13 +688,14 @@ export default function WeekPicker({
               const isCurrentWeekRow = rowIndex === currentWeekRowIndex;
 
               // Calculate stagger delays using helper function
-              const { staggerDelay, closingStaggerDelay } = calculateStaggerDelays(
-                isMonthViewExpanded, 
-                isCurrentWeekRow, 
-                isClosing, 
-                rowIndex, 
-                currentWeekRowIndex
-              );
+              const { staggerDelay, closingStaggerDelay } =
+                calculateStaggerDelays(
+                  isMonthViewExpanded,
+                  isCurrentWeekRow,
+                  isClosing,
+                  rowIndex,
+                  currentWeekRowIndex
+                );
 
               // In week mode, only show current week row
               if (!isMonthViewExpanded && !isCurrentWeekRow) return null;
@@ -644,7 +718,9 @@ export default function WeekPicker({
                         : 0, // Normal position
                   }}
                   transition={createAnimationTransition(
-                    isClosing && !isCurrentWeekRow ? WEEK_PICKER_CONSTANTS.ANIMATIONS.FAST_DURATION : WEEK_PICKER_CONSTANTS.ANIMATIONS.DEFAULT_DURATION,
+                    isClosing && !isCurrentWeekRow
+                      ? WEEK_PICKER_CONSTANTS.ANIMATIONS.FAST_DURATION
+                      : WEEK_PICKER_CONSTANTS.ANIMATIONS.DEFAULT_DURATION,
                     isClosing ? closingStaggerDelay : staggerDelay
                   )}
                   className="grid grid-cols-7 gap-0.5 sm:gap-1"
@@ -667,15 +743,15 @@ export default function WeekPicker({
                         initial={
                           // Only animate in month view, week view uses CSS classes
                           isMonthViewExpanded && (selected || today)
-                            ? { marginTop: -8, paddingTop: 8 } // Start with tall height (like week view)
+                            ? { marginTop: -12, paddingTop: 8, marginBottom: 4 } // Start with tall height (like week view)
                             : isMonthViewExpanded
-                            ? { marginTop: 0, paddingTop: 4 } // Normal height for unselected
+                            ? { marginTop: 0, paddingTop: 4, marginBottom: 0 } // Normal height for unselected
                             : false // Week view: no motion, use CSS classes
                         }
                         animate={
                           // Animate based on view state and closing state
                           isMonthViewExpanded && !isClosing
-                            ? { marginTop: 0, paddingTop: 0 } // Opening: animate to normal height
+                            ? { marginTop: 0, paddingTop: 0, marginBottom: 0 } // Opening: animate to normal height
                             : isClosing && (selected || today)
                             ? { marginTop: -12, paddingTop: 8, marginBottom: 4 } // Closing: grow back to tall height
                             : false // Week view: no motion
@@ -714,7 +790,12 @@ export default function WeekPicker({
                         {/* Date number */}
                         <motion.span
                           animate={{
-                            color: getDateTextColor(selected, today, outsideMonth, shouldShowMonthUI),
+                            color: getDateTextColor(
+                              selected,
+                              today,
+                              outsideMonth,
+                              shouldShowMonthUI
+                            ),
                             y:
                               isMonthViewExpanded &&
                               isClosing &&
