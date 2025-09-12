@@ -32,39 +32,47 @@ export function determineGameLiveStatus(
   // Check time-based status first
   const timeStatus = determineGameTimeStatus(game, currentTime)
   
-  // User's logic: if we already have scores AND we're in time range, game is finished
-  const hasExistingScores = (status.homeScore !== null && status.awayScore !== null)
-  
+  // User's logic: if game is in the 3-hour window, it could be live
   if (timeStatus.shouldBeLive) {
-    if (hasExistingScores) {
-      // We have scores and we're in time range = game is finished, use existing scores
+    console.log(`Game is in 3-hour window, checking for existing meaningful scores...`)
+    
+    // Only consider it finished if we have meaningful scores (not 0-0)
+    const hasMeaningfulScores = (status.homeScore !== null && status.awayScore !== null && 
+                                (status.homeScore > 0 || status.awayScore > 0))
+    
+    console.log(`Has meaningful scores: ${hasMeaningfulScores} (${status.homeScore}-${status.awayScore})`)
+    
+    if (hasMeaningfulScores) {
+      // Game has real scores and is in time window = finished
       status.status = 'finished'
       status.isLive = false
+      console.log('Game marked as finished due to meaningful scores')
     } else {
-      // No scores but in time range = potentially live, check events for scores
+      // No meaningful scores or 0-0 = potentially live
+      status.status = 'live'
+      status.isLive = true
+      console.log('Game marked as live - fetching events for scores')
+      
+      // Try to get scores from events for live games
       const latestScore = parseLatestScoreFromEvents(events)
+      console.log(`Events for live game:`, events.length, 'events')
+      console.log(`Latest score from events:`, latestScore)
       if (latestScore) {
         status.homeScore = latestScore.home
         status.awayScore = latestScore.away
+        console.log(`Updated scores from events: ${latestScore.home}-${latestScore.away}`)
       }
       
-      // Check if game has started/ended based on events
+      // Check if game has started/ended based on events for additional info
       const gameEvents = analyzeGameEvents(events)
-      if (gameEvents.hasGameStarted) {
-        status.status = gameEvents.hasGameEnded ? 'finished' : 'live'
-        status.isLive = !gameEvents.hasGameEnded
-        status.currentPeriod = gameEvents.currentPeriod
-        status.lastEventTime = gameEvents.lastEventTime
-      } else {
-        // In time range but no clear events = assume live
-        status.status = 'live'
-        status.isLive = true
-      }
+      status.currentPeriod = gameEvents.currentPeriod
+      status.lastEventTime = gameEvents.lastEventTime
     }
   } else {
     // Outside time range
     status.status = timeStatus.status
     status.isLive = false
+    console.log('Game outside 3-hour window, not live')
   }
 
   return status
@@ -74,27 +82,41 @@ export function determineGameLiveStatus(
  * Parses the latest score from goal events
  */
 export function parseLatestScoreFromEvents(events: GameEvent[]): { home: number, away: number } | null {
-  if (!events || events.length === 0) return null
+  if (!events || events.length === 0) {
+    console.log('No events provided to parseLatestScoreFromEvents')
+    return null
+  }
 
+  console.log(`Parsing ${events.length} events for scores`)
+  
   // Look for goal events with score information
   const goalEvents = events.filter(event => 
     event.event_type === 'goal' && 
     event.description?.includes(':')
   )
+  
+  console.log(`Found ${goalEvents.length} goal events with scores`)
+  goalEvents.forEach((event, i) => {
+    console.log(`Goal event ${i}:`, event.description)
+  })
 
   if (goalEvents.length === 0) return null
 
   // Get the most recent goal event (events are in reverse chronological order from API)
   const latestGoal = goalEvents[0]
+  console.log('Latest goal event:', latestGoal.description)
   
   // Parse score from description like "Torschütze 3:1"
   const scoreMatch = latestGoal.description?.match(/(\d+):(\d+)/)
+  console.log('Score match result:', scoreMatch)
   if (!scoreMatch) return null
 
-  return {
+  const result = {
     home: parseInt(scoreMatch[1]),
     away: parseInt(scoreMatch[2])
   }
+  console.log('Parsed score:', result)
+  return result
 }
 
 /**
@@ -198,9 +220,17 @@ export function determineGameTimeStatus(game: any, currentTime: Date) {
     const timeDiff = currentTime.getTime() - gameDateTime.getTime()
     const minutesDiff = timeDiff / (1000 * 60)
 
+    // Debug logging
+    console.log(`Time check for game: ${game.homeTeam?.name || 'Unknown'} vs ${game.awayTeam?.name || 'Unknown'}`)
+    console.log(`Game time: ${gameDateTime.toLocaleString()}`)
+    console.log(`Current time: ${currentTime.toLocaleString()}`) 
+    console.log(`Minutes diff: ${minutesDiff}`)
+
     // User's logic: game time to +3 hours (180 minutes) = potential live game
     // If current time is between game start and +3 hours, it could be live
     const shouldBeLive = minutesDiff >= 0 && minutesDiff <= 180
+    
+    console.log(`Should be live: ${shouldBeLive}`)
 
     let status: 'pre-game' | 'live' | 'finished'
     if (minutesDiff < 0) {

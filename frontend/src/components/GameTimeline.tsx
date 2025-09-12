@@ -185,9 +185,10 @@ export default function GameTimeline({ events }: GameTimelineProps) {
             )
           }
 
-          // Inline events - use team_side instead of team
-          const isHomeTeam = event.team_side === 'home'
-          const isNeutralEvent = event.team_side === 'neutral'
+          // Inline events - use team_side, but for timeouts use team field since they have neutral team_side
+          const isTimeoutEvent = event.event_type === 'timeout'
+          const isHomeTeam = isTimeoutEvent ? event.team === 'home' : event.team_side === 'home'
+          const isNeutralEvent = !isTimeoutEvent && event.team_side === 'neutral'
           
           // Handle neutral events (like best player) in center
           if (isNeutralEvent) {

@@ -27,21 +27,31 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
   useEffect(() => {
     const checkLiveStatus = async () => {
       try {
+        console.log(`=== GAMECARD FLOW for ${game.homeTeam?.name} vs ${game.awayTeam?.name} ===`)
         const initialStatus = determineGameLiveStatus(game, [])
+        console.log('1. Initial status (no events):', initialStatus)
+        console.log('2. shouldPollGameForUpdates:', shouldPollGameForUpdates(initialStatus))
+        console.log('3. initialStatus.status === "live":', initialStatus.status === 'live')
         
         // If game might be live, fetch events for accurate detection
         if (shouldPollGameForUpdates(initialStatus) || initialStatus.status === 'live') {
+          console.log('4. Fetching events for game...')
           try {
             const events = await apiClient.getGameEvents(game.id)
+            console.log('5. Retrieved events:', events.length)
             const liveStatusWithEvents = determineGameLiveStatus(game, events)
+            console.log('6. Final status (with events):', liveStatusWithEvents)
             setLiveStatus(liveStatusWithEvents)
           } catch (error) {
             console.error('Error checking live status for game', game.id, error)
+            console.log('7. Using initial status due to error')
             setLiveStatus(initialStatus)
           }
         } else {
+          console.log('4. Using initial status (not polling)')
           setLiveStatus(initialStatus)
         }
+        console.log(`=== END GAMECARD FLOW ===`)
       } catch (error) {
         console.error('Error determining live status:', error)
       }
@@ -54,6 +64,13 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
   const isUpcoming = game.status === 'upcoming'
   const hasScores = isLive || game.status === 'finished' || (game.homeScore !== null || game.awayScore !== null) || (liveStatus.homeScore !== null || liveStatus.awayScore !== null)
   const isCurrentGame = currentGameId === game.id
+  
+  // Debug logging
+  console.log(`GameCard for ${game.homeTeam?.name} vs ${game.awayTeam?.name}:`)
+  console.log(`- isLive: ${isLive}`)
+  console.log(`- liveStatus:`, liveStatus)
+  console.log(`- hasScores: ${hasScores}`)
+  console.log(`- game.homeScore: ${game.homeScore}, game.awayScore: ${game.awayScore}`)
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
