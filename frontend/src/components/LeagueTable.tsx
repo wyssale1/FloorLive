@@ -69,7 +69,7 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
           <div className="pl-0">Team</div> {/* Align with team name text */}
         </div>
         <div className="flex items-center space-x-4 flex-shrink-0 pr-1">
-          <div className="text-center w-8 -mr-1">Pts</div> {/* Center with points values */}
+          <div className="text-center w-8">Pts</div>
           <div className="hidden sm:block text-center w-8">Diff</div>
           <div className="hidden md:block text-center w-8">GP</div>
         </div>
@@ -176,7 +176,7 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
               {/* Right Side Stats */}
               <div className="flex items-center space-x-4 text-sm flex-shrink-0 pr-1">
                 {/* Points - Always visible */}
-                <div className="text-center w-8 -mr-1">
+                <div className="text-center w-8">
                   <div className="font-bold text-gray-900">{team.points}</div>
                 </div>
                 
