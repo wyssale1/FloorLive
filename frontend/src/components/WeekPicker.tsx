@@ -789,6 +789,20 @@ export default function WeekPicker({
 
                         {/* Date number */}
                         <motion.span
+                          initial={
+                            // Only animate in month view, week view uses CSS classes
+                            isMonthViewExpanded && selected
+                              ? {
+                                  color: WEEK_PICKER_CONSTANTS.COLORS.WHITE,
+                                  y: 4,
+                                } // Start white for selected
+                              : isMonthViewExpanded && today
+                              ? {
+                                  color: WEEK_PICKER_CONSTANTS.COLORS.BLUE_PRIMARY,
+                                  y: 4,
+                                } // Start blue for today
+                              : false // Week view: no motion, use CSS classes
+                          }
                           animate={{
                             color: getDateTextColor(
                               selected,
@@ -801,7 +815,7 @@ export default function WeekPicker({
                               isClosing &&
                               (selected || today)
                                 ? 4
-                                : "default", // No vertical movement for now
+                                : 0, // No vertical movement for now
                           }}
                           transition={createAnimationTransition(
                             WEEK_PICKER_CONSTANTS.ANIMATIONS.FAST_DURATION,
