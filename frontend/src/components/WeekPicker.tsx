@@ -164,11 +164,10 @@ export default function WeekPicker({
       }, 600); // Total animation time
     } else {
       // Opening - immediate UI changes
-      setShouldShowMonthUI(true); // Box/arrow start opening immediately  
+      setShouldShowMonthUI(true); // Box/arrow start opening immediately
       setIsMonthViewExpanded(true);
     }
   };
-
 
   const isToday = (date: Date) => isSameDay(date, new Date());
   const isSelected = (date: Date) => isSameDay(date, selectedDate);
@@ -177,7 +176,6 @@ export default function WeekPicker({
     const currentMonth = selectedDate.getMonth();
     return date.getMonth() !== currentMonth;
   };
-
 
   // Calculate which row in the month grid contains the current week
   const getCurrentWeekRowIndex = () => {
@@ -273,32 +271,34 @@ export default function WeekPicker({
         {/* Previous Week/Month Button */}
         <motion.div
           animate={{
-            y: shouldShowMonthUI ? 110 : 0 // Move down to center with month view - immediate response
-          }}
-          transition={{
-            duration: 0.4,
-            ease: [0.4, 0, 0.2, 1],
-            type: "tween"
-          }}
-        >
-          <NavigationButton
-            onClick={isMonthViewExpanded ? goToPreviousMonth : goToPreviousWeek}
-            direction="previous"
-            aria-label={isMonthViewExpanded ? "Previous month" : "Previous week"}
-          />
-        </motion.div>
-
-        {/* Layered Animation Calendar */}
-        <motion.div 
-          className="mx-2 flex flex-col items-center overflow-hidden"
-          animate={{
-            height: shouldShowMonthUI ? 240 : 60 // Week: ~70px, Month: ~240px - immediate response
+            y: shouldShowMonthUI ? 110 : 0, // Move down to center with month view - immediate response
           }}
           transition={{
             duration: 0.4,
             ease: [0.4, 0, 0.2, 1],
             type: "tween",
-delay: 0 // No delay - box closes immediately when user clicks
+          }}
+        >
+          <NavigationButton
+            onClick={isMonthViewExpanded ? goToPreviousMonth : goToPreviousWeek}
+            direction="previous"
+            aria-label={
+              isMonthViewExpanded ? "Previous month" : "Previous week"
+            }
+          />
+        </motion.div>
+
+        {/* Layered Animation Calendar */}
+        <motion.div
+          className="mx-2 flex flex-col items-center overflow-hidden"
+          animate={{
+            height: shouldShowMonthUI ? 240 : 60, // Week: ~70px, Month: ~240px - immediate response
+          }}
+          transition={{
+            duration: 0.4,
+            ease: [0.4, 0, 0.2, 1],
+            type: "tween",
+            delay: 0, // No delay - box closes immediately when user clicks
           }}
         >
           {/* Static Day Names Header - Only shown in month view */}
@@ -329,7 +329,7 @@ delay: 0 // No delay - box closes immediately when user clicks
                   : 0;
 
               // Calculate closing stagger delay (reverse order - closest rows disappear first)
-              const closingStaggerDelay = 
+              const closingStaggerDelay =
                 isClosing && !isCurrentWeekRow
                   ? 0.05 + Math.abs(rowIndex - currentWeekRowIndex) * 0.03
                   : 0;
@@ -347,11 +347,12 @@ delay: 0 // No delay - box closes immediately when user clicks
                   }
                   animate={{
                     opacity: isClosing && !isCurrentWeekRow ? 0 : 1, // Non-current rows fade out when closing
-                    y: isClosing && isCurrentWeekRow 
-                      ? currentWeekInitialOffset 
-                      : isClosing && !isCurrentWeekRow 
+                    y:
+                      isClosing && isCurrentWeekRow
+                        ? currentWeekInitialOffset
+                        : isClosing && !isCurrentWeekRow
                         ? -20 // Non-current rows move up while fading
-                        : 0 // Normal position
+                        : 0, // Normal position
                   }}
                   transition={{
                     duration: isClosing && !isCurrentWeekRow ? 0.2 : 0.4,
@@ -370,7 +371,15 @@ delay: 0 // No delay - box closes immediately when user clicks
 
                     // Get day name for week view
                     const dayIndex = rowDates.indexOf(date);
-                    const dayName = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dayIndex];
+                    const dayName = [
+                      "Mon",
+                      "Tue",
+                      "Wed",
+                      "Thu",
+                      "Fri",
+                      "Sat",
+                      "Sun",
+                    ][dayIndex];
 
                     return (
                       <motion.button
@@ -379,7 +388,7 @@ delay: 0 // No delay - box closes immediately when user clicks
                         initial={
                           // Only animate in month view, week view uses CSS classes
                           isMonthViewExpanded && (selected || today)
-                            ? { marginTop: -18, paddingTop: 24 } // Start with tall height (like week view)
+                            ? { marginTop: -8, paddingTop: 8 } // Start with tall height (like week view)
                             : isMonthViewExpanded
                             ? { marginTop: 0, paddingTop: 4 } // Normal height for unselected
                             : false // Week view: no motion, use CSS classes
@@ -389,14 +398,15 @@ delay: 0 // No delay - box closes immediately when user clicks
                           isMonthViewExpanded && !isClosing
                             ? { marginTop: 0, paddingTop: 0 } // Opening: animate to normal height
                             : isClosing && (selected || today)
-                              ? { marginTop: -24, paddingTop: 24 } // Closing: grow back to tall height
-                              : false // Week view: no motion
+                            ? { marginTop: -12, paddingTop: 8, marginBottom: 4 } // Closing: grow back to tall height
+                            : false // Week view: no motion
                         }
                         transition={{
                           duration: 0.4,
                           ease: [0.4, 0, 0.2, 1],
                           type: "tween",
-                          delay: !shouldShowMonthUI && (selected || today) ? 0.1 : 0 // Delay for blue selector growth - you can adjust this!
+                          delay:
+                            !shouldShowMonthUI && (selected || today) ? 0.1 : 0, // Delay for blue selector growth - you can adjust this!
                         }}
                         className={`
                           relative min-w-[36px] transition-colors duration-150
@@ -413,29 +423,45 @@ delay: 0 // No delay - box closes immediately when user clicks
                         {!isMonthViewExpanded && (
                           <motion.span
                             animate={{
-                              color: selected ? "#ffffff" : today ? "#1d4ed8" : "#6b7280"
+                              color: selected
+                                ? "#ffffff"
+                                : today
+                                ? "#1d4ed8"
+                                : "#6b7280",
                             }}
                             transition={{
                               duration: 0.2,
-                              delay: 0
+                              delay: 0,
                             }}
                             className="text-xs font-medium"
                           >
                             {dayName}
                           </motion.span>
                         )}
-                        
+
                         {/* Date number */}
                         <motion.span
                           animate={{
-                            color: selected && !shouldShowMonthUI ? "#ffffff" : // White immediately when closing month view, but only if SELECTED
-                                   selected ? "#ffffff" : 
-                                   today ? "#1d4ed8" : 
-                                   outsideMonth ? "#9ca3af" : "#111827"
+                            color:
+                              selected && !shouldShowMonthUI
+                                ? "#ffffff" // White immediately when closing month view, but only if SELECTED
+                                : selected
+                                ? "#ffffff"
+                                : today
+                                ? "#1d4ed8"
+                                : outsideMonth
+                                ? "#9ca3af"
+                                : "#111827",
+                            y:
+                              isMonthViewExpanded &&
+                              isClosing &&
+                              (selected || today)
+                                ? 4
+                                : "default", // No vertical movement for now
                           }}
                           transition={{
                             duration: 0.2,
-                            delay: 0 // No delay - text changes immediately when user clicks!
+                            delay: 0, // No delay - text changes immediately when user clicks!
                           }}
                           className="text-sm font-medium"
                         >
@@ -453,12 +479,12 @@ delay: 0 // No delay - box closes immediately when user clicks
         {/* Next Week/Month Button */}
         <motion.div
           animate={{
-            y: shouldShowMonthUI ? 110 : 0 // Move down to center with month view - immediate response
+            y: shouldShowMonthUI ? 110 : 0, // Move down to center with month view - immediate response
           }}
           transition={{
             duration: 0.4,
             ease: [0.4, 0, 0.2, 1],
-            type: "tween"
+            type: "tween",
           }}
         >
           <NavigationButton
