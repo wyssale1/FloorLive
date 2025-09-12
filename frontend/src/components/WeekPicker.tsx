@@ -219,12 +219,12 @@ export default function WeekPicker({
 
     // Lookup table for perfect alignment per week row position
     const offsetByWeekRow: Record<number, number> = {
-      0: -6, // First week of month
-      1: 2, // Second week of month
-      2: 10, // Third week of month
-      3: 18, // Fourth week of month
-      4: 26, // Fifth week of month
-      5: 34, // Sixth week of month (rare)
+      0: -12, // First week of month
+      1: -4, // Second week of month
+      2: 4, // Third week of month
+      3: 12, // Fourth week of month
+      4: 20, // Fifth week of month
+      5: 28, // Sixth week of month (rare)
     };
     const finetuneOffset = offsetByWeekRow[currentWeekRowIndex] ?? 2;
 
