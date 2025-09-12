@@ -303,16 +303,41 @@ export default function WeekPicker({
         >
           {/* Static Day Names Header - Only shown in month view */}
           {isMonthViewExpanded && (
-            <div className="grid grid-cols-7 gap-0.5 sm:gap-1 w-full max-w-sm">
+            <div className="grid grid-cols-7 gap-0.5 sm:gap-1 w-full max-w-sm z-10">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                (dayName) => (
-                  <div
-                    key={dayName}
-                    className="text-center text-xs font-medium py-1 min-w-[36px] text-gray-500"
-                  >
-                    {dayName}
-                  </div>
-                )
+                (dayName, index) => {
+                  // Calculate which day names should be highlighted based on selected/today
+                  const currentWeekDays = weekDays;
+                  const dayDate = currentWeekDays[index];
+                  const isDaySelected = dayDate && isSelected(dayDate);
+                  const isDayToday = dayDate && isToday(dayDate);
+
+                  return (
+                    <motion.div
+                      initial={{ color: "#6b7280" }}
+                      animate={{
+                        color:
+                          isMonthViewExpanded && isClosing
+                            ? isDaySelected
+                              ? "#ffffff"
+                              : isDayToday
+                              ? "#1d4ed8"
+                              : "#6b7280"
+                            : "#6b7280",
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        delay: isClosing ? 0.1 : 0,
+                        ease: [0.4, 0, 0.2, 1],
+                        type: "tween",
+                      }}
+                      key={dayName}
+                      className="text-center text-xs font-medium py-1 min-w-[36px]"
+                    >
+                      {dayName}
+                    </motion.div>
+                  );
+                }
               )}
             </div>
           )}
