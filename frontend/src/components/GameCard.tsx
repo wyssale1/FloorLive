@@ -125,16 +125,16 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       }
       
       return (
-        <div className="flex items-center space-x-2">
+        <div className={`flex items-center ${isLive ? 'space-x-2' : 'justify-center'}`}>
           <div className="space-y-1">
-            <span className={`text-sm block ${winner === 'home' ? 'text-gray-800 font-bold' : winner === 'away' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
+            <span className={`text-sm block text-center ${winner === 'home' ? 'text-gray-800 font-bold' : winner === 'away' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
               {homeScore !== null ? homeScore : '-'}
             </span>
-            <span className={`text-sm block ${winner === 'away' ? 'text-gray-800 font-bold' : winner === 'home' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
+            <span className={`text-sm block text-center ${winner === 'away' ? 'text-gray-800 font-bold' : winner === 'home' ? 'text-gray-500 font-medium' : 'text-gray-800 font-medium'}`}>
               {awayScore !== null ? awayScore : '-'}
             </span>
           </div>
-          {/* Live indicator next to score */}
+          {/* Live indicator next to score - only for live games */}
           {isLive && (
             <div className="flex items-center">
               <LiveBadge liveStatus={liveStatus} variant="dot-only" />
