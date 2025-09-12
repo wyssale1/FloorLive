@@ -738,7 +738,7 @@ export default function WeekPicker({
 
                     return (
                       <motion.button
-                        key={`date-button-${isMonthViewExpanded}`}
+                        key={`date-button-${date.getTime()}-${rowIndex}`}
                         onClick={() => onDateSelect(date)}
                         initial={
                           // Only animate in month view, week view uses CSS classes
