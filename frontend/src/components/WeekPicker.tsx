@@ -65,29 +65,6 @@ const WEEK_PICKER_CONSTANTS = {
 } as const;
 
 // TypeScript interfaces
-interface AnimationState {
-  isMonthViewExpanded: boolean;
-  isClosing: boolean;
-  shouldShowMonthUI: boolean;
-}
-
-interface DateState {
-  selectedDate: Date;
-  currentWeekStart: Date;
-  weekDays: Date[];
-  monthDays: Date[];
-  monthRows: Date[][];
-  currentWeekRowIndex: number;
-}
-
-interface NavigationHandlers {
-  goToPreviousWeek: () => void;
-  goToNextWeek: () => void;
-  goToPreviousMonth: () => void;
-  goToNextMonth: () => void;
-  goToToday: () => void;
-  toggleMonthView: () => void;
-}
 
 // Utility function to calculate the same day of week in a different week
 const calculateSameDayInWeek = (
@@ -231,7 +208,8 @@ const useWeekPickerNavigation = (
   setIsMonthViewExpanded: (value: boolean) => void,
   setIsClosing: (value: boolean) => void,
   setIsOpening: (value: boolean) => void,
-  setShouldShowMonthUI: (value: boolean) => void
+  setShouldShowMonthUI: (value: boolean) => void,
+  setIsMonthNavigation: (value: boolean) => void
 ) => {
   const goToPreviousWeek = useCallback(() => {
     const newWeekStart = addDays(currentWeekStart, -7);
@@ -250,6 +228,7 @@ const useWeekPickerNavigation = (
   }, [currentWeekStart, selectedDate, setCurrentWeekStart, onDateSelect]);
 
   const goToPreviousMonth = useCallback(() => {
+    setIsMonthNavigation(true); // Set flag before navigation
     const newDate = new Date(
       selectedDate.getFullYear(),
       selectedDate.getMonth() - 1,
@@ -258,9 +237,12 @@ const useWeekPickerNavigation = (
     const newWeekStart = startOfWeek(newDate, { weekStartsOn: 1 });
     setCurrentWeekStart(newWeekStart);
     onDateSelect(newDate);
-  }, [selectedDate, setCurrentWeekStart, onDateSelect]);
+    // Clear flag after a short delay to allow re-render
+    setTimeout(() => setIsMonthNavigation(false), 50);
+  }, [selectedDate, setCurrentWeekStart, onDateSelect, setIsMonthNavigation]);
 
   const goToNextMonth = useCallback(() => {
+    setIsMonthNavigation(true); // Set flag before navigation
     const newDate = new Date(
       selectedDate.getFullYear(),
       selectedDate.getMonth() + 1,
@@ -269,7 +251,9 @@ const useWeekPickerNavigation = (
     const newWeekStart = startOfWeek(newDate, { weekStartsOn: 1 });
     setCurrentWeekStart(newWeekStart);
     onDateSelect(newDate);
-  }, [selectedDate, setCurrentWeekStart, onDateSelect]);
+    // Clear flag after a short delay to allow re-render
+    setTimeout(() => setIsMonthNavigation(false), 50);
+  }, [selectedDate, setCurrentWeekStart, onDateSelect, setIsMonthNavigation]);
 
   const goToToday = useCallback(() => {
     const today = new Date();
@@ -564,6 +548,7 @@ export default function WeekPicker({
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [shouldShowMonthUI, setShouldShowMonthUI] = useState(false); // Controls immediate UI changes (box/arrow)
+  const [isMonthNavigation, setIsMonthNavigation] = useState(false); // Track month navigation to prevent animation
 
   // Sync currentWeekStart with selectedDate changes
   useEffect(() => {
@@ -588,7 +573,8 @@ export default function WeekPicker({
     setIsMonthViewExpanded,
     setIsClosing,
     setIsOpening,
-    setShouldShowMonthUI
+    setShouldShowMonthUI,
+    setIsMonthNavigation
   );
 
   // Destructure for convenience
@@ -791,7 +777,10 @@ export default function WeekPicker({
                         <motion.span
                           initial={
                             // Only animate in month view, week view uses CSS classes
-                            isMonthViewExpanded && selected
+                            // Skip animation if it's month navigation - start with final color
+                            isMonthNavigation 
+                              ? false // No initial animation during month navigation
+                              : isMonthViewExpanded && selected
                               ? {
                                   color: WEEK_PICKER_CONSTANTS.COLORS.WHITE,
                                   y: 4,

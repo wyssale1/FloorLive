@@ -81,29 +81,47 @@ export default function GameTimeline({ events }: GameTimelineProps) {
   sortedEvents = combineBestPlayerEvents(sortedEvents)
 
   const parseGoalInfo = (event: GameEvent) => {
-    if (event.event_type !== 'goal') return null
-    
-    // Extract score from description like "Torschütze 4:4"
+    // Handle both regular goals and eigentor (own goals)
+    const isEigentor = event.description?.includes('Eigentor')
+    if (event.event_type !== 'goal' && !isEigentor) return null
+
+    // Extract score from description like "Torschütze 4:4" or "Eigentor 5:7"
     const scoreMatch = event.description?.match(/(\d+):(\d+)/)
     if (!scoreMatch) return null
-    
+
     const homeScore = parseInt(scoreMatch[1])
     const awayScore = parseInt(scoreMatch[2])
-    
-    // Use team_side instead of team for proper assignment
-    const scoringTeam = event.team_side === 'home' ? 'home' : 'away'
-    
+
+    // For eigentor, determine scoring team by looking at which score increased
+    let scoringTeam: 'home' | 'away'
+    if (isEigentor) {
+      // For eigentor, we need to determine which team actually scored based on the team field
+      // The team field indicates which team the event is attributed to (the team that scored the own goal)
+      // But the goal goes to the opposing team
+      scoringTeam = event.team === 'home' ? 'away' : 'home'
+    } else {
+      // Regular goals use team_side
+      scoringTeam = event.team_side === 'home' ? 'home' : 'away'
+    }
+
     return {
       goalNumber: scoringTeam === 'home' ? homeScore : awayScore,
       opponentScore: scoringTeam === 'home' ? awayScore : homeScore,
       homeScore: homeScore,
       awayScore: awayScore,
       scoringTeam: scoringTeam,
-      playerName: event.player
+      playerName: event.player,
+      isEigentor: isEigentor
     }
   }
 
   const getEventIcon = (event: GameEvent) => {
+    // Special handling for eigentor events - show them as goals
+    const isEigentor = event.description?.includes('Eigentor')
+    if (isEigentor) {
+      return <Target className="w-4 h-4 text-gray-600" />
+    }
+
     // Use backend's icon classification - all icons in neutral gray
     switch (event.icon) {
       case 'goal':
@@ -147,7 +165,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
             <span>{goalInfo.homeScore}-<span className="font-bold">{goalInfo.awayScore}</span></span>
           )}
           {' '}
-          {goalInfo.playerName}
+          {goalInfo.isEigentor ? 'Eigentor' : goalInfo.playerName}
         </span>
       )
     }
@@ -186,9 +204,22 @@ export default function GameTimeline({ events }: GameTimelineProps) {
           }
 
           // Inline events - use team_side, but for timeouts use team field since they have neutral team_side
+          // For eigentor events, treat them as goal events and use the team that actually scored
           const isTimeoutEvent = event.event_type === 'timeout'
-          const isHomeTeam = isTimeoutEvent ? event.team === 'home' : event.team_side === 'home'
-          const isNeutralEvent = !isTimeoutEvent && event.team_side === 'neutral'
+          const isEigentor = event.description?.includes('Eigentor')
+
+          let isHomeTeam: boolean
+          if (isTimeoutEvent) {
+            isHomeTeam = event.team === 'home'
+          } else if (isEigentor) {
+            // For eigentor, the goal goes to the opposing team of the one that made the own goal
+            const goalInfo = parseGoalInfo(event)
+            isHomeTeam = goalInfo?.scoringTeam === 'home' || false
+          } else {
+            isHomeTeam = event.team_side === 'home'
+          }
+
+          const isNeutralEvent = !isTimeoutEvent && !isEigentor && event.team_side === 'neutral'
           
           // Handle neutral events (like best player) in center
           if (isNeutralEvent) {
