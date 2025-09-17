@@ -11,6 +11,7 @@ import PlayerStatsLegend from '../components/PlayerStatsLegend'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generatePlayerMeta } from '../hooks/useMetaTags'
 import { useEasterEggStore } from '../stores'
+import FloorballRain from '../components/FloorballRain'
 
 export default function PlayerDetail() {
   const { playerId } = useParams({ from: '/player/$playerId' })
@@ -24,7 +25,15 @@ export default function PlayerDetail() {
   })
 
   // Easter egg store
-  const { sequence, setSequenceStep, unlockCrown, resetSequence } = useEasterEggStore()
+  const {
+    sequence,
+    setSequenceStep,
+    unlockCrown,
+    resetSequence,
+    floorballSequence,
+    setFloorballSequenceStep,
+    resetFloorballSequence
+  } = useEasterEggStore()
 
   // Easter egg handlers for player ID 423870
   const handleImageClick = () => {
@@ -42,6 +51,25 @@ export default function PlayerDetail() {
       unlockCrown()
     } else if (playerId === '423870') {
       resetSequence()
+    }
+  }
+
+  // Floorball rain Easter egg handlers for player ID 427708
+  const handleJerseyNumberClick = () => {
+    if (playerId === '427708') {
+      if (floorballSequence.step === 0) {
+        setFloorballSequenceStep(1, playerId)
+      } else {
+        resetFloorballSequence()
+      }
+    }
+  }
+
+  const handleFloorballImageClick = () => {
+    if (playerId === '427708' && floorballSequence.step === 1 && floorballSequence.playerId === playerId) {
+      setFloorballSequenceStep(2, playerId) // This will trigger the rain
+    } else if (playerId === '427708') {
+      resetFloorballSequence()
     }
   }
 
@@ -145,12 +173,18 @@ export default function PlayerDetail() {
       >
         <div className="flex items-center gap-4 mb-4">
           {/* Player Image */}
-          <PlayerImage 
-            player={player} 
-            size="medium" 
+          <PlayerImage
+            player={player}
+            size="medium"
             className="flex-shrink-0"
-            onClick={playerId === '423870' ? handleImageClick : undefined}
-            hideCursor={playerId === '423870'}
+            onClick={
+              playerId === '423870'
+                ? handleImageClick
+                : playerId === '427708'
+                ? handleFloorballImageClick
+                : undefined
+            }
+            hideCursor={playerId === '423870' || playerId === '427708'}
           />
           
           {/* Player Info */}
@@ -163,7 +197,13 @@ export default function PlayerDetail() {
             </h1>
             <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
               {player.number && (
-                <span>#{player.number}</span>
+                <span
+                  onClick={playerId === '427708' ? handleJerseyNumberClick : undefined}
+                  className={playerId === '427708' ? 'cursor-pointer hover:text-blue-600 transition-colors select-none' : ''}
+                  style={playerId === '427708' ? { userSelect: 'none' } : {}}
+                >
+                  #{player.number}
+                </span>
               )}
               {player.position && (
                 <span>{player.position}</span>
@@ -466,6 +506,9 @@ export default function PlayerDetail() {
           ]}
         />
       </div>
+
+      {/* FloorballRain Component */}
+      <FloorballRain />
     </div>
   )
 }

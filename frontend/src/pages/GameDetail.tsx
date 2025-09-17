@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Clock } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient, type GameEvent } from '../lib/apiClient'
+import { calculateSeasonYear, getCurrentSeasonYear } from '../lib/seasonUtils'
 import GameTimeline from '../components/GameTimeline'
 import GameTimelineSkeleton from '../components/GameTimelineSkeleton'
 import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
@@ -22,6 +23,8 @@ export default function GameDetail() {
   const [game, setGame] = useState<any>(null)
   const [events, setEvents] = useState<GameEvent[]>([])
   const [leagueTable, setLeagueTable] = useState<any>(null)
+  const [selectedSeason, setSelectedSeason] = useState<string>('')
+  const [leagueTableCache, setLeagueTableCache] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
   const [tabsLoading, setTabsLoading] = useState({
     events: false,
@@ -62,54 +65,134 @@ export default function GameDetail() {
     fetchGameData()
   }, [gameId])
 
-  const loadLeagueTable = useCallback(async () => {
-    if (leagueTable || !game) return // Already loaded or no game data
-    
+  const loadLeagueTable = useCallback(async (season?: string) => {
+    if (!game) return // No game data
+
+    // Safe season calculation with fallback
+    let fallbackSeason: string
+    try {
+      const dateToUse = game.date || game.game_date
+      if (dateToUse && typeof dateToUse === 'string' && !dateToUse.match(/^(heute|gestern|morgen|today|yesterday|tomorrow)$/i)) {
+        fallbackSeason = calculateSeasonYear(dateToUse).toString()
+      } else {
+        fallbackSeason = getCurrentSeasonYear().toString()
+      }
+    } catch (error) {
+      fallbackSeason = getCurrentSeasonYear().toString()
+    }
+
+    const targetSeason = season || selectedSeason || fallbackSeason
+    const leagueId = extractLeagueId(game.league)
+
+    if (!leagueId) {
+      console.warn('No league information available for game:', game.league)
+      return
+    }
+
+    // Check cache first
+    const cacheKey = `${leagueId}-${targetSeason}`
+    if (leagueTableCache[cacheKey]) {
+      setLeagueTable(leagueTableCache[cacheKey])
+      return
+    }
+
     setTabsLoading(prev => ({ ...prev, table: true }))
     try {
-      // Use hardcoded 2024 for testing since 2025 rankings are not available yet
-      const season = "2024"
-      const leagueId = extractLeagueId(game.league)
-      
-      if (!leagueId) {
-        console.warn('No league information available for game:', game.league)
-        setTabsLoading(prev => ({ ...prev, table: false }))
-        return
-      }
-      
-      console.log('Loading league table with season:', season, 'league:', leagueId, 'from game league:', game.league)
-      
-      // Use existing rankings API that's known to work: /leagues/rankings?season=2024&league=L-UPL
+      console.log('Loading league table with season:', targetSeason, 'league:', leagueId, 'from game league:', game.league)
+
       const rankingsData = await apiClient.getRankings({
-        season: season,
+        season: targetSeason,
         league: leagueId,
-        leagueName: game.league?.name, // Pass league name for gender detection
-        teamNames: [game.homeTeam?.name, game.awayTeam?.name].filter(Boolean) // Pass team names for additional gender context
+        leagueName: game.league?.name,
+        teamNames: [game.homeTeam?.name, game.awayTeam?.name].filter(Boolean)
       })
-      
+
       if (rankingsData) {
-        setLeagueTable({
+        const tableData = {
           leagueId: leagueId,
           leagueName: game.league?.name || 'League',
-          season: season,
+          season: targetSeason,
           standings: rankingsData.standings?.standings || [],
           homeTeamId: game.homeTeam?.id,
-          awayTeamId: game.awayTeam?.id,
-        })
+          awayTeamId: game.awayTeam?.id
+        }
+
+        // Cache the result
+        setLeagueTableCache(prev => ({
+          ...prev,
+          [cacheKey]: tableData
+        }))
+
+        setLeagueTable(tableData)
       }
     } catch (error) {
       console.error('Error fetching league table:', error)
     } finally {
       setTabsLoading(prev => ({ ...prev, table: false }))
     }
-  }, [game, leagueTable])
+  }, [game, selectedSeason, leagueTableCache])
 
-  // Auto-load league table when game data is available (same pattern as events)
+  // Season change handler
+  const handleSeasonChange = useCallback((newSeason: string) => {
+    setSelectedSeason(newSeason)
+    loadLeagueTable(newSeason)
+  }, [loadLeagueTable])
+
+  // Auto-load league table when game data is available
   useEffect(() => {
-    if (game && !leagueTable) {
-      loadLeagueTable()
+    if (game && !selectedSeason) {
+      // Set initial selected season based on game date
+      // Handle cases where game.date or game.game_date might not be a valid date
+      let gameSeason: string
+      try {
+        // Try to use game.date first, then game.game_date, then fallback to current season
+        const dateToUse = game.date || game.game_date
+        if (dateToUse && typeof dateToUse === 'string' && !dateToUse.match(/^(heute|gestern|morgen|today|yesterday|tomorrow)$/i)) {
+          gameSeason = calculateSeasonYear(dateToUse).toString()
+        } else {
+          // Fallback to current season if date is not parseable
+          gameSeason = getCurrentSeasonYear().toString()
+        }
+      } catch (error) {
+        console.warn('Could not determine season from game date, using current season:', error)
+        gameSeason = getCurrentSeasonYear().toString()
+      }
+
+      setSelectedSeason(gameSeason)
+      loadLeagueTable(gameSeason)
     }
-  }, [game, leagueTable, loadLeagueTable])
+  }, [game, selectedSeason, loadLeagueTable])
+
+  // Generate available seasons (only past and current seasons)
+  const availableSeasons = useCallback(() => {
+    if (!game) return []
+
+    const currentSeason = getCurrentSeasonYear()
+    let gameSeason: number
+
+    try {
+      const dateToUse = game.date || game.game_date
+      if (dateToUse && typeof dateToUse === 'string' && !dateToUse.match(/^(heute|gestern|morgen|today|yesterday|tomorrow)$/i)) {
+        gameSeason = calculateSeasonYear(dateToUse)
+      } else {
+        gameSeason = currentSeason
+      }
+    } catch (error) {
+      gameSeason = currentSeason
+    }
+
+    const seasons = []
+
+    // Include seasons from 3 years ago to current season (no future seasons)
+    const startYear = Math.min(gameSeason - 3, currentSeason - 3)
+    const endYear = currentSeason // Only up to current season
+
+    for (let year = endYear; year >= startYear; year--) {
+      seasons.push(year.toString())
+    }
+
+    return seasons
+  }, [game])
 
   // Set dynamic page title and meta tags when game data is loaded
   const pageTitle = game 
@@ -391,10 +474,13 @@ export default function GameDetail() {
               value: 'table',
               label: 'League Table',
               content: (
-                <LeagueTable 
-                  table={leagueTable} 
+                <LeagueTable
+                  table={leagueTable}
                   loading={tabsLoading.table}
                   highlightTeamIds={leagueTable ? [leagueTable.homeTeamId, leagueTable.awayTeamId].filter(Boolean) : []}
+                  availableSeasons={availableSeasons()}
+                  onSeasonChange={handleSeasonChange}
+                  seasonSelectorDisabled={tabsLoading.table}
                 />
               )
             }
