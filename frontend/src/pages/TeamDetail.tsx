@@ -1,6 +1,6 @@
 import { useParams } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { Users, Trophy, Target, Globe, User, Hash } from 'lucide-react'
+import { Users, Trophy, Target, Globe, User, Hash, Calendar } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '../lib/apiClient'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
@@ -10,7 +10,8 @@ import PlayerListSkeleton from '../components/PlayerListSkeleton'
 import { Skeleton } from '../components/ui/skeleton'
 import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
-import UpcomingGames from '../components/UpcomingGames'
+import GameList from '../components/GameList'
+import GameCardSkeleton from '../components/GameCardSkeleton'
 import PlayerLink from '../components/PlayerLink'
 import PlayerImage from '../components/PlayerImage'
 import TeamPlayersLegend from '../components/TeamPlayersLegend'
@@ -517,15 +518,29 @@ export default function TeamDetail() {
           {
             value: 'games',
             label: 'Upcoming Games',
+            onTabSelect: loadUpcomingGames,
             content: (
-              <div
-                onFocus={() => loadUpcomingGames()}
-                onClick={() => loadUpcomingGames()}
-              >
-                <UpcomingGames 
-                  games={upcomingGames} 
-                  loading={tabsLoading.games}
-                />
+              <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-4 sm:p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <Calendar className="w-4 h-4 text-gray-600" />
+                  <h2 className="text-lg font-medium text-gray-800">Upcoming Games</h2>
+                  <span className="text-sm text-gray-500">
+                    {upcomingGames.length} {upcomingGames.length === 1 ? 'game' : 'games'}
+                  </span>
+                </div>
+
+                {tabsLoading.games ? (
+                  <GameCardSkeleton variant="list" count={3} />
+                ) : upcomingGames.length > 0 ? (
+                  <GameList games={upcomingGames} showSeparators={true} showDate={true} noPaddingOnMobile={true} />
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-gray-400 text-sm mb-1">No upcoming games scheduled</div>
+                    <div className="text-gray-500 text-xs">
+                      Check back later for future fixtures.
+                    </div>
+                  </div>
+                )}
               </div>
             )
           }

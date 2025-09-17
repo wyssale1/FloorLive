@@ -149,16 +149,24 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
   const renderTeamLine = (team: any, isHomeTeam: boolean) => {
     const isWinner = winner === (isHomeTeam ? 'home' : 'away')
     const isLoser = winner !== null && !isWinner
-    
+
+    // For upcoming games, use isCurrentTeam flag instead of winner/loser
+    let teamStyle = 'text-gray-700 font-medium' // default
+    if (isUpcoming) {
+      teamStyle = team.isCurrentTeam ? 'text-gray-800 font-bold' : 'text-gray-500 font-medium'
+    } else {
+      teamStyle = isWinner ? 'text-gray-800 font-bold' : isLoser ? 'text-gray-500 font-medium' : 'text-gray-700 font-medium'
+    }
+
     return (
       <div className="flex items-center space-x-3 min-w-0 flex-1">
-        <TeamLogo 
-          team={team} 
-          size="small" 
+        <TeamLogo
+          team={team}
+          size="small"
           className="shrink-0"
           fallbackIcon={<Shield className="w-4 h-4 text-gray-400" />}
         />
-        <span className={`text-sm truncate ${isWinner ? 'text-gray-800 font-bold' : isLoser ? 'text-gray-500 font-medium' : 'text-gray-700 font-medium'}`}>
+        <span className={`text-sm truncate ${teamStyle}`}>
           {team.name}
         </span>
       </div>

@@ -1,4 +1,5 @@
 import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, Player, PlayerStatistics, PlayerGamePerformance, TeamStatistics } from '../shared/types';
+import { getCurrentSeasonYear } from './seasonUtils';
 
 // Re-export types for external usage
 export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, Player, PlayerStatistics, PlayerGamePerformance, TeamStatistics };
@@ -164,13 +165,105 @@ class ApiClient {
 
   async getTeamUpcomingGames(teamId: string): Promise<any[]> {
     try {
-      const response = await fetch(`${this.baseURL}/teams/${teamId}/games`);
+      const currentSeason = getCurrentSeasonYear();
+      const response = await fetch(`https://api-v2.swissunihockey.ch/api/games?mode=team&season=${currentSeason}&team_id=${teamId}&games_per_page=30`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      const data = await response.json();
-      return data.games || [];
+
+      const apiData = await response.json();
+      const gameRows = apiData.data?.regions?.[0]?.rows || [];
+
+      // Filter to only upcoming games (today or future) and transform to our format
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0); // Reset to start of day for comparison
+
+      const upcomingGames: any[] = [];
+
+      gameRows.forEach((row: any) => {
+        if (!row.cells || row.cells.length < 5) return;
+
+        // Extract game date from first cell
+        const dateTimeText = row.cells[0]?.text?.[0] || '';
+        const timeText = row.cells[0]?.text?.[1] || '';
+
+        // Parse date (format: DD.MM.YYYY)
+        const dateParts = dateTimeText.split('.');
+        if (dateParts.length !== 3) return;
+
+        const gameDate = new Date(
+          parseInt(dateParts[2]), // year
+          parseInt(dateParts[1]) - 1, // month (0-indexed)
+          parseInt(dateParts[0]) // day
+        );
+        gameDate.setHours(0, 0, 0, 0);
+
+        // Only include upcoming games
+        if (gameDate < currentDate) return;
+
+        // Extract game ID from link
+        const gameId = row.link?.ids?.[0]?.toString() || '';
+        if (!gameId) return;
+
+        // Extract team names and check which is highlighted (current viewing team)
+        const homeTeamName = row.cells[2]?.text?.[0] || '';
+        const awayTeamName = row.cells[3]?.text?.[0] || '';
+        const isHomeTeamViewing = row.cells[2]?.highlight === true;
+        const isAwayTeamViewing = row.cells[3]?.highlight === true;
+
+        // Extract score if available
+        const scoreText = row.cells[4]?.text?.[0] || '';
+        const isFinished = scoreText && scoreText !== '';
+
+        // Convert DD.MM.YYYY to YYYY-MM-DD format for proper Date parsing
+        const convertDateFormat = (ddmmyyyy: string): string => {
+          const parts = ddmmyyyy.split('.');
+          if (parts.length === 3) {
+            const [day, month, year] = parts;
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          }
+          return ddmmyyyy; // fallback
+        };
+
+        const formattedDate = convertDateFormat(dateTimeText);
+
+        // Create game object in our format
+        const game = {
+          id: gameId,
+          homeTeam: {
+            id: isHomeTeamViewing ? teamId : '',
+            name: homeTeamName,
+            shortName: homeTeamName.substring(0, 3).toUpperCase(),
+            logo: '',
+            isCurrentTeam: isHomeTeamViewing // Add flag to identify current viewing team
+          },
+          awayTeam: {
+            id: isAwayTeamViewing ? teamId : '',
+            name: awayTeamName,
+            shortName: awayTeamName.substring(0, 3).toUpperCase(),
+            logo: '',
+            isCurrentTeam: isAwayTeamViewing // Add flag to identify current viewing team
+          },
+          homeScore: null,
+          awayScore: null,
+          status: isFinished ? 'finished' : 'upcoming',
+          startTime: timeText, // Only the time (e.g., "17:00")
+          gameDate: formattedDate, // Properly formatted date for JavaScript Date parsing
+          league: {
+            id: '',
+            name: apiData.data?.title?.split(',')[1]?.trim() || 'Unknown League'
+          },
+          location: row.cells[1]?.text?.[0] || '',
+          venue: {
+            name: row.cells[1]?.text?.[0] || '',
+            address: row.cells[1]?.text?.[1] || ''
+          }
+        };
+
+        upcomingGames.push(game);
+      });
+
+      return upcomingGames;
     } catch (error) {
       console.error('Error fetching team upcoming games:', error);
       return [];
