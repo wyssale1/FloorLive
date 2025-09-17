@@ -199,8 +199,8 @@ export default function PlayerDetail() {
               {player.number && (
                 <span
                   onClick={playerId === '427708' ? handleJerseyNumberClick : undefined}
-                  className={playerId === '427708' ? 'cursor-pointer hover:text-blue-600 transition-colors select-none' : ''}
-                  style={playerId === '427708' ? { userSelect: 'none' } : {}}
+                  className={playerId === '427708' ? 'select-none' : ''}
+                  style={playerId === '427708' ? { userSelect: 'none', cursor: 'default' } : {}}
                 >
                   #{player.number}
                 </span>
