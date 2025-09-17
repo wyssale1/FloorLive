@@ -777,9 +777,18 @@ export default function WeekPicker({
                         <motion.span
                           initial={
                             // Only animate in month view, week view uses CSS classes
-                            // Skip animation if it's month navigation - start with final color
-                            isMonthNavigation 
-                              ? false // No initial animation during month navigation
+                            // Skip animation if it's month navigation within expanded month view
+                            (isMonthNavigation && isMonthViewExpanded)
+                              ? {
+                                  // Match exactly what animate will be to prevent jump
+                                  color: getDateTextColor(
+                                    selected,
+                                    today,
+                                    outsideMonth,
+                                    shouldShowMonthUI
+                                  ),
+                                  y: 0, // Match animate y value for month navigation
+                                }
                               : isMonthViewExpanded && selected
                               ? {
                                   color: WEEK_PICKER_CONSTANTS.COLORS.WHITE,
