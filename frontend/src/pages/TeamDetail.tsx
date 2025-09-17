@@ -13,6 +13,7 @@ import LeagueTable from '../components/LeagueTable'
 import UpcomingGames from '../components/UpcomingGames'
 import PlayerLink from '../components/PlayerLink'
 import PlayerImage from '../components/PlayerImage'
+import TeamPlayersLegend from '../components/TeamPlayersLegend'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
 
@@ -349,12 +350,17 @@ export default function TeamDetail() {
             label: 'Players',
             content: (
               <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Users className="w-4 h-4 text-gray-600" />
-                  <h2 className="text-lg font-medium text-gray-800">Squad</h2>
-                  <span className="text-sm text-gray-500 ml-2">
-                    {players.length} {players.length === 1 ? 'player' : 'players'}
-                  </span>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-gray-600" />
+                    <h2 className="text-lg font-medium text-gray-800">Squad</h2>
+                    <span className="text-sm text-gray-500 ml-2">
+                      {players.length} {players.length === 1 ? 'player' : 'players'}
+                    </span>
+                  </div>
+                  {players.length > 0 && players.some(player => player.goals > 0 || player.assists > 0 || player.points > 0) && (
+                    <TeamPlayersLegend />
+                  )}
                 </div>
                 
                 {tabsLoading.players ? (
