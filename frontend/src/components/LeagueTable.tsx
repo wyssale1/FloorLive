@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
 import { Link } from '@tanstack/react-router'
-import { Trophy } from 'lucide-react'
+import { Trophy, RotateCcw } from 'lucide-react'
 import TeamLogo from './TeamLogo'
-import { formatSeasonDisplay } from '../lib/seasonUtils'
+import SeasonSelector from './SeasonSelector'
+import { formatSeasonDisplay, getCurrentSeasonYear } from '../lib/seasonUtils'
 import type { TeamRanking } from '../shared/types'
 
 interface LeagueTableProps {
@@ -17,9 +18,21 @@ interface LeagueTableProps {
   loading?: boolean
   currentTeamId?: string
   highlightTeamIds?: string[] // For highlighting multiple teams (e.g., game participants)
+  // Season selector props
+  availableSeasons?: string[]
+  onSeasonChange?: (season: string) => void
+  seasonSelectorDisabled?: boolean
 }
 
-export default function LeagueTable({ table, loading, currentTeamId, highlightTeamIds = [] }: LeagueTableProps) {
+export default function LeagueTable({
+  table,
+  loading,
+  currentTeamId,
+  highlightTeamIds = [],
+  availableSeasons,
+  onSeasonChange,
+  seasonSelectorDisabled = false
+}: LeagueTableProps) {
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -50,14 +63,36 @@ export default function LeagueTable({ table, loading, currentTeamId, highlightTe
   return (
     <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <Trophy className="w-4 h-4 text-gray-600" />
           <h2 className="text-lg font-medium text-gray-800">Standings</h2>
+          {table.season && availableSeasons && onSeasonChange &&
+           table.season !== getCurrentSeasonYear().toString() && (
+            <button
+              onClick={() => onSeasonChange(getCurrentSeasonYear().toString())}
+              disabled={seasonSelectorDisabled}
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Back to current season"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Current</span>
+            </button>
+          )}
         </div>
-        {table.season && (
-          <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
-            {formatSeasonDisplay(parseInt(table.season))}
-          </span>
+        {table.season && availableSeasons && onSeasonChange ? (
+          <SeasonSelector
+            currentSeason={table.season}
+            availableSeasons={availableSeasons}
+            onSeasonChange={onSeasonChange}
+            disabled={seasonSelectorDisabled}
+            loading={loading}
+          />
+        ) : (
+          table.season && (
+            <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+              {formatSeasonDisplay(parseInt(table.season))}
+            </span>
+          )
         )}
       </div>
 
