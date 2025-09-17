@@ -1,6 +1,6 @@
 /**
  * Season calculation utilities for Swiss Unihockey
- * New seasons start on August 1st each year
+ * New seasons start on September 1st each year
  */
 
 /**
@@ -15,9 +15,9 @@ export function calculateSeasonYear(date: string | Date): number {
   const year = gameDate.getFullYear()
   const month = gameDate.getMonth() + 1 // getMonth() returns 0-11
   
-  // If the game is in August (8) or later, it belongs to the new season starting that year
-  // If the game is before August (1-7), it belongs to the season that started the previous year
-  if (month >= 8) {
+  // If the game is in September (9) or later, it belongs to the new season starting that year
+  // If the game is before September (1-8), it belongs to the season that started the previous year
+  if (month >= 9) {
     return year
   } else {
     return year - 1
