@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { Game, GameEvent, SwissUnihockeyApiResponse, GameListParams, Team } from '../types/api.js';
+import { getCurrentSeasonYear } from '../utils/seasonUtils.js';
 
 export class SwissUnihockeyApiClient {
   private client: AxiosInstance;
@@ -323,7 +324,7 @@ export class SwissUnihockeyApiClient {
 
     // Fetch the actual standings for the first matching ranking
     const targetRanking = filteredRankings[0];
-    const specificRankings = await this.fetchSpecificRankings(params.season || '2024', targetRanking.context);
+    const specificRankings = await this.fetchSpecificRankings(params.season || getCurrentSeasonYear().toString(), targetRanking.context);
 
     return {
       availableRankings: allRankings,
@@ -409,8 +410,8 @@ export class SwissUnihockeyApiClient {
       if (season) {
         params.season = parseInt(season);
       } else {
-        // Default to current season (2024/25 = 2024)
-        params.season = 2024;
+        // Default to current season
+        params.season = getCurrentSeasonYear();
       }
 
       const response = await this.client.get<any>('/games', { params });
@@ -541,8 +542,10 @@ export class SwissUnihockeyApiClient {
       }
     }
 
-    // Check if game is live (this might be indicated differently in the API)
-    if (timeCell.toLowerCase().includes('live') || scoreCell.toLowerCase().includes('live')) {
+    // Check if game is live - detect both English "live" and German "Spiel läuft"
+    if (timeCell.toLowerCase().includes('live') || 
+        timeCell.includes('Spiel läuft') || 
+        scoreCell.toLowerCase().includes('live')) {
       status = 'live';
     }
 

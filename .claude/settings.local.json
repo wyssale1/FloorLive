@@ -31,7 +31,13 @@
       "Bash(open http://localhost:5174/team/1072853)",
       "Bash(open http://localhost:5174/team/429603)",
       "Bash(open http://localhost:5174/game/1072576)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "Bash(sudo lsof:*)",
+      "Bash(awk:*)",
+      "Bash(xargs -r kill -9)",
+      "Bash(lsof:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:upload.wikimedia.org)"
     ],
     "deny": [],
     "ask": []

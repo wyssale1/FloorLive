@@ -1,7 +1,7 @@
 import { useParams } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Users, Trophy, Target, Globe, User, Hash } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '../lib/apiClient'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { extractLeagueId } from '../lib/utils'
@@ -50,6 +50,8 @@ export default function TeamDetail() {
   const [statistics, setStatistics] = useState<any>(null)
   const [upcomingGames, setUpcomingGames] = useState<any[]>([])
   const [leagueTables, setLeagueTables] = useState<any[]>([])
+  const [selectedSeason, setSelectedSeason] = useState<string>('')
+  const [leagueTableCache, setLeagueTableCache] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
   const [tabsLoading, setTabsLoading] = useState({
     players: false,
@@ -73,25 +75,6 @@ export default function TeamDetail() {
         // Also load statistics for team info
         const statsData = await apiClient.getTeamStatistics(teamId)
         setStatistics(statsData)
-        
-        // Automatically load league tables when team data is available
-        // No need for setTimeout since we can call it directly
-        setTabsLoading(prev => ({ ...prev, tables: true }))
-        
-        // Load league tables immediately
-        try {
-          const currentSeasonYear = getCurrentSeasonYear()
-          const rankingsData = await apiClient.getRankings({ 
-            season: currentSeasonYear.toString() 
-          })
-          if (rankingsData && rankingsData.standings) {
-            setLeagueTables([rankingsData.standings])
-          }
-        } catch (error) {
-          console.error('Error auto-loading league tables:', error)
-        } finally {
-          setTabsLoading(prev => ({ ...prev, tables: false }))
-        }
       } catch (error) {
         console.error('Error fetching team data:', error)
       } finally {
@@ -117,63 +100,136 @@ export default function TeamDetail() {
   }
   useMetaTags(metaOptions)
 
-  const loadLeagueTables = async () => {
-    if (leagueTables.length > 0 || tabsLoading.tables) return // Already loaded or loading
-    
+  const loadLeagueTables = useCallback(async (season?: string) => {
+    if (!team) return // No team data
+
+    // Determine target season
+    const targetSeason = season || selectedSeason || getCurrentSeasonYear().toString()
+    const leagueId = extractLeagueId(team?.league)
+
+    // Check cache first
+    const cacheKey = leagueId ? `${leagueId}-${targetSeason}` : `general-${targetSeason}`
+    if (leagueTableCache[cacheKey]) {
+      setLeagueTables([leagueTableCache[cacheKey]])
+      return
+    }
+
     setTabsLoading(prev => ({ ...prev, tables: true }))
     try {
-      // Use centralized season calculation (updated to September 1st)
-      const currentSeasonYear = getCurrentSeasonYear()
-      
+      console.log('Loading league table with season:', targetSeason, 'league:', leagueId, 'from team league:', team?.league)
+
       // First try to get rankings for the team's league if available
       let rankingsData = null
-      const leagueId = extractLeagueId(team?.league)
-      
+
       if (leagueId) {
-        console.log('Loading league table with season:', currentSeasonYear, 'league:', leagueId, 'from team league:', team?.league)
-        rankingsData = await apiClient.getRankings({ 
-          season: currentSeasonYear.toString(),
-          league: leagueId 
+        rankingsData = await apiClient.getRankings({
+          season: targetSeason,
+          league: leagueId,
+          leagueName: team.league?.name,
+          teamNames: [team.name].filter(Boolean)
         })
       } else {
         console.warn('No league information available for team:', team?.league)
       }
-      
-      // If team league rankings not available, try general current season rankings
+
+      // If team league rankings not available, try general season rankings
       if (!rankingsData) {
-        rankingsData = await apiClient.getRankings({ 
-          season: currentSeasonYear.toString() 
+        rankingsData = await apiClient.getRankings({
+          season: targetSeason
         })
       }
-      
+
       if (rankingsData && rankingsData.standings) {
-        setLeagueTables([rankingsData.standings])
+        const tableData = {
+          leagueId: leagueId || 'general',
+          leagueName: team.league?.name || 'League',
+          season: targetSeason,
+          standings: rankingsData.standings?.standings || rankingsData.standings || [],
+          currentTeamId: teamId
+        }
+
+        // Cache the result
+        setLeagueTableCache(prev => ({
+          ...prev,
+          [cacheKey]: tableData
+        }))
+
+        setLeagueTables([tableData])
       } else {
         // Fallback: try competitions approach if main ranking methods fail
         const competitionsData = await apiClient.getTeamCompetitions(teamId)
-        
+
         const tablePromises = competitionsData.map(async (competition: any) => {
           try {
-            const rankingsForCompetition = await apiClient.getRankings({ 
-              season: currentSeasonYear.toString(),
-              league: competition.id 
+            const rankingsForCompetition = await apiClient.getRankings({
+              season: targetSeason,
+              league: competition.id
             })
-            return rankingsForCompetition
+            return rankingsForCompetition ? {
+              ...rankingsForCompetition,
+              leagueId: competition.id,
+              leagueName: competition.name,
+              season: targetSeason,
+              currentTeamId: teamId
+            } : null
           } catch (error) {
             console.error(`Error loading rankings for ${competition.name}:`, error)
             return null
           }
         })
-        
+
         const tables = await Promise.all(tablePromises)
-        setLeagueTables(tables.filter(table => table !== null))
+        const validTables = tables.filter(table => table !== null)
+        setLeagueTables(validTables)
+
+        // Cache the results
+        validTables.forEach(table => {
+          const key = `${table.leagueId}-${targetSeason}`
+          setLeagueTableCache(prev => ({
+            ...prev,
+            [key]: table
+          }))
+        })
       }
     } catch (error) {
       console.error('Error fetching league tables:', error)
     } finally {
       setTabsLoading(prev => ({ ...prev, tables: false }))
     }
-  }
+  }, [team, selectedSeason, leagueTableCache, teamId])
+
+  // Season change handler
+  const handleSeasonChange = useCallback((newSeason: string) => {
+    setSelectedSeason(newSeason)
+    loadLeagueTables(newSeason)
+  }, [loadLeagueTables])
+
+  // Generate available seasons
+  const availableSeasons = useCallback(() => {
+    if (!team) return []
+
+    const currentSeason = getCurrentSeasonYear()
+
+    // Create seasons array from 3 years ago to current season
+    const seasons = []
+    const startYear = currentSeason - 3
+    const endYear = currentSeason
+
+    for (let year = endYear; year >= startYear; year--) {
+      seasons.push(year.toString())
+    }
+
+    return seasons
+  }, [team])
+
+  // Auto-load league table when team data is available and set initial season
+  useEffect(() => {
+    if (team && !selectedSeason) {
+      const currentSeasonYear = getCurrentSeasonYear().toString()
+      setSelectedSeason(currentSeasonYear)
+      loadLeagueTables(currentSeasonYear)
+    }
+  }, [team, selectedSeason, loadLeagueTables])
 
   const loadUpcomingGames = async () => {
     if (upcomingGames.length > 0) return // Already loaded
@@ -438,7 +494,13 @@ export default function TeamDetail() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <LeagueTable table={table} currentTeamId={teamId} />
+                        <LeagueTable
+                          table={table}
+                          currentTeamId={teamId}
+                          availableSeasons={availableSeasons()}
+                          onSeasonChange={handleSeasonChange}
+                          seasonSelectorDisabled={tabsLoading.tables}
+                        />
                       </motion.div>
                     ))}
                   </div>

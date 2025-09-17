@@ -1191,6 +1191,40 @@
         }
       }
     },
+    "429461": {
+      "teamId": "429461",
+      "teamName": "",
+      "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_club_logo/vpuhw2cmxdyv0809pcqv.png",
+      "downloadedAt": "2025-09-12T20:01:24.078Z",
+      "processedAt": "2025-09-12T20:01:24.078Z",
+      "sizes": {
+        "large": {
+          "width": 200,
+          "height": 200
+        },
+        "small": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      "formats": [
+        "avif",
+        "webp",
+        "png"
+      ],
+      "fileSize": {
+        "large": {
+          "avif": 9730,
+          "webp": 9326,
+          "png": 8619
+        },
+        "small": {
+          "avif": 1284,
+          "webp": 884,
+          "png": 1102
+        }
+      }
+    },
     "429471": {
       "teamId": "429471",
       "teamName": "",
@@ -2652,7 +2686,41 @@
           "png": 770
         }
       }
+    },
+    "432525": {
+      "teamId": "432525",
+      "teamName": "",
+      "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_club_logo/i7rkmirzvwaclaiou6os.png",
+      "downloadedAt": "2025-09-12T20:01:24.092Z",
+      "processedAt": "2025-09-12T20:01:24.092Z",
+      "sizes": {
+        "large": {
+          "width": 200,
+          "height": 200
+        },
+        "small": {
+          "width": 32,
+          "height": 32
+        }
+      },
+      "formats": [
+        "avif",
+        "webp",
+        "png"
+      ],
+      "fileSize": {
+        "large": {
+          "avif": 16182,
+          "webp": 17758,
+          "png": 8501
+        },
+        "small": {
+          "avif": 1914,
+          "webp": 1262,
+          "png": 770
+        }
+      }
     }
   },
-  "lastUpdated": "2025-09-12T19:15:03.128Z"
+  "lastUpdated": "2025-09-12T20:01:24.092Z"
 }
