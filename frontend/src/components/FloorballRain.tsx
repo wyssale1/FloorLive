@@ -20,36 +20,49 @@ const FloorballRain: React.FC = () => {
             <motion.div
               key={particle.id}
               className="absolute pointer-events-none"
-              style={{ left: particle.x }}
+              style={{
+                left: particle.x,
+                willChange: 'transform',
+                backfaceVisibility: 'hidden',
+                perspective: 1000
+              }}
               initial={{
                 y: -100,
-                rotate: 0,
-                scale: 0
+                opacity: 0
               }}
               animate={{
-                y: window.innerHeight + 200, // Fall well past the bottom edge
-                rotate: 360 * (2 + Math.random()), // 2-3 full rotations
-                scale: 1
+                y: window.innerHeight + 100,
+                opacity: [0, 1, 1, 0] // Fade in/out for better performance
               }}
               transition={{
                 delay: particle.delay,
                 duration: particle.duration,
-                ease: "linear", // Constant speed like real falling objects
-                rotate: {
-                  duration: particle.duration,
-                  ease: "linear"
-                },
-                scale: {
-                  duration: 0.3,
-                  ease: "easeOut"
+                ease: "easeIn", // Slightly accelerating like gravity
+                opacity: {
+                  times: [0, 0.1, 0.9, 1],
+                  duration: particle.duration
                 }
               }}
-              // Remove exit animation - let balls disappear naturally off-screen
             >
-              <FloorballBall
-                size={particle.size}
-                className="drop-shadow-md"
-              />
+              <motion.div
+                animate={{
+                  rotate: 360 * 2 // Fixed 2 rotations
+                }}
+                transition={{
+                  delay: particle.delay,
+                  duration: particle.duration,
+                  ease: "linear",
+                  repeat: 0
+                }}
+                style={{
+                  willChange: 'transform'
+                }}
+              >
+                <FloorballBall
+                  size={particle.size}
+                  className="transform-gpu"
+                />
+              </motion.div>
             </motion.div>
           ))}
         </motion.div>

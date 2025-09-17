@@ -15,11 +15,14 @@ const FloorballBall: React.FC<FloorballBallProps> = ({
       src={floorballSvg}
       width={size}
       height={size}
-      className={className}
+      className={`${className} select-none`}
       alt="Floorball"
       style={{
-        filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.3))'
+        filter: 'drop-shadow(1px 1px 3px rgba(0,0,0,0.2))', // Lighter shadow for performance
+        imageRendering: 'optimizeSpeed' as any, // Optimize for animation performance
+        transform: 'translateZ(0)' // Force GPU acceleration
       }}
+      draggable={false}
     />
   )
 }

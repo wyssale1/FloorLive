@@ -124,6 +124,13 @@
     font-size: 0.625rem;
     line-height: 0.75rem;
   }
+
+  /* GPU acceleration for animations */
+  .transform-gpu {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
 }
 
 body {

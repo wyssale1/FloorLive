@@ -19,16 +19,16 @@ export const useFloorballRain = () => {
       return
     }
 
-    // Create particles with staggered timing - let Framer Motion handle animation
+    // Create particles with staggered timing - optimized for performance
     const isMobile = window.innerWidth < 768
-    const particleCount = isMobile ? 15 : 25
+    const particleCount = isMobile ? 8 : 12 // Reduced particle count
 
     const newParticles = Array.from({ length: particleCount }, (_, i) => ({
       id: i,
       x: Math.random() * (window.innerWidth + 100) - 50,
-      size: isMobile ? 16 + Math.random() * 14 : 20 + Math.random() * 20,
-      delay: Math.random() * 3, // Stagger over 3 seconds
-      duration: 8 + Math.random() * 4 // 8-12 seconds to fall (much slower)
+      size: isMobile ? 18 + Math.random() * 10 : 22 + Math.random() * 16,
+      delay: Math.random() * 4, // Stagger over 4 seconds
+      duration: 6 + Math.random() * 3 // 6-9 seconds to fall (faster for less lag)
     }))
 
     setParticles(newParticles)
