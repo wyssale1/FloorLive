@@ -1,9 +1,11 @@
 import { Link, useLocation } from '@tanstack/react-router'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect } from 'react'
 import { useEasterEggStore } from '../stores'
+import { useMenu } from '../contexts/MenuContext'
 import Crown from './Crown'
+import GlobalMenu from './GlobalMenu'
 
 // SVG Logo Component - inline for performance
 const Logo = ({ className }: { className?: string }) => (
@@ -69,88 +71,146 @@ const useBackButton = () => {
 export default function Header() {
   const { shouldShow, goBack } = useBackButton()
   const { crownUnlocked } = useEasterEggStore()
-  
+  const { isOpen, toggleMenu } = useMenu()
+
   return (
-    <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        {/* Left Section - Dynamic Back Button */}
-        <div className="flex items-center w-20">
-          <AnimatePresence mode="wait">
-            {shouldShow && (
-              <motion.button
-                key="back-button"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-                onClick={goBack}
-                className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors p-2 -ml-2 rounded-lg hover:bg-gray-50"
-                aria-label="Go back"
-              >
-                <ChevronLeft className="w-5 h-5" />
-                <span className="text-sm font-medium">Back</span>
-              </motion.button>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Center Section - Logo + Brand */}
-        <Link 
-          to="/" 
-          search={{ date: undefined }}
-          className="flex items-center space-x-2 transition-opacity"
-        >
-          <div className="relative">
-            <Logo className="h-5 w-5" />
-            {crownUnlocked && <Crown />}
+    <>
+      {/* Fixed Header Bar */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50 h-14">
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+          {/* Left Section - Dynamic Back Button */}
+          <div className="flex items-center w-20">
+            <AnimatePresence mode="wait">
+              {shouldShow && !isOpen && (
+                <motion.button
+                  key="back-button"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={goBack}
+                  className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors p-2 -ml-2 rounded-lg hover:bg-gray-50"
+                  aria-label="Go back"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  <span className="text-sm font-medium">Back</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
-          <div className="text-xl font-medium text-gray-900 tracking-tight relative">
-            {crownUnlocked ? (
-              <div className="flex items-center">
-                <span>Floor</span>
-                <div className="relative inline-block">
-                  {/* Greyish "Live" */}
-                  <span className="text-gray-300">
-                    Live
-                  </span>
-                  {/* "King" text appearing directly over "Live" */}
-                  <motion.span 
-                    className="absolute -top-0.5 left-0 text-yellow-500 font-bold text-xl"
-                    initial={{ 
-                      opacity: 0, 
-                      scale: 0.8,
-                      rotate: 0
-                    }}
-                    animate={{ 
-                      opacity: 1, 
-                      scale: 1.1,
-                      rotate: -8
-                    }}
-                    transition={{ 
-                      delay: 0.3, 
-                      type: "spring", 
-                      damping: 15, 
-                      stiffness: 300 
-                    }}
-                    style={{
-                      textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
-                    }}
-                  >
-                    King
-                  </motion.span>
+
+          {/* Center Section - Logo + Brand */}
+          <Link
+            to="/"
+            search={{ date: undefined }}
+            className="flex items-center space-x-2 transition-opacity"
+            onClick={isOpen ? toggleMenu : undefined} // Close menu if navigating home
+          >
+            <div className="relative">
+              <Logo className="h-5 w-5" />
+              {crownUnlocked && <Crown />}
+            </div>
+            <div className="text-xl font-medium text-gray-900 tracking-tight relative">
+              {crownUnlocked ? (
+                <div className="flex items-center">
+                  <span>Floor</span>
+                  <div className="relative inline-block">
+                    {/* Greyish "Live" */}
+                    <span className="text-gray-300">
+                      Live
+                    </span>
+                    {/* "King" text appearing directly over "Live" */}
+                    <motion.span
+                      className="absolute -top-0.5 left-0 text-yellow-500 font-bold text-xl"
+                      initial={{
+                        opacity: 0,
+                        scale: 0.8,
+                        rotate: 0
+                      }}
+                      animate={{
+                        opacity: 1,
+                        scale: 1.1,
+                        rotate: -8
+                      }}
+                      transition={{
+                        delay: 0.3,
+                        type: "spring",
+                        damping: 15,
+                        stiffness: 300
+                      }}
+                      style={{
+                        textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      King
+                    </motion.span>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <span>FloorLive</span>
-            )}
-          </div>
-        </Link>
+              ) : (
+                <span>FloorLive</span>
+              )}
+            </div>
+          </Link>
 
-        {/* Right Section - Placeholder for future actions */}
-        <div className="w-20 flex justify-end">
-          {/* Future: Settings, User menu, etc. */}
+          {/* Right Section - Menu Button */}
+          <div className="w-20 flex justify-end">
+            <motion.button
+              onClick={toggleMenu}
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors p-2 -mr-2 rounded-lg hover:bg-gray-50"
+              aria-label={isOpen ? "Close menu" : "Open menu"}
+              whileTap={{ scale: 0.95 }}
+            >
+              <AnimatePresence mode="wait">
+                {isOpen ? (
+                  <motion.div
+                    key="close-icon"
+                    initial={{ opacity: 0, rotate: -90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: 90 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu-icon"
+                    initial={{ opacity: 0, rotate: 90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: -90 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu className="w-5 h-5" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Full-Screen Menu Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-white/80 backdrop-blur-sm z-40"
+          >
+            {/* Menu Content */}
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
+              className="pt-20" // Space for fixed header
+            >
+              <GlobalMenu className="max-w-7xl mx-auto px-4" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
