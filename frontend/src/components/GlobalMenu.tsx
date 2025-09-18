@@ -156,7 +156,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
         >
           {/* Search Section */}
           <motion.div variants={searchSectionVariants} className="mb-8">
-            <div className="relative max-w-md">
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-700 z-10" />
               <Input
                 type="text"

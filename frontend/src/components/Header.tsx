@@ -164,20 +164,20 @@ export default function Header() {
                 {isOpen ? (
                   <motion.div
                     key="close-icon"
-                    initial={{ opacity: 0, rotate: -90 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: 90 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.15, ease: "easeInOut" }}
                   >
                     <X className="w-5 h-5" />
                   </motion.div>
                 ) : (
                   <motion.div
                     key="menu-icon"
-                    initial={{ opacity: 0, rotate: 90 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: -90 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.15, ease: "easeInOut" }}
                   >
                     <Menu className="w-5 h-5" />
                   </motion.div>
