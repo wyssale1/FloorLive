@@ -31,7 +31,7 @@ app.use(helmet({
 // CORS configuration - allow Tailscale access when HOST=0.0.0.0
 const corsOrigin = () => {
   if (process.env.NODE_ENV === 'production') {
-    return ['https://floorlive.alexander-wyss.ch', 'http://floorlive.alexander-wyss.ch'];
+    return ['https://floorlive.ch', 'http://floorlive.ch'];
   }
   // Development mode
   if (process.env.HOST === '0.0.0.0') {
