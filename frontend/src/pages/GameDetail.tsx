@@ -1,11 +1,9 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Clock } from 'lucide-react'
-import { useState, useEffect, useCallback } from 'react'
-import { apiClient, type GameEvent } from '../lib/apiClient'
+import { useState, useCallback, useMemo } from 'react'
 import { calculateSeasonYear, getCurrentSeasonYear } from '../lib/seasonUtils'
 import GameTimeline from '../components/GameTimeline'
-import GameTimelineSkeleton from '../components/GameTimelineSkeleton'
 import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
 import GameOverviewSkeleton from '../components/GameOverviewSkeleton'
 import TeamLogo from '../components/TeamLogo'
@@ -13,155 +11,83 @@ import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import GameOverview from '../components/GameOverview'
 import { PeriodBadge } from '../components/LiveBadge'
-import { useLiveGame } from '../hooks/useLiveGame'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
 import { extractLeagueId } from '../lib/utils'
+import { useLiveGamePolling, useRankings } from '../hooks/useQueries'
+import { determineGameLiveStatus } from '../lib/liveGameUtils'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
-  const [game, setGame] = useState<any>(null)
-  const [events, setEvents] = useState<GameEvent[]>([])
-  const [leagueTable, setLeagueTable] = useState<any>(null)
   const [selectedSeason, setSelectedSeason] = useState<string>('')
-  const [leagueTableCache, setLeagueTableCache] = useState<Record<string, any>>({})
-  const [loading, setLoading] = useState(true)
-  const [tabsLoading, setTabsLoading] = useState({
-    events: false,
-    table: false
-  })
 
-  // Live game detection and polling
-  const { liveStatus, isPolling } = useLiveGame({
-    gameId,
-    initialGame: game,
-    initialEvents: events,
-    enabled: true
-  })
-  
-  useEffect(() => {
-    const fetchGameData = async () => {
-      setLoading(true)
-      try {
-        const gameData = await apiClient.getGameDetails(gameId)
-        
-        if (gameData) {
-          const adaptedGame = apiClient.adaptGameForFrontend(gameData)
-          setGame(adaptedGame)
-          
-          // Initial load of events (for default tab)
-          setTabsLoading(prev => ({ ...prev, events: true }))
-          const eventsData = await apiClient.getGameEvents(gameId)
-          setEvents(eventsData)
-          setTabsLoading(prev => ({ ...prev, events: false }))
-        }
-      } catch (error) {
-        console.error('Error fetching game data:', error)
-      } finally {
-        setLoading(false)
-      }
+  // Use React Query for game data and live polling
+  const { game, events, isLoading: gameLoading } = useLiveGamePolling(gameId)
+
+  // Calculate live status from fetched data
+  const liveStatus = useMemo(() => {
+    if (!game || !events) return {
+      isLive: false,
+      status: 'unknown' as const,
+      homeScore: null,
+      awayScore: null,
+      currentPeriod: null,
+      lastEventTime: null
     }
-    
-    fetchGameData()
-  }, [gameId])
+    return determineGameLiveStatus(game, events)
+  }, [game, events])
 
-  const loadLeagueTable = useCallback(async (season?: string) => {
-    if (!game) return // No game data
+  const isPolling = game?.status === 'live' || game?.status === 'running'
+  
 
-    // Safe season calculation with fallback
-    let fallbackSeason: string
+  // Calculate season for league table
+  const gameSeason = useMemo(() => {
+    if (!game) return getCurrentSeasonYear().toString()
+
     try {
       const dateToUse = game.date || game.game_date
       if (dateToUse && typeof dateToUse === 'string' && !dateToUse.match(/^(heute|gestern|morgen|today|yesterday|tomorrow)$/i)) {
-        fallbackSeason = calculateSeasonYear(dateToUse).toString()
-      } else {
-        fallbackSeason = getCurrentSeasonYear().toString()
+        return calculateSeasonYear(dateToUse).toString()
       }
     } catch {
-      fallbackSeason = getCurrentSeasonYear().toString()
+      // Fallback to current season
     }
+    return getCurrentSeasonYear().toString()
+  }, [game])
 
-    const targetSeason = season || selectedSeason || fallbackSeason
-    const leagueId = extractLeagueId(game.league)
+  const targetSeason = selectedSeason || gameSeason
+  const leagueId = useMemo(() => game ? extractLeagueId(game.league) : null, [game])
 
-    if (!leagueId) {
-      console.warn('No league information available for game:', game.league)
-      return
+  // Use React Query for league table
+  const {
+    data: rankingsData,
+    isLoading: rankingsLoading
+  } = useRankings({
+    season: targetSeason,
+    league: leagueId || undefined,
+    leagueName: game?.league?.name,
+    teamNames: game ? [game.homeTeam?.name, game.awayTeam?.name].filter(Boolean) : undefined
+  }, !!game && !!leagueId)
+
+  // Transform rankings data to table format
+  const leagueTable = useMemo(() => {
+    if (!rankingsData || !game) return null
+
+    return {
+      leagueId: leagueId || 'general',
+      leagueName: game.league?.name || 'League',
+      season: targetSeason,
+      standings: rankingsData.standings?.standings || [],
+      homeTeamId: game.homeTeam?.id,
+      awayTeamId: game.awayTeam?.id
     }
-
-    // Check cache first
-    const cacheKey = `${leagueId}-${targetSeason}`
-    if (leagueTableCache[cacheKey]) {
-      setLeagueTable(leagueTableCache[cacheKey])
-      return
-    }
-
-    setTabsLoading(prev => ({ ...prev, table: true }))
-    try {
-      console.log('Loading league table with season:', targetSeason, 'league:', leagueId, 'from game league:', game.league)
-
-      const rankingsData = await apiClient.getRankings({
-        season: targetSeason,
-        league: leagueId,
-        leagueName: game.league?.name,
-        teamNames: [game.homeTeam?.name, game.awayTeam?.name].filter(Boolean)
-      })
-
-      if (rankingsData) {
-        const tableData = {
-          leagueId: leagueId,
-          leagueName: game.league?.name || 'League',
-          season: targetSeason,
-          standings: rankingsData.standings?.standings || [],
-          homeTeamId: game.homeTeam?.id,
-          awayTeamId: game.awayTeam?.id
-        }
-
-        // Cache the result
-        setLeagueTableCache(prev => ({
-          ...prev,
-          [cacheKey]: tableData
-        }))
-
-        setLeagueTable(tableData)
-      }
-    } catch (error) {
-      console.error('Error fetching league table:', error)
-    } finally {
-      setTabsLoading(prev => ({ ...prev, table: false }))
-    }
-  }, [game, selectedSeason, leagueTableCache])
+  }, [rankingsData, game, leagueId, targetSeason])
 
   // Season change handler
   const handleSeasonChange = useCallback((newSeason: string) => {
     setSelectedSeason(newSeason)
-    loadLeagueTable(newSeason)
-  }, [loadLeagueTable])
+  }, [])
 
-  // Auto-load league table when game data is available
-  useEffect(() => {
-    if (game && !selectedSeason) {
-      // Set initial selected season based on game date
-      // Handle cases where game.date or game.game_date might not be a valid date
-      let gameSeason: string
-      try {
-        // Try to use game.date first, then game.game_date, then fallback to current season
-        const dateToUse = game.date || game.game_date
-        if (dateToUse && typeof dateToUse === 'string' && !dateToUse.match(/^(heute|gestern|morgen|today|yesterday|tomorrow)$/i)) {
-          gameSeason = calculateSeasonYear(dateToUse).toString()
-        } else {
-          // Fallback to current season if date is not parseable
-          gameSeason = getCurrentSeasonYear().toString()
-        }
-      } catch (error) {
-        console.warn('Could not determine season from game date, using current season:', error)
-        gameSeason = getCurrentSeasonYear().toString()
-      }
-
-      setSelectedSeason(gameSeason)
-      loadLeagueTable(gameSeason)
-    }
-  }, [game, selectedSeason, loadLeagueTable])
 
   // Generate available seasons (only past and current seasons)
   const availableSeasons = useCallback(() => {
@@ -215,7 +141,7 @@ export default function GameDetail() {
   }
   useMetaTags(metaOptions)
 
-  if (loading) {
+  if (gameLoading) {
     return (
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
         {/* Game Header Skeleton */}
@@ -462,11 +388,7 @@ export default function GameDetail() {
                     )}
                   </div>
                   
-                  {tabsLoading.events ? (
-                    <GameTimelineSkeleton />
-                  ) : (
-                    <GameTimeline events={events} />
-                  )}
+                  <GameTimeline events={events} />
                 </div>
               )
             },
@@ -476,11 +398,11 @@ export default function GameDetail() {
               content: (
                 <LeagueTable
                   table={leagueTable}
-                  loading={tabsLoading.table}
+                  loading={rankingsLoading}
                   highlightTeamIds={leagueTable ? [leagueTable.homeTeamId, leagueTable.awayTeamId].filter(Boolean) : []}
                   availableSeasons={availableSeasons()}
                   onSeasonChange={handleSeasonChange}
-                  seasonSelectorDisabled={tabsLoading.table}
+                  seasonSelectorDisabled={rankingsLoading}
                 />
               )
             }

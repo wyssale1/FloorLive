@@ -1,5 +1,6 @@
-import { Shield } from 'lucide-react';
-import OptimizedImage from './OptimizedImage';
+import { Shield } from 'lucide-react'
+import { memo, useMemo } from 'react'
+import OptimizedImage from './OptimizedImage'
 
 interface TeamLogoProps {
   team: {
@@ -19,7 +20,7 @@ interface TeamLogoProps {
   variant?: 'default' | 'square'; // New prop for container variant
 }
 
-export default function TeamLogo({ 
+function TeamLogo({ 
   team, 
   size = 'small', 
   className = '', 
@@ -27,37 +28,35 @@ export default function TeamLogo({
   showSwissUnihockeyFallback = false,
   variant = 'default'
 }: TeamLogoProps) {
-  // Prepare image options for OptimizedImage
-  const imageOptions = {
+  // Prepare image options for OptimizedImage (memoized)
+  const imageOptions = useMemo(() => ({
     baseId: `team-${team.id}`,
     basePath: '/assets/teams',
     size: size as 'small' | 'large',
     providedUrls: team.logoUrls?.[size],
     fallbackUrl: showSwissUnihockeyFallback ? team.logo : undefined,
     enableResponsive: false // Teams logos don't need responsive variants
-  };
+  }), [team.id, team.logoUrls, size, showSwissUnihockeyFallback, team.logo])
 
-  // Size configurations
-  const sizeClasses = {
-    large: 'w-16 h-16',
-    small: 'w-5 h-5'
-  };
-
-  const iconSizes = {
-    large: 'w-12 h-12',
-    small: 'w-4 h-4'
-  };
-
-  // Container configurations for square variant
-  const containerClasses = {
-    large: 'w-16 h-16 sm:w-20 sm:h-20', // Match the current header sizes
-    small: 'w-8 h-8'
-  };
-
-  const logoClasses = {
-    large: 'w-12 h-12 sm:w-16 sm:h-16', // Match the current logo sizes inside containers
-    small: 'w-6 h-6'
-  };
+  // Size configurations (memoized constants)
+  const { sizeClasses, iconSizes, containerClasses, logoClasses } = useMemo(() => ({
+    sizeClasses: {
+      large: 'w-16 h-16',
+      small: 'w-5 h-5'
+    },
+    iconSizes: {
+      large: 'w-12 h-12',
+      small: 'w-4 h-4'
+    },
+    containerClasses: {
+      large: 'w-16 h-16 sm:w-20 sm:h-20',
+      small: 'w-8 h-8'
+    },
+    logoClasses: {
+      large: 'w-12 h-12 sm:w-16 sm:h-16',
+      small: 'w-6 h-6'
+    }
+  }), [])
 
   // Helper function to wrap content in square container
   const wrapInSquareContainer = (content: React.ReactNode) => {
@@ -73,18 +72,19 @@ export default function TeamLogo({
     );
   };
 
-  // Fallback icon when no logo is available
-  const FallbackIcon = fallbackIcon || (
-    <Shield className={`${iconSizes[size]} text-gray-400`} />
-  );
+  // Memoize fallback components
+  const FallbackIcon = useMemo(() =>
+    fallbackIcon || <Shield className={`${iconSizes[size]} text-gray-400`} />,
+    [fallbackIcon, iconSizes, size]
+  )
 
-  const fallbackComponent = (
+  const fallbackComponent = useMemo(() => (
     <div className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} flex items-center justify-center`}>
       {FallbackIcon}
     </div>
-  );
+  ), [variant, logoClasses, sizeClasses, size, FallbackIcon])
 
-  const logoElement = (
+  const logoElement = useMemo(() => (
     <OptimizedImage
       {...imageOptions}
       alt={`${team.name} logo`}
@@ -92,7 +92,10 @@ export default function TeamLogo({
       loading="lazy"
       fallbackComponent={fallbackComponent}
     />
-  );
+  ), [imageOptions, team.name, variant, logoClasses, sizeClasses, size, className, fallbackComponent])
 
-  return wrapInSquareContainer(logoElement);
+  return wrapInSquareContainer(logoElement)
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default memo(TeamLogo)

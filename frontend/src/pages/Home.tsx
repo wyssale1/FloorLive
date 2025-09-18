@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import GameSection from '../components/GameSection'
@@ -7,13 +7,14 @@ import WeekPicker from '../components/WeekPicker'
 import { format, parseISO } from 'date-fns'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags } from '../hooks/useMetaTags'
+import { useGamesByDate } from '../hooks/useQueries'
 
 export default function Home() {
   const navigate = useNavigate()
   const search = useSearch({ from: '/' })
-  
+
   // Get date from URL or default to today
-  const getInitialDate = () => {
+  const getInitialDate = useCallback(() => {
     if (search?.date && typeof search.date === 'string') {
       try {
         return parseISO(search.date)
@@ -22,13 +23,32 @@ export default function Home() {
       }
     }
     return new Date()
-  }
+  }, [search?.date])
 
   const [selectedDate, setSelectedDate] = useState(() => getInitialDate())
-  const [loading, setLoading] = useState(true)
+
+  // Format date for API call
+  const formattedDate = useMemo(() => format(selectedDate, 'yyyy-MM-dd'), [selectedDate])
+
+  // Use React Query for games data
+  const { data: games = [], isLoading, isError } = useGamesByDate(formattedDate)
+
+  // Group games by league (memoized)
+  const gamesByLeague = useMemo(() => {
+    const grouped: Record<string, any[]> = {}
+
+    games.forEach((game: { league?: { name?: string } }) => {
+      const leagueName = game.league?.name || 'Unknown League'
+      if (!grouped[leagueName]) {
+        grouped[leagueName] = []
+      }
+      grouped[leagueName].push(game)
+    })
+
+    return grouped
+  }, [games])
 
   // Set dynamic page title and meta tags
-  const formattedDate = format(selectedDate, 'yyyy-MM-dd')
   usePageTitle(pageTitles.home(formattedDate))
   useMetaTags({
     title: pageTitles.home(formattedDate),
@@ -36,14 +56,14 @@ export default function Home() {
     type: 'website'
   })
 
-  const handleDateSelect = (date: Date) => {
+  const handleDateSelect = useCallback((date: Date) => {
     setSelectedDate(date)
     // Update URL with selected date
     navigate({
       to: '/',
       search: { date: format(date, 'yyyy-MM-dd') }
     })
-  }
+  }, [navigate])
 
   // Update state when URL changes
   useEffect(() => {
@@ -51,157 +71,79 @@ export default function Home() {
     if (newDate.getTime() !== selectedDate.getTime()) {
       setSelectedDate(newDate)
     }
-  }, [search?.date])
-  
-  // Fetch games when date changes
-  useEffect(() => {
-    const fetchGames = async () => {
-      setLoading(true)
-      try {
-        const dateString = format(selectedDate, 'yyyy-MM-dd')
-        // Dynamic API URL detection for Tailscale development
-        const getApiBaseUrl = () => {
-          // First check if explicitly set via environment
-          if (import.meta.env.VITE_API_URL) {
-            return import.meta.env.VITE_API_URL;
-          }
-          
-          // In development, detect if we're running on Tailscale network
-          if (import.meta.env.DEV) {
-            const currentHost = window.location.hostname;
-            
-            // Check if we're on a network IP (not localhost)
-            if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
-              // Use Tailscale IP for backend
-              return `http://100.99.89.57:3001/api`;
-            }
-          }
-          
-          // Default fallback
-          return 'http://localhost:3001/api';
-        };
-        
-        const API_BASE_URL = getApiBaseUrl();
-        const response = await fetch(`${API_BASE_URL}/games?date=${dateString}`)
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        
-        const data = await response.json()
-        
-        // Convert backend format to frontend format, preserving league structure
-        const allGames: any[] = []
-        const gamesByLeague: Record<string, any[]> = {}
-        
-        Object.entries(data.gamesByLeague).forEach(([leagueName, games]: [string, any]) => {
-          const adaptedGames = games.map((game: any) => ({
-            id: game.id,
-            homeTeam: {
-              id: game.home_team.id,
-              name: game.home_team.name,
-              shortName: game.home_team.short_name,
-              logo: game.home_team.logo,
-              logoUrls: game.home_team.logoUrls
-            },
-            awayTeam: {
-              id: game.away_team.id,
-              name: game.away_team.name,
-              shortName: game.away_team.short_name,
-              logo: game.away_team.logo,
-              logoUrls: game.away_team.logoUrls
-            },
-            homeScore: game.home_score,
-            awayScore: game.away_score,
-            status: game.status,
-            period: game.period,
-            time: game.time,
-            league: leagueName,
-            startTime: game.start_time,
-            gameDate: game.game_date,
-            isLive: game.status === 'live'
-          }))
-          
-          gamesByLeague[leagueName] = adaptedGames
-          allGames.push(...adaptedGames)
-        })
-        
-        setGamesByLeague(gamesByLeague)
-        setLeaguesForDate(data.leagues || [])
-        
-      } catch (error) {
-        console.error('Error fetching games:', error)
-        setGamesByLeague({})
-        setLeaguesForDate([])
-      } finally {
-        setLoading(false)
-      }
-    }
+  }, [search?.date, selectedDate, getInitialDate])
 
-    fetchGames()
-  }, [selectedDate])
-  
-  
-  const [gamesByLeague, setGamesByLeague] = useState<Record<string, any[]>>({})
-  
-  // Get leagues for rendering (use backend-provided order)
-  const [leaguesForDate, setLeaguesForDate] = useState<string[]>([])
-  
-  const renderLeagueSection = (league: string, index: number) => {
-    const leagueGames = gamesByLeague[league] || []
-    
+  if (isError) {
     return (
-      <GameSection
-        key={league}
-        title={league}
-        games={leagueGames}
-        index={index}
-      />
+      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
+        <div className="text-center py-12">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Unable to load games</h2>
+          <p className="text-gray-600 mb-4">
+            There was an error loading games for {format(selectedDate, 'MMMM d, yyyy')}.
+          </p>
+          <p className="text-sm text-gray-500">
+            Please check your connection and try again.
+          </p>
+        </div>
+      </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
-      {/* Week Picker */}
-      <WeekPicker 
-        selectedDate={selectedDate} 
-        onDateSelect={handleDateSelect}
-      />
-      
-      {/* Games by League */}
-      {loading ? (
-        <div className="space-y-8">
-          {/* Skeleton for different leagues */}
-          {Array(3).fill(0).map((_, leagueIndex) => (
-            <motion.section
-              key={`skeleton-league-${leagueIndex}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: leagueIndex * 0.1 }}
-            >
-              <GameCardSkeleton 
-                variant="section" 
-                count={leagueIndex === 0 ? 4 : leagueIndex === 1 ? 3 : 2} 
-              />
-            </motion.section>
-          ))}
-        </div>
-      ) : leaguesForDate.length > 0 ? (
-        <div>
-          {leaguesForDate.map((league, index) => renderLeagueSection(league, index))}
-        </div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-12"
-        >
-          <div className="text-gray-400 text-lg mb-2">No games scheduled</div>
-          <div className="text-gray-500 text-sm">
-            Try selecting a different date
+    <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
+      {/* Week Navigation */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="mb-4 sm:mb-6"
+      >
+        <WeekPicker
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+        />
+      </motion.div>
+
+      {/* Games Content */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        {isLoading ? (
+          <div className="space-y-6">
+            <GameCardSkeleton variant="section" />
+            <GameCardSkeleton variant="section" />
+            <GameCardSkeleton variant="section" />
           </div>
-        </motion.div>
-      )}
+        ) : Object.keys(gamesByLeague).length === 0 ? (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">No games scheduled</h2>
+            <p className="text-gray-600">
+              There are no games scheduled for {format(selectedDate, 'MMMM d, yyyy')}.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {Object.entries(gamesByLeague)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([leagueName, leagueGames], index) => (
+                <motion.div
+                  key={leagueName}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <GameSection
+                    title={leagueName}
+                    games={leagueGames}
+                    index={index}
+                  />
+                </motion.div>
+              ))}
+          </div>
+        )}
+      </motion.div>
     </div>
   )
 }

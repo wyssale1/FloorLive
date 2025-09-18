@@ -44,12 +44,14 @@ class ApiClient {
       
       const data: ApiResponse<Game> = await response.json();
       
-      // Flatten all games from all leagues
-      const allGames: Game[] = [];
+      // Flatten all games from all leagues and transform them
+      const allGames: any[] = [];
       Object.values(data.gamesByLeague).forEach(games => {
-        allGames.push(...games);
+        games.forEach(game => {
+          allGames.push(this.adaptGameForFrontend(game));
+        });
       });
-      
+
       return allGames;
     } catch (error) {
       console.error('Error fetching games by date:', error);

@@ -1,11 +1,11 @@
 import { Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Shield } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { memo, useMemo, useCallback } from 'react'
 import type { Game } from '../lib/mockData'
 import { cn } from '../lib/utils'
-import { determineGameLiveStatus, shouldPollGameForUpdates, type LiveGameStatus } from '../lib/liveGameUtils'
-import { apiClient } from '../lib/apiClient'
+import { determineGameLiveStatus, shouldPollGameForUpdates } from '../lib/liveGameUtils'
+import { useGameEvents } from '../hooks/useQueries'
 import TeamLogo from './TeamLogo'
 import LiveBadge from './LiveBadge'
 
@@ -17,74 +17,42 @@ interface GameCardProps {
   currentGameId?: string // For highlighting the currently viewed game
 }
 
+function GameCard({ game, className, showDate = false, noPaddingOnMobile = false, currentGameId }: GameCardProps) {
+  // Check if we should fetch events for live detection
+  const shouldFetchEvents = useMemo(() => {
+    const initialStatus = determineGameLiveStatus(game, [])
+    return shouldPollGameForUpdates(initialStatus) || initialStatus.status === 'live'
+  }, [game])
 
-export default function GameCard({ game, className, showDate = false, noPaddingOnMobile = false, currentGameId }: GameCardProps) {
-  const [liveStatus, setLiveStatus] = useState<LiveGameStatus>(() => 
-    determineGameLiveStatus(game, [])
-  )
+  // Only fetch events if the game might be live
+  const { data: events = [] } = useGameEvents(game.id, shouldFetchEvents)
 
-  // Check for live status on mount and when game changes
-  useEffect(() => {
-    const checkLiveStatus = async () => {
-      try {
-        console.log(`=== GAMECARD FLOW for ${game.homeTeam?.name} vs ${game.awayTeam?.name} ===`)
-        const initialStatus = determineGameLiveStatus(game, [])
-        console.log('1. Initial status (no events):', initialStatus)
-        console.log('2. shouldPollGameForUpdates:', shouldPollGameForUpdates(initialStatus))
-        console.log('3. initialStatus.status === "live":', initialStatus.status === 'live')
-        
-        // If game might be live, fetch events for accurate detection
-        if (shouldPollGameForUpdates(initialStatus) || initialStatus.status === 'live') {
-          console.log('4. Fetching events for game...')
-          try {
-            const events = await apiClient.getGameEvents(game.id)
-            console.log('5. Retrieved events:', events.length)
-            const liveStatusWithEvents = determineGameLiveStatus(game, events)
-            console.log('6. Final status (with events):', liveStatusWithEvents)
-            setLiveStatus(liveStatusWithEvents)
-          } catch (error) {
-            console.error('Error checking live status for game', game.id, error)
-            console.log('7. Using initial status due to error')
-            setLiveStatus(initialStatus)
-          }
-        } else {
-          console.log('4. Using initial status (not polling)')
-          setLiveStatus(initialStatus)
-        }
-        console.log(`=== END GAMECARD FLOW ===`)
-      } catch (error) {
-        console.error('Error determining live status:', error)
-      }
-    }
+  // Calculate live status with events
+  const liveStatus = useMemo(() => {
+    return determineGameLiveStatus(game, events)
+  }, [game, events])
 
-    checkLiveStatus()
-  }, [game.id, game.startTime, game.gameDate])
+  // Memoize computed values
+  const { isLive, isUpcoming, hasScores, isCurrentGame } = useMemo(() => ({
+    isLive: liveStatus.isLive,
+    isUpcoming: game.status === 'upcoming',
+    hasScores: liveStatus.isLive || game.status === 'finished' || (game.homeScore !== null || game.awayScore !== null) || (liveStatus.homeScore !== null || liveStatus.awayScore !== null),
+    isCurrentGame: currentGameId === game.id
+  }), [liveStatus.isLive, game.status, game.homeScore, game.awayScore, liveStatus.homeScore, liveStatus.awayScore, currentGameId, game.id])
 
-  const isLive = liveStatus.isLive
-  const isUpcoming = game.status === 'upcoming'
-  const hasScores = isLive || game.status === 'finished' || (game.homeScore !== null || game.awayScore !== null) || (liveStatus.homeScore !== null || liveStatus.awayScore !== null)
-  const isCurrentGame = currentGameId === game.id
-  
-  // Debug logging
-  console.log(`GameCard for ${game.homeTeam?.name} vs ${game.awayTeam?.name}:`)
-  console.log(`- isLive: ${isLive}`)
-  console.log(`- liveStatus:`, liveStatus)
-  console.log(`- hasScores: ${hasScores}`)
-  console.log(`- game.homeScore: ${game.homeScore}, game.awayScore: ${game.awayScore}`)
-  
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('de-CH', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+    return date.toLocaleDateString('de-CH', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     })
-  }
+  }, [])
 
-  // Determine winner for finished games
-  const getWinner = () => {
+  // Determine winner for finished games (memoized)
+  const winner = useMemo(() => {
     let homeScore, awayScore
-    
+
     if (isLive) {
       // For live games, prefer live scores
       homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
@@ -94,16 +62,14 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       homeScore = game.homeScore !== null ? game.homeScore : liveStatus.homeScore
       awayScore = game.awayScore !== null ? game.awayScore : liveStatus.awayScore
     }
-    
+
     if (game.status === 'upcoming' || homeScore === null || awayScore === null) return null
     if (homeScore > awayScore) return 'home'
-    if (awayScore > homeScore) return 'away' 
+    if (awayScore > homeScore) return 'away'
     return null // tie
-  }
-  
-  const winner = getWinner()
+  }, [isLive, liveStatus.homeScore, liveStatus.awayScore, game.homeScore, game.awayScore, game.status])
 
-  const renderLeftContent = () => {
+  const renderLeftContent = useCallback(() => {
     if (isUpcoming) {
       return (
         <div className="flex flex-col items-center">
@@ -113,7 +79,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
     }
     if (hasScores) {
       let homeScore, awayScore
-      
+
       if (isLive) {
         // For live games, prefer live scores
         homeScore = liveStatus.homeScore !== null ? liveStatus.homeScore : game.homeScore
@@ -123,7 +89,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
         homeScore = game.homeScore !== null ? game.homeScore : liveStatus.homeScore
         awayScore = game.awayScore !== null ? game.awayScore : liveStatus.awayScore
       }
-      
+
       return (
         <div className={`flex items-center ${isLive ? 'space-x-2' : 'justify-center'}`}>
           <div className="space-y-1">
@@ -144,9 +110,9 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
       )
     }
     return null
-  }
+  }, [isUpcoming, game.startTime, hasScores, isLive, game.homeScore, game.awayScore, winner, liveStatus])
 
-  const renderTeamLine = (team: any, isHomeTeam: boolean) => {
+  const renderTeamLine = useCallback((team: { id: string; name: string; shortName?: string; logo?: string; isCurrentTeam?: boolean }, isHomeTeam: boolean) => {
     const isWinner = winner === (isHomeTeam ? 'home' : 'away')
     const isLoser = winner !== null && !isWinner
 
@@ -171,7 +137,7 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
         </span>
       </div>
     )
-  }
+  }, [winner, isUpcoming])
 
   return (
     <Link to="/game/$gameId" params={{ gameId: game.id }} className="block">
@@ -184,26 +150,26 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
           className
         )}
       >
-        
+
         {/* Main content */}
         <div className="flex items-center">
           {/* Left side - Always present for consistent height */}
           <div className="min-w-[40px] text-center mr-3">
             {renderLeftContent()}
           </div>
-          
+
           {/* Teams */}
           <div className="flex-1 min-w-0 space-y-2">
             {renderTeamLine(game.homeTeam, true)}
             {renderTeamLine(game.awayTeam, false)}
           </div>
-          
+
           {/* Date display if enabled */}
           {showDate && game.gameDate && (
             <div className="ml-3 flex-shrink-0">
               <div className={`px-2 py-1 rounded text-xs font-medium ${
-                isCurrentGame 
-                  ? 'bg-blue-100 text-blue-700' 
+                isCurrentGame
+                  ? 'bg-blue-100 text-blue-700'
                   : 'bg-gray-100 text-gray-600'
               }`}>
                 {formatDate(game.gameDate)}
@@ -227,3 +193,6 @@ export default function GameCard({ game, className, showDate = false, noPaddingO
     </Link>
   )
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default memo(GameCard)

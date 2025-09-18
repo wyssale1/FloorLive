@@ -1,8 +1,7 @@
 import { useParams } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Users, Trophy, Target, Globe, User, Hash, Calendar } from 'lucide-react'
-import { useState, useEffect, useCallback } from 'react'
-import { apiClient } from '../lib/apiClient'
+import { useState, useCallback, useMemo } from 'react'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { extractLeagueId } from '../lib/utils'
 import TeamLogo from '../components/TeamLogo'
@@ -17,6 +16,7 @@ import PlayerImage from '../components/PlayerImage'
 import TeamPlayersLegend from '../components/TeamPlayersLegend'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
+import { useTeamDetail, useTeamPlayers, useTeamStatistics, useTeamUpcomingGames, useRankings } from '../hooks/useQueries'
 
 function groupPlayersByPosition(players: any[]) {
   const categories = {
@@ -47,45 +47,14 @@ function groupPlayersByPosition(players: any[]) {
 
 export default function TeamDetail() {
   const { teamId } = useParams({ from: '/team/$teamId' })
-  const [team, setTeam] = useState<any>(null)
-  const [players, setPlayers] = useState<any[]>([])
-  const [statistics, setStatistics] = useState<any>(null)
-  const [upcomingGames, setUpcomingGames] = useState<any[]>([])
-  const [leagueTables, setLeagueTables] = useState<any[]>([])
   const [selectedSeason, setSelectedSeason] = useState<string>('')
-  const [leagueTableCache, setLeagueTableCache] = useState<Record<string, any>>({})
-  const [loading, setLoading] = useState(true)
-  const [tabsLoading, setTabsLoading] = useState({
-    players: false,
-    tables: false,
-    games: false
-  })
+
+  // Use React Query hooks for all data fetching
+  const { data: team, isLoading: teamLoading } = useTeamDetail(teamId)
+  const { data: players = [], isLoading: playersLoading } = useTeamPlayers(teamId)
+  const { data: statistics, isLoading: statisticsLoading } = useTeamStatistics(teamId)
+  const { data: upcomingGames = [], isLoading: gamesLoading } = useTeamUpcomingGames(teamId, false) // Lazy load
   
-  useEffect(() => {
-    const fetchTeamData = async () => {
-      setLoading(true)
-      try {
-        const teamData = await apiClient.getTeamDetails(teamId)
-        setTeam(teamData)
-        
-        // Initial load of players (for default tab)
-        setTabsLoading(prev => ({ ...prev, players: true }))
-        const playersData = await apiClient.getTeamPlayers(teamId)
-        setPlayers(playersData)
-        setTabsLoading(prev => ({ ...prev, players: false }))
-        
-        // Also load statistics for team info
-        const statsData = await apiClient.getTeamStatistics(teamId)
-        setStatistics(statsData)
-      } catch (error) {
-        console.error('Error fetching team data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    fetchTeamData()
-  }, [teamId])
 
   // Set dynamic page title and meta tags when team data is loaded
   const pageTitle = team ? pageTitles.team(team.name) : 'Team Details'
@@ -102,109 +71,41 @@ export default function TeamDetail() {
   }
   useMetaTags(metaOptions)
 
-  const loadLeagueTables = useCallback(async (season?: string) => {
-    if (!team) return // No team data
+  // Calculate target season and league for rankings
+  const targetSeason = selectedSeason || getCurrentSeasonYear().toString()
+  const leagueId = useMemo(() => team ? extractLeagueId(team.league) : null, [team])
 
-    // Determine target season
-    const targetSeason = season || selectedSeason || getCurrentSeasonYear().toString()
-    const leagueId = extractLeagueId(team?.league)
+  // Use React Query for league rankings
+  const {
+    data: rankingsData,
+    isLoading: rankingsLoading,
+    isError: rankingsError
+  } = useRankings({
+    season: targetSeason,
+    league: leagueId || undefined,
+    leagueName: team?.league?.name,
+    teamNames: team ? [team.name].filter(Boolean) : undefined
+  }, false) // Lazy load rankings
 
-    // Check cache first
-    const cacheKey = leagueId ? `${leagueId}-${targetSeason}` : `general-${targetSeason}`
-    if (leagueTableCache[cacheKey]) {
-      setLeagueTables([leagueTableCache[cacheKey]])
-      return
+  // Transform rankings data to table format
+  const leagueTables = useMemo(() => {
+    if (!rankingsData || !team) return []
+
+    const tableData = {
+      leagueId: leagueId || 'general',
+      leagueName: team.league?.name || 'League',
+      season: targetSeason,
+      standings: rankingsData.standings?.standings || [],
+      currentTeamId: teamId
     }
 
-    setTabsLoading(prev => ({ ...prev, tables: true }))
-    try {
-      console.log('Loading league table with season:', targetSeason, 'league:', leagueId, 'from team league:', team?.league)
-
-      // First try to get rankings for the team's league if available
-      let rankingsData = null
-
-      if (leagueId) {
-        rankingsData = await apiClient.getRankings({
-          season: targetSeason,
-          league: leagueId,
-          leagueName: team.league?.name,
-          teamNames: [team.name].filter(Boolean)
-        })
-      } else {
-        console.warn('No league information available for team:', team?.league)
-      }
-
-      // If team league rankings not available, try general season rankings
-      if (!rankingsData) {
-        rankingsData = await apiClient.getRankings({
-          season: targetSeason
-        })
-      }
-
-      if (rankingsData && rankingsData.standings) {
-        const tableData = {
-          leagueId: leagueId || 'general',
-          leagueName: team.league?.name || 'League',
-          season: targetSeason,
-          standings: rankingsData.standings?.standings || rankingsData.standings || [],
-          currentTeamId: teamId
-        }
-
-        // Cache the result
-        setLeagueTableCache(prev => ({
-          ...prev,
-          [cacheKey]: tableData
-        }))
-
-        setLeagueTables([tableData])
-      } else {
-        // Fallback: try competitions approach if main ranking methods fail
-        const competitionsData = await apiClient.getTeamCompetitions(teamId)
-
-        const tablePromises = competitionsData.map(async (competition: any) => {
-          try {
-            const rankingsForCompetition = await apiClient.getRankings({
-              season: targetSeason,
-              league: competition.id
-            })
-            return rankingsForCompetition ? {
-              ...rankingsForCompetition,
-              leagueId: competition.id,
-              leagueName: competition.name,
-              season: targetSeason,
-              currentTeamId: teamId
-            } : null
-          } catch (error) {
-            console.error(`Error loading rankings for ${competition.name}:`, error)
-            return null
-          }
-        })
-
-        const tables = await Promise.all(tablePromises)
-        const validTables = tables.filter(table => table !== null)
-        setLeagueTables(validTables)
-
-        // Cache the results
-        validTables.forEach(table => {
-          const key = `${table.leagueId}-${targetSeason}`
-          setLeagueTableCache(prev => ({
-            ...prev,
-            [key]: table
-          }))
-        })
-      }
-    } catch (error) {
-      console.error('Error fetching league tables:', error)
-    } finally {
-      setTabsLoading(prev => ({ ...prev, tables: false }))
-    }
-  }, [team, selectedSeason, leagueTableCache, teamId])
+    return [tableData]
+  }, [rankingsData, team, leagueId, targetSeason, teamId])
 
   // Season change handler
   const handleSeasonChange = useCallback((newSeason: string) => {
     setSelectedSeason(newSeason)
-    loadLeagueTables(newSeason)
-  }, [loadLeagueTables])
+  }, [])
 
   // Generate available seasons
   const availableSeasons = useCallback(() => {
@@ -224,30 +125,11 @@ export default function TeamDetail() {
     return seasons
   }, [team])
 
-  // Auto-load league table when team data is available and set initial season
-  useEffect(() => {
-    if (team && !selectedSeason) {
-      const currentSeasonYear = getCurrentSeasonYear().toString()
-      setSelectedSeason(currentSeasonYear)
-      loadLeagueTables(currentSeasonYear)
-    }
-  }, [team, selectedSeason, loadLeagueTables])
 
-  const loadUpcomingGames = async () => {
-    if (upcomingGames.length > 0) return // Already loaded
-    
-    setTabsLoading(prev => ({ ...prev, games: true }))
-    try {
-      const gamesData = await apiClient.getTeamUpcomingGames(teamId)
-      setUpcomingGames(gamesData)
-    } catch (error) {
-      console.error('Error fetching upcoming games:', error)
-    } finally {
-      setTabsLoading(prev => ({ ...prev, games: false }))
-    }
-  }
+  // Lazy load upcoming games when tab is selected
+  const { refetch: loadUpcomingGames } = useTeamUpcomingGames(teamId, false)
   
-  if (loading) {
+  if (teamLoading) {
     return (
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
         {/* Team Header Skeleton */}
@@ -364,7 +246,7 @@ export default function TeamDetail() {
                   )}
                 </div>
                 
-                {tabsLoading.players ? (
+                {playersLoading ? (
                   <PlayerListSkeleton />
                 ) : players.length === 0 ? (
                   <div className="text-center py-12">
@@ -459,11 +341,8 @@ export default function TeamDetail() {
             value: 'tables',
             label: 'League Tables',
             content: (
-              <div
-                onFocus={() => loadLeagueTables()}
-                onClick={() => loadLeagueTables()}
-              >
-                {tabsLoading.tables ? (
+              <div>
+                {rankingsLoading ? (
                   <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
                     <div className="space-y-4">
                       <Skeleton className="h-6 w-48 mb-6" />
@@ -506,7 +385,7 @@ export default function TeamDetail() {
                           currentTeamId={teamId}
                           availableSeasons={availableSeasons()}
                           onSeasonChange={handleSeasonChange}
-                          seasonSelectorDisabled={tabsLoading.tables}
+                          seasonSelectorDisabled={rankingsLoading}
                         />
                       </motion.div>
                     ))}
@@ -518,7 +397,7 @@ export default function TeamDetail() {
           {
             value: 'games',
             label: 'Upcoming Games',
-            onTabSelect: loadUpcomingGames,
+            onTabSelect: () => loadUpcomingGames(),
             content: (
               <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-4 sm:p-6">
                 <div className="flex items-center space-x-2 mb-4">
@@ -529,7 +408,7 @@ export default function TeamDetail() {
                   </span>
                 </div>
 
-                {tabsLoading.games ? (
+                {gamesLoading ? (
                   <GameCardSkeleton variant="list" count={3} />
                 ) : upcomingGames.length > 0 ? (
                   <GameList games={upcomingGames} showSeparators={true} showDate={true} noPaddingOnMobile={true} />
