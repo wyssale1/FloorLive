@@ -1,5 +1,5 @@
 import { Shield } from 'lucide-react';
-import { useOptimalLogoUrl } from '../hooks/useLogo';
+import OptimizedImage from './OptimizedImage';
 
 interface TeamLogoProps {
   team: {
@@ -27,8 +27,15 @@ export default function TeamLogo({
   showSwissUnihockeyFallback = false,
   variant = 'default'
 }: TeamLogoProps) {
-  const logoUrls = team.logoUrls?.[size];
-  const optimalUrl = useOptimalLogoUrl(logoUrls);
+  // Prepare image options for OptimizedImage
+  const imageOptions = {
+    baseId: `team-${team.id}`,
+    basePath: '/assets/teams',
+    size: size as 'small' | 'large',
+    providedUrls: team.logoUrls?.[size],
+    fallbackUrl: showSwissUnihockeyFallback ? team.logo : undefined,
+    enableResponsive: false // Teams logos don't need responsive variants
+  };
 
   // Size configurations
   const sizeClasses = {
@@ -66,44 +73,26 @@ export default function TeamLogo({
     );
   };
 
-  // First priority: Optimized logos (our processed logos)
-  if (optimalUrl) {
-    const logoElement = (
-      <img
-        src={optimalUrl}
-        alt={`${team.name} logo`}
-        className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} object-contain ${variant !== 'square' ? className : ''}`}
-        loading="lazy"
-      />
-    );
-
-    return wrapInSquareContainer(logoElement);
-  }
-
-  // Second priority: Swiss Unihockey logo (only if allowed by context)
-  if (showSwissUnihockeyFallback && team.logo) {
-    const logoElement = (
-      <img
-        src={team.logo}
-        alt={`${team.name} logo`}
-        className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} object-contain ${variant !== 'square' ? className : ''}`}
-        loading="lazy"
-      />
-    );
-
-    return wrapInSquareContainer(logoElement);
-  }
-
-  // Final fallback: Icon placeholder
+  // Fallback icon when no logo is available
   const FallbackIcon = fallbackIcon || (
     <Shield className={`${iconSizes[size]} text-gray-400`} />
   );
 
-  const fallbackElement = (
-    <div className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} flex items-center justify-center ${variant !== 'square' ? className : ''}`}>
+  const fallbackComponent = (
+    <div className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} flex items-center justify-center`}>
       {FallbackIcon}
     </div>
   );
 
-  return wrapInSquareContainer(fallbackElement);
+  const logoElement = (
+    <OptimizedImage
+      {...imageOptions}
+      alt={`${team.name} logo`}
+      className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} object-contain ${variant !== 'square' ? className : ''}`}
+      loading="lazy"
+      fallbackComponent={fallbackComponent}
+    />
+  );
+
+  return wrapInSquareContainer(logoElement);
 }

@@ -1,6 +1,6 @@
 import { User } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useResponsiveImage } from '../hooks/useResponsiveImage';
+import OptimizedImage from './OptimizedImage';
+import { convertImageInfo } from '../lib/imageUtils';
 
 interface PlayerImageProps {
   player: {
@@ -25,10 +25,10 @@ interface PlayerImageProps {
   };
 }
 
-export default function PlayerImage({ 
-  player, 
-  size = 'medium', 
-  className = '', 
+export default function PlayerImage({
+  player,
+  size = 'medium',
+  className = '',
   fallbackIcon,
   onClick,
   hideCursor = false,
@@ -36,8 +36,6 @@ export default function PlayerImage({
   showNumberBadge = false,
   imageInfo
 }: PlayerImageProps) {
-  const [imageError, setImageError] = useState(false);
-  const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null);
 
   // Size configurations
   const sizeClasses = {
@@ -58,99 +56,26 @@ export default function PlayerImage({
     small: 'w-4 h-4 text-[8px]'
   };
 
-  // Set processed image URL from team-provided data or API fallback
-  useEffect(() => {
-    // Reset state when player changes
-    setImageError(false);
-    setProcessedImageUrl(null);
+  // Convert imageInfo to the new format
+  const providedUrls = convertImageInfo(imageInfo, size === 'large' ? 'medium' : 'small');
 
-    if (!player.id) {
-      return;
-    }
+  // Determine image options for OptimizedImage
+  const imageOptions = {
+    // Use processed images if we have a player ID
+    baseId: player.id,
+    basePath: '/assets/players',
+    size: (size === 'large' ? 'medium' : 'small') as 'small' | 'medium',
 
-    // First priority: Use image URLs provided by team API
-    if (imageInfo?.hasImage && imageInfo.smallImageUrls) {
-      // For small size, use the small URLs provided
-      // For medium/large sizes, we still use small URLs for team lists (they're already appropriate size)
-      const preferredUrl = 
-        imageInfo.smallImageUrls.avif || 
-        imageInfo.smallImageUrls.webp || 
-        imageInfo.smallImageUrls.png;
-      
-      if (preferredUrl) {
-        setProcessedImageUrl(preferredUrl);
-        return;
-      }
-    }
+    // Use provided URLs if available
+    providedUrls,
 
-    // Fallback: Check individual player API (for cases where imageInfo wasn't provided)
-    if (!imageInfo?.hasImage) {
-      const checkProcessedImages = async () => {
-        try {
-          const response = await fetch(`/api/players/${player.id}/images`);
-          if (response.ok) {
-            const data = await response.json();
-            if (data.hasImage && data.imagePaths) {
-              // Try to get the best image format for the current size
-              const sizeKey = size === 'large' ? 'medium' : 'small'; // Map large to medium for processed images
-              const imagePaths = data.imagePaths[sizeKey];
-              
-              if (imagePaths) {
-                // Prefer AVIF, then WebP, then PNG
-                const preferredUrl = 
-                  imagePaths.avif || 
-                  imagePaths.webp || 
-                  imagePaths.png;
-                
-                if (preferredUrl) {
-                  setProcessedImageUrl(preferredUrl);
-                }
-              }
-            }
-          }
-        } catch {
-          // Silently fail - we'll fall back to original image or placeholder
-          console.debug('Could not fetch processed image for player:', player.id);
-        }
-      };
+    // Fallback to legacy profile image
+    legacyUrl: player.profileImage,
 
-      checkProcessedImages();
-    }
-  }, [player.id, size, imageInfo]);
-
-  // Use responsive images for processed images
-  const responsiveImage = useResponsiveImage({
-    baseUrl: processedImageUrl || player.profileImage || '',
-    size: size === 'large' ? 'medium' : 'small', // Map large to medium for processed images
-    playerId: processedImageUrl ? player.id : undefined // Only use responsive for processed images
-  });
-
-  // Determine which image to show (prioritize processed images)
-  const imageUrl = processedImageUrl || player.profileImage;
+    enableResponsive: true
+  };
   
-  // If we have an image and no error, show it
-  if (imageUrl && !imageError) {
-    return (
-      <div className={`relative inline-block ${className}`}>
-        <img
-          src={responsiveImage.src}
-          srcSet={responsiveImage.srcSet}
-          alt={`${player.name} portrait`}
-          className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`}
-          loading="lazy"
-          onError={() => setImageError(true)}
-          onClick={onClick}
-        />
-        {showNumberBadge && jerseyNumber && (
-          <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
-            {jerseyNumber}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Fallback: Jersey number or icon
+  // Fallback component for when no image is available
   const FallbackIcon = fallbackIcon || (jerseyNumber ? (
     <span className="text-xs font-medium text-gray-700">
       {jerseyNumber}
@@ -159,12 +84,28 @@ export default function PlayerImage({
     <User className={`${iconSizes[size]} text-gray-400`} />
   ));
 
-  return (
-    <div 
-      className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center ${onClick && !hideCursor ? 'cursor-pointer' : ''} ${className}`}
-      onClick={onClick}
-    >
+  const fallbackComponent = (
+    <div className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center`}>
       {FallbackIcon}
     </div>
   );
+
+  return (
+    <div className={`relative inline-block ${className}`}>
+      <OptimizedImage
+        {...imageOptions}
+        alt={`${player.name} portrait`}
+        className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`}
+        loading="lazy"
+        onClick={onClick}
+        fallbackComponent={fallbackComponent}
+      />
+      {showNumberBadge && jerseyNumber && (
+        <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
+          {jerseyNumber}
+        </div>
+      )}
+    </div>
+  );
+
 }
