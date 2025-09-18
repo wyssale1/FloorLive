@@ -25,7 +25,9 @@ function RootComponent() {
       <MenuProvider>
         <div className="min-h-screen bg-gray-50/30">
           <Header />
-          <Outlet />
+          <div className="pt-14">
+            <Outlet />
+          </div>
         </div>
       </MenuProvider>
     </ErrorBoundary>

@@ -106,7 +106,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
     clearSearch()
   }
 
-  // Handle escape key
+  // Handle escape key and body scroll
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -116,19 +116,19 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
 
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown)
-      // Prevent body scroll when menu is open
+      // Prevent body scroll when menu is open and store original value
+      const originalOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
-    } else {
-      // Restore body scroll when menu is closed
-      document.body.style.overflow = 'unset'
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown)
+        // Restore original overflow value
+        document.body.style.overflow = originalOverflow || ''
+      }
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
-      // Only restore scroll if component unmounts while menu is open
-      if (isOpen) {
-        document.body.style.overflow = 'unset'
-      }
     }
   }, [isOpen, closeMenu])
 

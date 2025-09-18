@@ -76,7 +76,7 @@ export default function Header() {
   return (
     <>
       {/* Fixed Header Bar */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50 h-14">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 fixed top-0 left-0 right-0 z-50 h-14">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Left Section - Dynamic Back Button */}
           <div className="flex items-center w-20">
@@ -197,6 +197,7 @@ export default function Header() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 bg-white/80 backdrop-blur-sm z-40"
+            style={{ touchAction: 'none' }}
           >
             {/* Menu Content */}
             <motion.div
