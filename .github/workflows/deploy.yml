@@ -84,3 +84,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./backend-deploy/
           server-dir: /app/floorlive_backend/
+
+      - name: Restart Node.js Application in cPanel
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          key: ${{ secrets.CPANEL_SSH_KEY }}
+          script: |
+            # Navigate to app directory and restart using CloudLinux Node.js Selector
+            cd ~/app/floorlive_backend
+            cloudlinux-selector restart --json --interpreter nodejs --app-root ~/app/floorlive_backend
