@@ -92,14 +92,15 @@ export default function PlayerImage({
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <OptimizedImage
-        {...imageOptions}
-        alt={`${player.name} portrait`}
-        className={`${sizeClasses[size]} rounded-full object-cover bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`}
-        loading="lazy"
-        onClick={onClick}
-        fallbackComponent={fallbackComponent}
-      />
+      <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`} onClick={onClick}>
+        <OptimizedImage
+          {...imageOptions}
+          alt={`${player.name} portrait`}
+          className="w-full h-full object-cover"
+          loading="lazy"
+          fallbackComponent={fallbackComponent}
+        />
+      </div>
       {showNumberBadge && jerseyNumber && (
         <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
           {jerseyNumber}

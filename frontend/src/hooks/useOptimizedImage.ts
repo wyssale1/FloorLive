@@ -105,12 +105,12 @@ export function useOptimizedImage(options: OptimizedImageOptions): OptimizedImag
    * Generate srcSet string for a format
    */
   const generateSrcSet = (format: string, baseUrl?: string): string => {
-    // If we have a base URL (provided), use it directly
-    if (baseUrl) {
+    // If we have a base URL (provided), check if we should fall back to generated responsive URLs
+    if (baseUrl && !baseId) {
       return baseUrl;
     }
 
-    // Generate responsive URLs for processed images
+    // Generate responsive URLs for processed images (prioritize these over provided URLs for better resolution support)
     if (baseId && enableResponsive) {
       const urls = generateResponsiveUrls(format);
       const srcSetParts: string[] = [];
@@ -122,6 +122,11 @@ export function useOptimizedImage(options: OptimizedImageOptions): OptimizedImag
       return srcSetParts.join(', ');
     }
 
+    // Fallback to single URL if no baseId or responsive disabled
+    if (baseUrl) {
+      return baseUrl;
+    }
+
     return '';
   };
 
@@ -131,19 +136,25 @@ export function useOptimizedImage(options: OptimizedImageOptions): OptimizedImag
   const getFallbackUrl = (): string => {
     const support = getCachedFormatSupport();
 
-    // Priority 1: Provided URLs with format preference
+    // Priority 1: Generated URLs for processed images (with responsive support)
+    if (baseId) {
+      // Get the best format
+      let format = 'png';
+      if (support.avif) format = 'avif';
+      else if (support.webp) format = 'webp';
+
+      const urls = generateResponsiveUrls(format);
+      if (devicePixelRatio >= 3 && urls['3x']) return urls['3x'];
+      if (devicePixelRatio >= 2 && urls['2x']) return urls['2x'];
+      if (urls['1x']) return urls['1x'];
+    }
+
+    // Priority 2: Provided URLs with format preference (fallback when no processed images)
     if (providedUrls) {
       if (providedUrls.avif && support.avif) return providedUrls.avif;
       if (providedUrls.webp && support.webp) return providedUrls.webp;
       if (providedUrls.png) return providedUrls.png;
       if (providedUrls.jpg) return providedUrls.jpg;
-    }
-
-    // Priority 2: Generated URLs for processed images
-    if (baseId) {
-      const urls = generateResponsiveUrls('png'); // Fallback to PNG
-      if (devicePixelRatio >= 2 && urls['2x']) return urls['2x'];
-      if (urls['1x']) return urls['1x'];
     }
 
     // Priority 3: Explicit fallback URL
@@ -165,10 +176,12 @@ export function useOptimizedImage(options: OptimizedImageOptions): OptimizedImag
     // Add AVIF source if supported
     if (support.avif) {
       let srcSet = '';
-      if (providedUrls?.avif) {
-        srcSet = providedUrls.avif;
-      } else if (baseId) {
+
+      // Prioritize processed images with responsive support
+      if (baseId) {
         srcSet = generateSrcSet('avif');
+      } else if (providedUrls?.avif) {
+        srcSet = providedUrls.avif;
       }
 
       if (srcSet) {
@@ -179,10 +192,12 @@ export function useOptimizedImage(options: OptimizedImageOptions): OptimizedImag
     // Add WebP source if supported
     if (support.webp) {
       let srcSet = '';
-      if (providedUrls?.webp) {
-        srcSet = providedUrls.webp;
-      } else if (baseId) {
+
+      // Prioritize processed images with responsive support
+      if (baseId) {
         srcSet = generateSrcSet('webp');
+      } else if (providedUrls?.webp) {
+        srcSet = providedUrls.webp;
       }
 
       if (srcSet) {
