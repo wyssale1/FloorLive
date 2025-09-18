@@ -7,9 +7,11 @@ import Home from './pages/Home'
 import GameDetail from './pages/GameDetail'
 import TeamDetail from './pages/TeamDetail'
 import PlayerDetail from './pages/PlayerDetail'
+import Rankings from './pages/Rankings'
 import NotFound from './pages/NotFound'
 import Header from './components/Header'
 import ErrorBoundary from './components/ErrorBoundary'
+import { MenuProvider } from './contexts/MenuContext'
 import { useScrollToTop } from './hooks/useScrollToTop'
 
 const queryClient = new QueryClient()
@@ -17,13 +19,15 @@ const queryClient = new QueryClient()
 // Root component with scroll management
 function RootComponent() {
   useScrollToTop()
-  
+
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50/30">
-        <Header />
-        <Outlet />
-      </div>
+      <MenuProvider>
+        <div className="min-h-screen bg-gray-50/30">
+          <Header />
+          <Outlet />
+        </div>
+      </MenuProvider>
     </ErrorBoundary>
   )
 }
@@ -67,16 +71,23 @@ const playerRoute = createRoute({
   component: PlayerDetail,
 })
 
-// Step 6: Create the route tree
-const routeTree = rootRoute.addChildren([indexRoute, gameRoute, teamRoute, playerRoute])
+// Step 6: Create rankings route
+const rankingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/rankings',
+  component: Rankings,
+})
 
-// Step 7: Create the router with scroll management
+// Step 7: Create the route tree
+const routeTree = rootRoute.addChildren([indexRoute, gameRoute, teamRoute, playerRoute, rankingsRoute])
+
+// Step 8: Create the router with scroll management
 const router = createRouter({ 
   routeTree,
   defaultPreload: 'intent',
 })
 
-// Step 8: Register for TypeScript
+// Step 9: Register for TypeScript
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
