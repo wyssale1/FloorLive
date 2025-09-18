@@ -3,7 +3,22 @@ import { motion } from 'framer-motion'
 import { useMenu } from '../contexts/MenuContext'
 
 // Shortcut link configuration
-const shortcuts = [
+interface InternalShortcut {
+  label: string
+  to: string
+  search?: Record<string, unknown>
+  external: false
+}
+
+interface ExternalShortcut {
+  label: string
+  href: string
+  external: true
+}
+
+type Shortcut = InternalShortcut | ExternalShortcut
+
+const shortcuts: Shortcut[] = [
   {
     label: 'Ranking',
     to: '/rankings',
@@ -50,7 +65,6 @@ const itemVariants = {
     scale: 1,
     transition: {
       duration: 0.3,
-      ease: [0.4, 0, 0.2, 1],
     },
   },
   exit: {
@@ -95,7 +109,7 @@ export default function ShortcutLinks({ className = '' }: ShortcutLinksProps) {
             return (
               <motion.div key={shortcut.label} variants={itemVariants}>
                 <motion.a
-                  href={shortcut.href}
+                  href={(shortcut as ExternalShortcut).href}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={handleLinkClick}
@@ -112,8 +126,8 @@ export default function ShortcutLinks({ className = '' }: ShortcutLinksProps) {
           return (
             <motion.div key={shortcut.label} variants={itemVariants}>
               <Link
-                to={shortcut.to}
-                search={shortcut.search}
+                to={(shortcut as InternalShortcut).to}
+                search={(shortcut as InternalShortcut).search}
                 onClick={handleLinkClick}
                 className="block bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-3 hover:bg-white/80 transition-colors duration-200 w-fit"
               >

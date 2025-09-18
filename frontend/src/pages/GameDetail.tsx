@@ -77,7 +77,7 @@ export default function GameDetail() {
       } else {
         fallbackSeason = getCurrentSeasonYear().toString()
       }
-    } catch (error) {
+    } catch {
       fallbackSeason = getCurrentSeasonYear().toString()
     }
 
@@ -177,7 +177,7 @@ export default function GameDetail() {
       } else {
         gameSeason = currentSeason
       }
-    } catch (error) {
+    } catch {
       gameSeason = currentSeason
     }
 

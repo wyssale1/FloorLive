@@ -1,5 +1,4 @@
 import { Skeleton } from './ui/skeleton'
-import { Trophy } from 'lucide-react'
 
 interface LeagueTableSkeletonProps {
   teamCount?: number
@@ -10,10 +9,9 @@ export default function LeagueTableSkeleton({ teamCount = 12 }: LeagueTableSkele
     <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <Trophy className="w-4 h-4 text-gray-600" />
-          <Skeleton className="h-6 w-20" />
+          <Skeleton className="h-6 w-24 rounded" />
         </div>
-        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-6 w-16 rounded" />
       </div>
 
       {/* Header Row */}

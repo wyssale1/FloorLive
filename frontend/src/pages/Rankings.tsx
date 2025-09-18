@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy } from 'lucide-react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
 import LeagueTable from '../components/LeagueTable'
 import LeagueTableSkeleton from '../components/LeagueTableSkeleton'
-import SeasonSelector from '../components/SeasonSelector'
-import { getCurrentSeasonYear, formatSeasonDisplay } from '../lib/seasonUtils'
+import CombinedLeagueSeasonSelector from '../components/CombinedLeagueSeasonSelector'
+import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { apiClient } from '../lib/apiClient'
 import type { TeamRanking } from '../shared/types'
 
@@ -14,6 +12,7 @@ const LEAGUES = [
   {
     id: 'nla-men',
     label: 'NLA Men',
+    shortLabel: 'NLA M',
     leagueId: '24',
     gameClass: '11',
     leagueName: 'L-UPL',
@@ -22,6 +21,7 @@ const LEAGUES = [
   {
     id: 'nla-women',
     label: 'NLA Women',
+    shortLabel: 'NLA W',
     leagueId: '24',
     gameClass: '21',
     leagueName: 'L-UPL',
@@ -30,6 +30,7 @@ const LEAGUES = [
   {
     id: 'nlb-men',
     label: 'NLB Men',
+    shortLabel: 'NLB M',
     leagueId: '2',
     gameClass: '11',
     leagueName: 'H',
@@ -38,6 +39,7 @@ const LEAGUES = [
   {
     id: 'nlb-women',
     label: 'NLB Women',
+    shortLabel: 'NLB W',
     leagueId: '2',
     gameClass: '21',
     leagueName: 'D',
@@ -151,6 +153,11 @@ export default function Rankings() {
     setCurrentSeason(newSeason)
   }
 
+  // Handle league change
+  const handleLeagueChange = (league: typeof LEAGUES[0]) => {
+    setActiveTab(league.id)
+  }
+
   // Get current league data
   const currentLeague = LEAGUES.find(l => l.id === activeTab)
   const currentData = rankingsState[activeTab]
@@ -167,75 +174,67 @@ export default function Rankings() {
         >
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-gray-900">Rankings</h1>
-            <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded">
-              {formatSeasonDisplay(parseInt(currentSeason))}
-            </span>
+            {currentLeague && (
+              <CombinedLeagueSeasonSelector
+                currentLeague={currentLeague}
+                currentSeason={currentSeason}
+                availableLeagues={LEAGUES}
+                availableSeasons={availableSeasons}
+                onLeagueChange={handleLeagueChange}
+                onSeasonChange={handleSeasonChange}
+                disabled={currentData?.loading}
+                loading={currentData?.loading}
+              />
+            )}
           </div>
         </motion.div>
 
-        {/* League Tabs */}
+        {/* Rankings Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6 bg-white/60 backdrop-blur-sm border border-gray-100">
-              {LEAGUES.map((league) => (
-                <TabsTrigger
-                  key={league.id}
-                  value={league.id}
-                  className="text-sm font-medium"
-                >
-                  {league.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {/* Tab Content */}
-            <AnimatePresence mode="wait">
-              {LEAGUES.map((league) => (
-                <TabsContent
-                  key={league.id}
-                  value={league.id}
-                  className="mt-0"
-                >
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {rankingsState[league.id].loading ? (
-                      <LeagueTableSkeleton />
-                    ) : rankingsState[league.id].error ? (
-                      <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
-                        <div className="text-center py-12">
-                          <div className="text-red-600 text-sm mb-2">
-                            Failed to load rankings: {rankingsState[league.id].error}
-                          </div>
-                          <button
-                            onClick={() => fetchRankings(league.leagueId, league.gameClass, currentSeason, league.id)}
-                            className="text-red-600 hover:text-red-800 text-sm font-medium underline"
-                          >
-                            Try again
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <LeagueTable
-                        table={rankingsState[league.id].table}
-                        loading={false}
-                        availableSeasons={availableSeasons}
-                        onSeasonChange={handleSeasonChange}
-                        seasonSelectorDisabled={rankingsState[league.id].loading}
-                      />
-                    )}
-                  </motion.div>
-                </TabsContent>
-              ))}
-            </AnimatePresence>
-          </Tabs>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {currentData?.loading ? (
+                <LeagueTableSkeleton />
+              ) : currentData?.error ? (
+                <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
+                  <div className="text-center py-12">
+                    <div className="text-red-600 text-sm mb-2">
+                      Failed to load rankings: {currentData.error}
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (currentLeague) {
+                          fetchRankings(currentLeague.leagueId, currentLeague.gameClass, currentSeason, currentLeague.id)
+                        }
+                      }}
+                      className="text-red-600 hover:text-red-800 text-sm font-medium underline"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <LeagueTable
+                  table={currentData?.table}
+                  loading={false}
+                  availableSeasons={availableSeasons}
+                  onSeasonChange={handleSeasonChange}
+                  seasonSelectorDisabled={currentData?.loading}
+                  currentLeague={currentLeague}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
       </div>
     </div>
