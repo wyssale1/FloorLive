@@ -26,11 +26,8 @@ export class EntityMasterService {
 
   private initializeCacheSync() {
     try {
-      // For ES modules, we can't use require, so we'll just initialize empty and load async
       this.initializeEmptyCache();
-      console.log('📄 Entity master cache will be loaded asynchronously');
     } catch (error) {
-      console.warn('Could not initialize entity master cache, using empty cache:', error);
       this.initializeEmptyCache();
     }
   }
@@ -135,8 +132,6 @@ export class EntityMasterService {
 
       // Write merged data atomically
       await fs.writeFile(this.MASTER_FILE, JSON.stringify(mergedData, null, 2), 'utf-8');
-
-      console.log(`💾 Saved master data: ${Object.keys(mergedData.teams).length} teams, ${Object.keys(mergedData.players).length} players`);
     } catch (error) {
       console.error('Failed to save entity master data:', error);
       throw error;
@@ -152,22 +147,8 @@ export class EntityMasterService {
   private isEntityExpired(entity: Entity): boolean {
     try {
       const ttlDate = new Date(entity.ttl);
-      const now = new Date();
-      const isExpired = now > ttlDate;
-
-      // Add debug logging to track TTL checks
-      const timeUntilExpiry = ttlDate.getTime() - now.getTime();
-      const daysUntilExpiry = Math.ceil(timeUntilExpiry / (1000 * 60 * 60 * 24));
-
-      if (isExpired) {
-        console.log(`⏰ TTL EXPIRED: ${entity.name} (${entity.id}) - expired ${Math.abs(daysUntilExpiry)} days ago`);
-      } else {
-        console.log(`✅ TTL VALID: ${entity.name} (${entity.id}) - expires in ${daysUntilExpiry} days`);
-      }
-
-      return isExpired;
+      return new Date() > ttlDate;
     } catch (error) {
-      console.log(`❌ TTL INVALID: ${entity.name} (${entity.id}) - treating as expired`);
       return true; // If TTL is invalid, consider it expired
     }
   }
@@ -248,7 +229,6 @@ export class EntityMasterService {
 
     // Only add if player doesn't exist (for discovery only)
     if (this.cache!.players[playerId]) {
-      console.log(`🔄 Player stub already exists: ${name} (${playerId}) - skipping save operation`);
       return this.cache!.players[playerId];
     }
 
@@ -266,7 +246,6 @@ export class EntityMasterService {
     this.cache!.players[playerId] = player;
     await this.saveMasterData();
 
-    console.log(`📝 Added NEW player stub: ${name} (${playerId}) to master registry`);
     return player;
   }
 

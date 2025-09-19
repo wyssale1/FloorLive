@@ -35,7 +35,6 @@ export class BackgroundEntityService {
     );
 
     if (existingJob) {
-      console.log(`🔄 Entity ${entityType}:${entityId} already queued for refresh`);
       return;
     }
 
@@ -57,7 +56,6 @@ export class BackgroundEntityService {
       this.updateQueue.push(job);
     }
 
-    console.log(`📋 Scheduled ${entityType} refresh for ${name} (${entityId}) with ${priority} priority`);
 
     // Start processing if not already running
     if (!this.isProcessing) {
@@ -82,7 +80,9 @@ export class BackgroundEntityService {
         await this.scheduleEntityRefresh(player.id, 'player', player.name, 'normal');
       }
 
-      console.log(`🕐 Scheduled refresh for ${expiredTeams.length} expired teams and ${expiredPlayers.length} expired players`);
+      if (expiredTeams.length > 0 || expiredPlayers.length > 0) {
+        console.log(`Scheduled refresh for ${expiredTeams.length} expired teams and ${expiredPlayers.length} expired players`);
+      }
 
       return {
         teamsScheduled: expiredTeams.length,
@@ -98,7 +98,6 @@ export class BackgroundEntityService {
     if (this.isProcessing) return;
 
     this.isProcessing = true;
-    console.log(`🚀 Starting background entity processing queue (${this.updateQueue.length} jobs)`);
 
     while (this.updateQueue.length > 0 && this.runningJobs < this.MAX_CONCURRENT_JOBS) {
       const job = this.updateQueue.shift();
@@ -109,7 +108,7 @@ export class BackgroundEntityService {
             this.runningJobs--;
           })
           .catch((error) => {
-            console.error(`❌ Job ${job.id} failed:`, error);
+            console.error(`Job ${job.id} failed:`, error);
             this.runningJobs--;
           });
 
@@ -126,27 +125,21 @@ export class BackgroundEntityService {
     }
 
     this.isProcessing = false;
-    console.log(`✅ Background entity processing queue completed`);
   }
 
   private async processJob(job: UpdateJob): Promise<void> {
     try {
-      console.log(`⚡ Processing ${job.type}:${job.entityId} (${job.name})`);
-
       if (job.type === 'team') {
         await this.refreshTeam(job.entityId, job.name);
       } else {
         await this.refreshPlayer(job.entityId, job.name);
       }
-
-      console.log(`✅ Successfully refreshed ${job.type}:${job.entityId} (${job.name})`);
     } catch (error) {
-      console.error(`❌ Failed to refresh ${job.type}:${job.entityId} (${job.name}):`, error);
+      console.error(`Failed to refresh ${job.type}:${job.entityId} (${job.name}):`, error);
 
       // Retry logic
       if (job.retries < job.maxRetries) {
         job.retries++;
-        console.log(`🔄 Retrying ${job.type}:${job.entityId} (attempt ${job.retries}/${job.maxRetries})`);
 
         // Add back to queue with delay
         setTimeout(() => {
@@ -156,7 +149,7 @@ export class BackgroundEntityService {
           }
         }, this.RETRY_DELAY_MS * job.retries); // Exponential backoff
       } else {
-        console.error(`💥 Max retries exceeded for ${job.type}:${job.entityId} (${job.name})`);
+        console.error(`Max retries exceeded for ${job.type}:${job.entityId} (${job.name})`);
       }
     }
   }
@@ -186,9 +179,8 @@ export class BackgroundEntityService {
         league
       );
 
-      console.log(`📊 Updated team ${teamName} (${teamId}) with league: ${league || 'unknown'}`);
     } catch (error) {
-      console.error(`❌ Failed to refresh team ${teamId}:`, error);
+      console.error(`Failed to refresh team ${teamId}:`, error);
       throw error;
     }
   }
@@ -221,9 +213,8 @@ export class BackgroundEntityService {
         teamId
       );
 
-      console.log(`👤 Updated player ${playerName} (${playerId}) with team: ${teamName || 'unknown'}`);
     } catch (error) {
-      console.error(`❌ Failed to refresh player ${playerId}:`, error);
+      console.error(`Failed to refresh player ${playerId}:`, error);
       throw error;
     }
   }

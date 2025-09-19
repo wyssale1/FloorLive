@@ -4,6 +4,7 @@ import { CacheService } from '../services/cacheService.js';
 import { playerImageService } from '../services/playerImageService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
 import { backgroundEntityService } from '../services/backgroundEntityService.js';
+import { EntityTtlHelper } from '../utils/entityTtlHelper.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -58,23 +59,6 @@ router.get('/:teamId', async (req, res) => {
       return res.status(400).json({ error: 'Team ID is required' });
     }
 
-    // Check master registry for team entity (background refresh logic)
-    const teamEntity = await entityMasterService.getTeam(teamId);
-    let shouldRefresh = false;
-
-    if (!teamEntity) {
-      // New team - add to registry and mark for refresh
-      shouldRefresh = true;
-      console.log(`🆕 New team discovered: ${teamId}`);
-    } else {
-      // Check if team needs refresh based on TTL
-      const ttlDate = new Date(teamEntity.ttl);
-      if (new Date() > ttlDate) {
-        shouldRefresh = true;
-        console.log(`🕐 Team ${teamId} (${teamEntity.name}) needs refresh`);
-      }
-    }
-
     // Check API cache first for immediate response
     const cacheKey = `team:${teamId}`;
     let team = cache.get(cacheKey);
@@ -90,22 +74,17 @@ router.get('/:teamId', async (req, res) => {
       cache.set(cacheKey, team, 3600000);
     }
 
-    // Schedule background refresh if needed (non-blocking)
-    if (shouldRefresh) {
-      const teamName = (team as any).name || `Team ${teamId}`;
+    // Check TTL and schedule refresh if needed (unified logic)
+    const teamName = (team as any).name || `Team ${teamId}`;
+    const ttlResult = await EntityTtlHelper.checkAndScheduleTeamRefresh(teamId, teamName);
 
-      if (!teamEntity) {
-        console.log(`🆕 New team discovered: ${teamName} (${teamId}) - scheduling background refresh`);
+    // Only log when refresh is actually needed (optional - for debugging)
+    if (ttlResult.shouldRefresh) {
+      if (ttlResult.isNewEntity) {
+        console.log(`🆕 New team discovered: ${teamName} (${teamId})`);
       } else {
-        console.log(`🕐 Team ${teamName} (${teamId}) TTL expired - scheduling background refresh`);
+        console.log(`🔄 Team ${teamName} (${teamId}) TTL expired - scheduled refresh`);
       }
-
-      backgroundEntityService.scheduleEntityRefresh(teamId, 'team', teamName, 'normal')
-        .catch(error => {
-          console.error(`❌ Failed to schedule team refresh for ${teamId}:`, error);
-        });
-    } else if (teamEntity) {
-      console.log(`✅ Team ${teamEntity.name} (${teamId}) TTL valid - no refresh needed`);
     }
 
     res.json(team);
@@ -173,32 +152,15 @@ router.get('/:teamId/players', async (req, res) => {
           };
           playersData.push(playerData);
 
-          // Check master registry for player entity (non-blocking approach)
-          const playerEntity = await entityMasterService.getPlayer(player.id);
-          let shouldRefreshPlayer = false;
+          // Check TTL and schedule refresh if needed (unified logic)
+          const ttlResult = await EntityTtlHelper.checkAndSchedulePlayerRefresh(
+            player.id,
+            playerName,
+            teamName,
+            teamId
+          );
 
-          if (!playerEntity) {
-            // New player - add stub to master registry (minimal data, non-blocking)
-            console.log(`🆕 NEW PLAYER DISCOVERED: ${playerName} (${player.id}) - adding stub to registry`);
-            await entityMasterService.addPlayerStub(player.id, playerName, teamName, teamId);
-            shouldRefreshPlayer = true;
-            console.log(`✅ New player stub added: ${playerName} (${player.id})`);
-          } else {
-            // Check if player needs refresh based on TTL (background only)
-            const ttlDate = new Date(playerEntity.ttl);
-            const now = new Date();
-            const timeUntilExpiry = ttlDate.getTime() - now.getTime();
-            const daysUntilExpiry = Math.ceil(timeUntilExpiry / (1000 * 60 * 60 * 24));
-
-            if (now > ttlDate) {
-              shouldRefreshPlayer = true;
-              console.log(`🕐 TTL EXPIRED: ${playerName} (${player.id}) - expired ${Math.abs(daysUntilExpiry)} days ago - scheduling background refresh`);
-            } else {
-              console.log(`✅ TTL VALID: ${playerName} (${player.id}) - expires in ${daysUntilExpiry} days - no refresh needed`);
-            }
-          }
-
-          if (shouldRefreshPlayer) {
+          if (ttlResult.shouldRefresh) {
             playersToRefresh.push({ id: player.id, name: playerName });
           }
 
@@ -219,29 +181,15 @@ router.get('/:teamId/players', async (req, res) => {
           }
         }
       }
-      // Schedule background player entity refreshes (non-blocking)
-      if (playersToRefresh.length > 0) {
-        for (const player of playersToRefresh) {
-          backgroundEntityService.scheduleEntityRefresh(player.id, 'player', player.name, 'normal')
-            .catch(error => {
-              console.error(`❌ Failed to schedule player refresh for ${player.id}:`, error);
-            });
-        }
-        console.log(`🔄 Scheduled ${playersToRefresh.length} players for entity refresh`);
-      }
+      // Note: Player refreshes are now handled by EntityTtlHelper.checkAndSchedulePlayerRefresh above
 
       // If there are players to process for images, do it in the background (don't await)
       if (playersToProcess.length > 0) {
         // Process players in background (fire and forget)
         processPlayersWithApiDetails(teamId, teamName, playersToProcess)
-          .then(result => {
-            console.log(`✅ Processed ${result.processed} players for team ${teamName} (${result.successful} successful, ${result.failed} failed)`);
-          })
           .catch(error => {
-            console.error('❌ Failed to process players for team:', teamId, error);
+            console.error('Failed to process players for team:', teamId, error);
           });
-
-        console.log(`🎯 Processing ${playersToProcess.length} players for team ${teamName} (${playersToProcess.length} need image refresh)`);
       }
     } catch (error) {
       // Don't fail the request if background processing fails

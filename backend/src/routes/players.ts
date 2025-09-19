@@ -4,6 +4,7 @@ import { CacheService } from '../services/cacheService.js';
 import { playerImageService } from '../services/playerImageService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
 import { backgroundEntityService } from '../services/backgroundEntityService.js';
+import { EntityTtlHelper } from '../utils/entityTtlHelper.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -107,23 +108,6 @@ router.get('/:playerId', async (req, res) => {
       return res.status(400).json({ error: 'Player ID is required' });
     }
 
-    // Check master registry for player entity (background refresh logic)
-    const playerEntity = await entityMasterService.getPlayer(playerId);
-    let shouldRefresh = false;
-
-    if (!playerEntity) {
-      // New player - mark for refresh
-      shouldRefresh = true;
-      console.log(`🆕 New player discovered: ${playerId}`);
-    } else {
-      // Check if player needs refresh based on TTL
-      const ttlDate = new Date(playerEntity.ttl);
-      if (new Date() > ttlDate) {
-        shouldRefresh = true;
-        console.log(`🕐 Player ${playerId} (${playerEntity.name}) needs refresh`);
-      }
-    }
-
     // Check API cache first for immediate response
     const cacheKey = `player:${playerId}`;
     let player = cache.get(cacheKey);
@@ -139,36 +123,29 @@ router.get('/:playerId', async (req, res) => {
       cache.set(cacheKey, player, 3600000);
     }
 
-    // Schedule background refresh if needed (non-blocking)
-    if (shouldRefresh) {
-      const playerName = (player as any).name || `Player ${playerId}`;
+    // Check TTL and schedule refresh if needed (unified logic)
+    const playerName = (player as any)?.name || `Player ${playerId}`;
 
-      // Extract team information for master registry
-      let teamName: string | undefined;
-      let teamId: string | undefined;
+    // Extract team information for TTL helper
+    let teamName: string | undefined;
+    let teamId: string | undefined;
 
-      if ((player as any).club) {
-        teamName = (player as any).club.name;
-        teamId = (player as any).club.id;
-      } else if ((player as any).currentSeason) {
-        teamName = (player as any).currentSeason.team;
-      }
+    if ((player as any).club) {
+      teamName = (player as any).club.name;
+      teamId = (player as any).club.id;
+    } else if ((player as any).currentSeason) {
+      teamName = (player as any).currentSeason.team;
+    }
 
-      // Add stub to master registry if new (minimal data only)
-      if (!playerEntity) {
-        await entityMasterService.addPlayerStub(playerId, playerName, teamName, teamId);
-        console.log(`🆕 New player discovered: ${playerName} (${playerId}) - added stub to registry`);
+    const ttlResult = await EntityTtlHelper.checkAndSchedulePlayerRefresh(playerId, playerName, teamName, teamId);
+
+    // Only log when refresh is actually needed (optional - for debugging)
+    if (ttlResult.shouldRefresh) {
+      if (ttlResult.isNewEntity) {
+        console.log(`🆕 New player discovered: ${playerName} (${playerId})`);
       } else {
-        console.log(`🕐 Player ${playerName} (${playerId}) TTL expired - scheduling background refresh`);
+        console.log(`🔄 Player ${playerName} (${playerId}) TTL expired - scheduled refresh`);
       }
-
-      // Schedule background refresh (this is where the full API update happens)
-      backgroundEntityService.scheduleEntityRefresh(playerId, 'player', playerName, 'normal')
-        .catch(error => {
-          console.error(`❌ Failed to schedule player refresh for ${playerId}:`, error);
-        });
-    } else if (playerEntity) {
-      console.log(`✅ Player ${playerEntity.name} (${playerId}) TTL valid - no refresh needed`);
     }
 
     res.json({ player });
