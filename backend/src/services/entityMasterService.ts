@@ -248,6 +248,7 @@ export class EntityMasterService {
 
     // Only add if player doesn't exist (for discovery only)
     if (this.cache!.players[playerId]) {
+      console.log(`🔄 Player stub already exists: ${name} (${playerId}) - skipping save operation`);
       return this.cache!.players[playerId];
     }
 
@@ -265,7 +266,7 @@ export class EntityMasterService {
     this.cache!.players[playerId] = player;
     await this.saveMasterData();
 
-    console.log(`📝 Added player stub: ${name} (${playerId}) to master registry`);
+    console.log(`📝 Added NEW player stub: ${name} (${playerId}) to master registry`);
     return player;
   }
 

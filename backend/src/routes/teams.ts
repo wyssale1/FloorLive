@@ -179,17 +179,22 @@ router.get('/:teamId/players', async (req, res) => {
 
           if (!playerEntity) {
             // New player - add stub to master registry (minimal data, non-blocking)
+            console.log(`🆕 NEW PLAYER DISCOVERED: ${playerName} (${player.id}) - adding stub to registry`);
             await entityMasterService.addPlayerStub(player.id, playerName, teamName, teamId);
             shouldRefreshPlayer = true;
-            console.log(`🆕 New player discovered: ${playerName} (${player.id}) - added stub to registry`);
+            console.log(`✅ New player stub added: ${playerName} (${player.id})`);
           } else {
             // Check if player needs refresh based on TTL (background only)
             const ttlDate = new Date(playerEntity.ttl);
-            if (new Date() > ttlDate) {
+            const now = new Date();
+            const timeUntilExpiry = ttlDate.getTime() - now.getTime();
+            const daysUntilExpiry = Math.ceil(timeUntilExpiry / (1000 * 60 * 60 * 24));
+
+            if (now > ttlDate) {
               shouldRefreshPlayer = true;
-              console.log(`🕐 Player ${playerName} (${player.id}) TTL expired - scheduling background refresh`);
+              console.log(`🕐 TTL EXPIRED: ${playerName} (${player.id}) - expired ${Math.abs(daysUntilExpiry)} days ago - scheduling background refresh`);
             } else {
-              console.log(`✅ Player ${playerName} (${player.id}) TTL valid - no refresh needed`);
+              console.log(`✅ TTL VALID: ${playerName} (${player.id}) - expires in ${daysUntilExpiry} days - no refresh needed`);
             }
           }
 
