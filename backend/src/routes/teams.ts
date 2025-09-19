@@ -79,7 +79,7 @@ router.get('/search', async (req, res) => {
     const results = teams.map(team => ({
       id: team.id,
       name: team.name,
-      league: team.league || null
+      league: team.league || 'Swiss Unihockey'
     }));
 
     res.json({

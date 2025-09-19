@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { entityMasterService } from '../services/entityMasterService.js';
+import { logoService } from '../services/logoService.js';
+import { playerImageService } from '../services/playerImageService.js';
 
 const router = Router();
 
@@ -31,17 +33,30 @@ router.get('/', async (req, res) => {
       entityMasterService.searchPlayers(q.trim(), limitClamped)
     ]);
 
+    // Check image availability for teams and players in parallel
+    const [teamLogosAvailable, playerImagesAvailable] = await Promise.all([
+      Promise.all(teams.map(team => logoService.hasLogo(team.id))),
+      Promise.all(players.map(player => {
+        const playerData = playerImageService.getPlayerMetadata(player.id);
+        return playerData ? playerData.hasImage : false;
+      }))
+    ]);
+
     // Format results for frontend (matching GlobalMenu.tsx expected format)
-    const formattedTeams = teams.map(team => ({
+    const formattedTeams = teams.map((team, index) => ({
       id: team.id,
       name: team.name,
-      league: team.league || null
+      league: team.league || 'Swiss Unihockey',
+      hasLogo: teamLogosAvailable[index],
+      logoUrl: teamLogosAvailable[index] ? `/api/logos/team-${team.id}/small.webp` : null
     }));
 
-    const formattedPlayers = players.map(player => ({
+    const formattedPlayers = players.map((player, index) => ({
       id: player.id,
       name: player.name,
-      team: player.team || null
+      team: player.team || null,
+      hasImage: playerImagesAvailable[index],
+      imageUrl: playerImagesAvailable[index] ? `/assets/players/${player.id}/profile.webp` : null
     }));
 
     res.json({

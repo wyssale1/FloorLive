@@ -50,6 +50,23 @@ interface GlobalMenuProps {
   className?: string
 }
 
+// Types for search results with image data
+interface TeamSearchResult {
+  id: string;
+  name: string;
+  league?: string;
+  hasLogo?: boolean;
+  logoUrl?: string;
+}
+
+interface PlayerSearchResult {
+  id: string;
+  name: string;
+  team?: string;
+  hasImage?: boolean;
+  imageUrl?: string;
+}
+
 export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
   const {
     isOpen,
@@ -201,8 +218,29 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                 closeMenu()
                               }}
                             >
-                              <div className="font-medium text-gray-900">{team.name}</div>
-                              <div className="text-sm text-gray-500">{team.league}</div>
+                              <div className="flex items-center space-x-3">
+                                {team.hasLogo ? (
+                                  <img
+                                    src={team.logoUrl}
+                                    alt={`${team.name} logo`}
+                                    className="w-8 h-8 rounded-full object-contain bg-gray-100"
+                                    loading="lazy"
+                                    onError={(e) => {
+                                      // Fallback to initials if image fails
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      target.nextElementSibling?.classList.remove('hidden');
+                                    }}
+                                  />
+                                ) : null}
+                                <div className={`w-8 h-8 rounded-full bg-blue-500 text-white text-xs font-medium flex items-center justify-center ${team.hasLogo ? 'hidden' : ''}`}>
+                                  {team.name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase()}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-medium text-gray-900">{team.name}</div>
+                                  <div className="text-sm text-gray-500">{team.league}</div>
+                                </div>
+                              </div>
                             </motion.div>
                           ))}
                         </div>
@@ -224,8 +262,29 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                 closeMenu()
                               }}
                             >
-                              <div className="font-medium text-gray-900">{player.name}</div>
-                              <div className="text-sm text-gray-500">{player.team}</div>
+                              <div className="flex items-center space-x-3">
+                                {player.hasImage ? (
+                                  <img
+                                    src={player.imageUrl}
+                                    alt={`${player.name} photo`}
+                                    className="w-8 h-8 rounded-full object-cover bg-gray-100"
+                                    loading="lazy"
+                                    onError={(e) => {
+                                      // Fallback to initials if image fails
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      target.nextElementSibling?.classList.remove('hidden');
+                                    }}
+                                  />
+                                ) : null}
+                                <div className={`w-8 h-8 rounded-full bg-green-500 text-white text-xs font-medium flex items-center justify-center ${player.hasImage ? 'hidden' : ''}`}>
+                                  {player.name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase()}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-medium text-gray-900">{player.name}</div>
+                                  <div className="text-sm text-gray-500">{player.team}</div>
+                                </div>
+                              </div>
                             </motion.div>
                           ))}
                         </div>

@@ -251,15 +251,23 @@ export class LogoService {
    */
   public async getLogoPath(teamId: string, size: 'large' | 'small', format: string): Promise<string | null> {
     if (!this.FORMATS.includes(format as any)) return null;
-    
+
     const filePath = path.join(this.ASSETS_DIR, `team-${teamId}`, `${size}.${format}`);
-    
+
     try {
       await fs.access(filePath);
       return filePath;
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Check if logo exists for a team
+   */
+  public async hasLogo(teamId: string): Promise<boolean> {
+    const logoPath = await this.getLogoPath(teamId, 'small', 'webp');
+    return logoPath !== null;
   }
 
   /**
