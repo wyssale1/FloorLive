@@ -37,7 +37,11 @@
       "Bash(xargs -r kill -9)",
       "Bash(lsof:*)",
       "Bash(node:*)",
-      "WebFetch(domain:upload.wikimedia.org)"
+      "WebFetch(domain:upload.wikimedia.org)",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "WebFetch(domain:coffey.codes)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": []

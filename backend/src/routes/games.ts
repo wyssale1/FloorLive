@@ -48,27 +48,37 @@ router.get('/', async (req, res) => {
       fromCache = true;
     }
 
+    // Filter out games with invalid team data
+    const validGames = games.filter(game =>
+      game &&
+      game.home_team &&
+      game.away_team &&
+      game.home_team.name &&
+      game.away_team.name &&
+      game.league
+    );
+
     // Group by league for frontend
-    const gamesByLeague = games.reduce((acc, game) => {
+    const gamesByLeague = validGames.reduce((acc, game) => {
       let leagueName = game.league.name;
-      
+
       // Handle games without proper league information
       if (!leagueName || leagueName === 'Unknown League' || leagueName.trim() === '') {
         leagueName = 'Other Leagues';
       }
-      
+
       if (!acc[leagueName]) {
         acc[leagueName] = [];
       }
       acc[leagueName].push(game);
       return acc;
-    }, {} as Record<string, typeof games>);
+    }, {} as Record<string, typeof validGames>);
 
     const leagueNames = Object.keys(gamesByLeague);
     const orderedLeagues = sortLeagues(leagueNames);
 
-    // Add optimistic logo URLs to all games (async operation) - but don't block response
-    addOptimisticLogosToGames(games).catch(err =>
+    // Add optimistic logo URLs to all valid games (async operation) - but don't block response
+    addOptimisticLogosToGames(validGames).catch(err =>
       console.warn('Non-critical logo processing failed:', err)
     );
 
@@ -76,9 +86,9 @@ router.get('/', async (req, res) => {
       date: dateString,
       leagues: orderedLeagues,
       gamesByLeague,
-      totalGames: games.length,
+      totalGames: validGames.length,
       cached: fromCache,
-      hasGames: games.length > 0
+      hasGames: validGames.length > 0
     });
 
   } catch (error) {

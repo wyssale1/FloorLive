@@ -581,6 +581,11 @@ export class SwissUnihockeyApiClient {
       if (match) awayTeamId = match[1];
     }
     
+    // If no team names, return null to skip this game
+    if (!homeTeamName || !awayTeamName) {
+      return null;
+    }
+
     // If no proper team IDs found, generate consistent IDs from team names
     if (!homeTeamId && homeTeamName) {
       homeTeamId = homeTeamName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');

@@ -82,7 +82,7 @@ export default function Home() {
   useStructuredData([
     generateOrganizationData(),
     generateWebSiteData(),
-    ...generateGamesListData(games.map(game => ({
+    ...generateGamesListData(games.filter(game => game.home_team && game.away_team).map(game => ({
       id: game.id,
       homeTeam: { name: game.home_team.name, logo: game.home_team.logo },
       awayTeam: { name: game.away_team.name, logo: game.away_team.logo },
