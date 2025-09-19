@@ -50,6 +50,54 @@ async function processPlayersWithApiDetails(
   return { processed, successful, failed };
 }
 
+// GET /api/teams/search?q=query - Search teams (must be before /:teamId route)
+router.get('/search', async (req, res) => {
+  try {
+    const { q, limit } = req.query;
+
+    if (!q || typeof q !== 'string') {
+      return res.status(400).json({
+        error: 'Search query is required',
+        message: 'Please provide a search query using the "q" parameter'
+      });
+    }
+
+    if (q.trim().length < 2) {
+      return res.status(400).json({
+        error: 'Search query too short',
+        message: 'Please provide at least 2 characters to search'
+      });
+    }
+
+    const searchLimit = limit && typeof limit === 'string' ? parseInt(limit, 10) : 20;
+    const limitClamped = Math.min(Math.max(searchLimit, 1), 100); // Between 1 and 100
+
+    // Search using the master registry
+    const teams = await entityMasterService.searchTeams(q.trim(), limitClamped);
+
+    // Format results for frontend
+    const results = teams.map(team => ({
+      id: team.id,
+      name: team.name,
+      league: team.league || null
+    }));
+
+    res.json({
+      query: q.trim(),
+      limit: limitClamped,
+      totalResults: results.length,
+      teams: results
+    });
+
+  } catch (error) {
+    console.error('Error searching teams:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to search teams'
+    });
+  }
+});
+
 // GET /api/teams/:teamId - Get team details
 router.get('/:teamId', async (req, res) => {
   try {

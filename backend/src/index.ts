@@ -11,6 +11,7 @@ import teamsRouter from './routes/teams.js';
 import leaguesRouter from './routes/leagues.js';
 import logosRouter from './routes/logos.js';
 import playersRouter from './routes/players.js';
+import searchRouter from './routes/search.js';
 import sitemapRouter from './routes/sitemap.js';
 import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
@@ -61,6 +62,7 @@ app.use('/api/teams', teamsRouter);
 app.use('/api/leagues', leaguesRouter);
 app.use('/api/logos', logosRouter);
 app.use('/api/players', playersRouter);
+app.use('/api/search', searchRouter);
 
 // SEO routes (no /api prefix for sitemap.xml)
 app.use('/', sitemapRouter);
@@ -115,6 +117,9 @@ app.get('/api', (req, res) => {
       team_statistics: '/api/teams/:teamId/statistics',
       team_competitions: '/api/teams/:teamId/competitions',
       team_games: '/api/teams/:teamId/games',
+      search: '/api/search?q=query',
+      search_teams: '/api/teams/search?q=query',
+      search_players: '/api/players/search?q=query',
       game_statistics: '/api/games/:gameId/statistics',
       league_table: '/api/leagues/:leagueId/table',
       rankings: '/api/leagues/rankings',

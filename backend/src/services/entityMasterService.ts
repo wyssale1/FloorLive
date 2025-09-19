@@ -295,8 +295,7 @@ export class EntityMasterService {
 
     return Object.values(this.cache!.teams)
       .filter(team =>
-        team.name.toLowerCase().includes(normalizedQuery) ||
-        (team.league && team.league.toLowerCase().includes(normalizedQuery))
+        team.name.toLowerCase().includes(normalizedQuery)
       )
       .slice(0, limit);
   }
@@ -307,8 +306,7 @@ export class EntityMasterService {
 
     return Object.values(this.cache!.players)
       .filter(player =>
-        player.name.toLowerCase().includes(normalizedQuery) ||
-        (player.team && player.team.toLowerCase().includes(normalizedQuery))
+        player.name.toLowerCase().includes(normalizedQuery)
       )
       .slice(0, limit);
   }

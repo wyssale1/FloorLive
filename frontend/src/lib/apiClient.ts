@@ -398,11 +398,72 @@ class ApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data.overview || [];
     } catch (error) {
       console.error('Error fetching player overview:', error);
+      return [];
+    }
+  }
+
+  // Search Methods
+  async search(query: string, limit?: number): Promise<{ teams: any[], players: any[] }> {
+    try {
+      const params = new URLSearchParams();
+      params.append('q', query);
+      if (limit) params.append('limit', limit.toString());
+
+      const response = await fetch(`${this.baseURL}/search?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return {
+        teams: data.teams || [],
+        players: data.players || []
+      };
+    } catch (error) {
+      console.error('Error performing search:', error);
+      return { teams: [], players: [] };
+    }
+  }
+
+  async searchTeams(query: string, limit?: number): Promise<any[]> {
+    try {
+      const params = new URLSearchParams();
+      params.append('q', query);
+      if (limit) params.append('limit', limit.toString());
+
+      const response = await fetch(`${this.baseURL}/teams/search?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.teams || [];
+    } catch (error) {
+      console.error('Error searching teams:', error);
+      return [];
+    }
+  }
+
+  async searchPlayers(query: string, limit?: number): Promise<any[]> {
+    try {
+      const params = new URLSearchParams();
+      params.append('q', query);
+      if (limit) params.append('limit', limit.toString());
+
+      const response = await fetch(`${this.baseURL}/players/search?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.players || [];
+    } catch (error) {
+      console.error('Error searching players:', error);
       return [];
     }
   }

@@ -4,6 +4,7 @@ import { Search, X } from 'lucide-react'
 import { Input } from './ui/input'
 import ShortcutLinks from './ShortcutLinks'
 import { useMenu } from '../contexts/MenuContext'
+import { apiClient } from '../lib/apiClient'
 
 // Animation variants
 const contentVariants = {
@@ -44,17 +45,6 @@ const searchSectionVariants = {
   },
 }
 
-// Mock search results for now (will be replaced with real API calls later)
-const mockSearchResults = {
-  teams: [
-    { id: '429603', name: 'Zug United', league: 'NLA' },
-    { id: '1072853', name: 'Bülach Floorball', league: 'NLB' },
-  ],
-  players: [
-    { id: '12345', name: 'John Doe', team: 'Zug United' },
-    { id: '12346', name: 'Jane Smith', team: 'Bülach Floorball' },
-  ],
-}
 
 interface GlobalMenuProps {
   className?: string
@@ -75,7 +65,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
 
   const [localSearchQuery, setLocalSearchQuery] = useState('')
 
-  // Handle search input changes
+  // Handle search input changes with debouncing
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value
     setLocalSearchQuery(query)
@@ -83,16 +73,17 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
 
     if (query.trim()) {
       setIsSearching(true)
-      // Simulate API call delay
-      setTimeout(() => {
-        const filteredTeams = mockSearchResults.teams.filter(team =>
-          team.name.toLowerCase().includes(query.toLowerCase())
-        )
-        const filteredPlayers = mockSearchResults.players.filter(player =>
-          player.name.toLowerCase().includes(query.toLowerCase())
-        )
-        setSearchResults({ teams: filteredTeams, players: filteredPlayers })
-        setIsSearching(false)
+      // Debounce API calls (300ms)
+      setTimeout(async () => {
+        try {
+          const results = await apiClient.search(query.trim(), 20)
+          setSearchResults(results)
+        } catch (error) {
+          console.error('Search failed:', error)
+          setSearchResults({ teams: [], players: [] })
+        } finally {
+          setIsSearching(false)
+        }
       }, 300)
     } else {
       setSearchResults({ teams: [], players: [] })
@@ -187,7 +178,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="space-y-4"
+                className="space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
               >
                 {isSearching ? (
                   <div className="text-center py-8">

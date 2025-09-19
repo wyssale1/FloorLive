@@ -2,10 +2,17 @@
   "_metadata": {
     "description": "Master entity registry for Swiss Unihockey teams and players",
     "version": "1.0.0",
-    "lastUpdated": "2025-09-19T12:30:21.160Z",
+    "lastUpdated": "2025-09-19T12:46:31.087Z",
     "instructions": "This file manages core entity data with TTL-based refresh. Feature services consume and extend this data."
   },
   "teams": {
+    "428322": {
+      "type": "team",
+      "id": "428322",
+      "name": "Floorball Thurgau",
+      "lastUpdated": "2025-09-19T12:46:05.239Z",
+      "ttl": "2025-09-26T12:46:05.239Z"
+    },
     "428535": {
       "type": "team",
       "id": "428535",
@@ -19,6 +26,20 @@
       "name": "Tigers Langnau",
       "lastUpdated": "2025-09-19T12:13:21.956Z",
       "ttl": "2025-09-26T12:13:21.956Z"
+    },
+    "429603": {
+      "type": "team",
+      "id": "429603",
+      "name": "Zug United",
+      "lastUpdated": "2025-09-19T12:46:31.086Z",
+      "ttl": "2025-09-26T12:46:31.086Z"
+    },
+    "432307": {
+      "type": "team",
+      "id": "432307",
+      "name": "WASA St. Gallen",
+      "lastUpdated": "2025-09-19T12:46:12.901Z",
+      "ttl": "2025-09-26T12:46:12.902Z"
     }
   },
   "players": {
@@ -39,6 +60,15 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.677Z",
       "ttl": "2025-09-26T10:22:26.677Z"
+    },
+    "420512": {
+      "type": "player",
+      "id": "420512",
+      "name": "Manuel Staub",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.073Z",
+      "ttl": "2025-09-26T12:46:31.073Z"
     },
     "422303": {
       "type": "player",
@@ -103,6 +133,15 @@
       "lastUpdated": "2025-09-19T12:30:21.153Z",
       "ttl": "2025-09-26T12:30:21.153Z"
     },
+    "432130": {
+      "type": "player",
+      "id": "432130",
+      "name": "David Gross",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.920Z",
+      "ttl": "2025-09-26T12:46:12.920Z"
+    },
     "439570": {
       "type": "player",
       "id": "439570",
@@ -130,6 +169,24 @@
       "lastUpdated": "2025-09-19T10:22:26.675Z",
       "ttl": "2025-09-26T10:22:26.675Z"
     },
+    "443702": {
+      "type": "player",
+      "id": "443702",
+      "name": "Mike Zahner",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.918Z",
+      "ttl": "2025-09-26T12:46:12.918Z"
+    },
+    "443950": {
+      "type": "player",
+      "id": "443950",
+      "name": "Rahul Chiplunkar",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.919Z",
+      "ttl": "2025-09-26T12:46:12.919Z"
+    },
     "445347": {
       "type": "player",
       "id": "445347",
@@ -138,6 +195,15 @@
       "teamId": "428535",
       "lastUpdated": "2025-09-19T12:30:21.150Z",
       "ttl": "2025-09-26T12:30:21.150Z"
+    },
+    "446678": {
+      "type": "player",
+      "id": "446678",
+      "name": "Romano Schubiger",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.912Z",
+      "ttl": "2025-09-26T12:46:12.912Z"
     },
     "448604": {
       "type": "player",
@@ -157,6 +223,15 @@
       "lastUpdated": "2025-09-19T10:22:26.680Z",
       "ttl": "2025-09-26T10:22:26.680Z"
     },
+    "449772": {
+      "type": "player",
+      "id": "449772",
+      "name": "Severin Moser",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.918Z",
+      "ttl": "2025-09-26T12:46:12.918Z"
+    },
     "450690": {
       "type": "player",
       "id": "450690",
@@ -165,6 +240,42 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T12:01:29.905Z",
       "ttl": "2025-09-26T12:01:29.905Z"
+    },
+    "450697": {
+      "type": "player",
+      "id": "450697",
+      "name": "Markus Wellauer",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.916Z",
+      "ttl": "2025-09-26T12:46:12.916Z"
+    },
+    "450891": {
+      "type": "player",
+      "id": "450891",
+      "name": "Joël Stocker",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.080Z",
+      "ttl": "2025-09-26T12:46:31.080Z"
+    },
+    "451968": {
+      "type": "player",
+      "id": "451968",
+      "name": "Luca Holenstein",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.914Z",
+      "ttl": "2025-09-26T12:46:12.914Z"
+    },
+    "453044": {
+      "type": "player",
+      "id": "453044",
+      "name": "Severin Nigg",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.077Z",
+      "ttl": "2025-09-26T12:46:31.077Z"
     },
     "453479": {
       "type": "player",
@@ -193,6 +304,24 @@
       "lastUpdated": "2025-09-19T10:22:26.678Z",
       "ttl": "2025-09-26T10:22:26.678Z"
     },
+    "454050": {
+      "type": "player",
+      "id": "454050",
+      "name": "Mauro Stingelin",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.917Z",
+      "ttl": "2025-09-26T12:46:12.917Z"
+    },
+    "455077": {
+      "type": "player",
+      "id": "455077",
+      "name": "Raphael Neidhart",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.074Z",
+      "ttl": "2025-09-26T12:46:31.074Z"
+    },
     "455331": {
       "type": "player",
       "id": "455331",
@@ -201,6 +330,15 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.676Z",
       "ttl": "2025-09-26T10:22:26.676Z"
+    },
+    "455609": {
+      "type": "player",
+      "id": "455609",
+      "name": "Mias Wellauer",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.228Z",
+      "ttl": "2025-09-26T12:46:05.228Z"
     },
     "456965": {
       "type": "player",
@@ -220,6 +358,24 @@
       "lastUpdated": "2025-09-19T12:30:21.151Z",
       "ttl": "2025-09-26T12:30:21.151Z"
     },
+    "459038": {
+      "type": "player",
+      "id": "459038",
+      "name": "Jari Portmann",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.070Z",
+      "ttl": "2025-09-26T12:46:31.070Z"
+    },
+    "459118": {
+      "type": "player",
+      "id": "459118",
+      "name": "Jonas Nigg",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.079Z",
+      "ttl": "2025-09-26T12:46:31.079Z"
+    },
     "459198": {
       "type": "player",
       "id": "459198",
@@ -228,6 +384,15 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.679Z",
       "ttl": "2025-09-26T10:22:26.679Z"
+    },
+    "459261": {
+      "type": "player",
+      "id": "459261",
+      "name": "Michael Schwizer",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.913Z",
+      "ttl": "2025-09-26T12:46:12.913Z"
     },
     "459278": {
       "type": "player",
@@ -238,6 +403,15 @@
       "lastUpdated": "2025-09-19T12:30:21.150Z",
       "ttl": "2025-09-26T12:30:21.150Z"
     },
+    "459449": {
+      "type": "player",
+      "id": "459449",
+      "name": "Nils Schälin",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.071Z",
+      "ttl": "2025-09-26T12:46:31.071Z"
+    },
     "459565": {
       "type": "player",
       "id": "459565",
@@ -246,6 +420,33 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.678Z",
       "ttl": "2025-09-26T10:22:26.678Z"
+    },
+    "459971": {
+      "type": "player",
+      "id": "459971",
+      "name": "Joel Bachmann",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.917Z",
+      "ttl": "2025-09-26T12:46:12.917Z"
+    },
+    "460281": {
+      "type": "player",
+      "id": "460281",
+      "name": "Levin Gügi",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.912Z",
+      "ttl": "2025-09-26T12:46:12.912Z"
+    },
+    "460579": {
+      "type": "player",
+      "id": "460579",
+      "name": "Jonas Stettler",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.075Z",
+      "ttl": "2025-09-26T12:46:31.075Z"
     },
     "460606": {
       "type": "player",
@@ -256,6 +457,24 @@
       "lastUpdated": "2025-09-19T10:22:26.679Z",
       "ttl": "2025-09-26T10:22:26.679Z"
     },
+    "460688": {
+      "type": "player",
+      "id": "460688",
+      "name": "Loris Hofmann",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.075Z",
+      "ttl": "2025-09-26T12:46:31.075Z"
+    },
+    "461516": {
+      "type": "player",
+      "id": "461516",
+      "name": "Oliver Wiedmer",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.236Z",
+      "ttl": "2025-09-26T12:46:05.236Z"
+    },
     "461593": {
       "type": "player",
       "id": "461593",
@@ -264,6 +483,51 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.672Z",
       "ttl": "2025-09-26T10:22:26.672Z"
+    },
+    "462541": {
+      "type": "player",
+      "id": "462541",
+      "name": "Ramon Zeller",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.914Z",
+      "ttl": "2025-09-26T12:46:12.914Z"
+    },
+    "464391": {
+      "type": "player",
+      "id": "464391",
+      "name": "Tobias Flütsch",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.074Z",
+      "ttl": "2025-09-26T12:46:31.074Z"
+    },
+    "464828": {
+      "type": "player",
+      "id": "464828",
+      "name": "Ivo Lüthi",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.233Z",
+      "ttl": "2025-09-26T12:46:05.233Z"
+    },
+    "464885": {
+      "type": "player",
+      "id": "464885",
+      "name": "Elia Seiler",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.235Z",
+      "ttl": "2025-09-26T12:46:05.235Z"
+    },
+    "465407": {
+      "type": "player",
+      "id": "465407",
+      "name": "Livio Zeller",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.910Z",
+      "ttl": "2025-09-26T12:46:12.910Z"
     },
     "465593": {
       "type": "player",
@@ -274,6 +538,33 @@
       "lastUpdated": "2025-09-19T12:30:21.152Z",
       "ttl": "2025-09-26T12:30:21.152Z"
     },
+    "465906": {
+      "type": "player",
+      "id": "465906",
+      "name": "Rohit Chiplunkar",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.916Z",
+      "ttl": "2025-09-26T12:46:12.916Z"
+    },
+    "466282": {
+      "type": "player",
+      "id": "466282",
+      "name": "Michael Haenle",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.911Z",
+      "ttl": "2025-09-26T12:46:12.911Z"
+    },
+    "467692": {
+      "type": "player",
+      "id": "467692",
+      "name": "Joshua Villiger",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.229Z",
+      "ttl": "2025-09-26T12:46:05.229Z"
+    },
     "468880": {
       "type": "player",
       "id": "468880",
@@ -283,6 +574,24 @@
       "lastUpdated": "2025-09-19T10:22:26.679Z",
       "ttl": "2025-09-26T10:22:26.679Z"
     },
+    "469117": {
+      "type": "player",
+      "id": "469117",
+      "name": "Silas Fitzi",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.223Z",
+      "ttl": "2025-09-26T12:46:05.223Z"
+    },
+    "469253": {
+      "type": "player",
+      "id": "469253",
+      "name": "Niklas Graf",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.234Z",
+      "ttl": "2025-09-26T12:46:05.234Z"
+    },
     "469383": {
       "type": "player",
       "id": "469383",
@@ -291,6 +600,15 @@
       "teamId": "428535",
       "lastUpdated": "2025-09-19T12:30:21.155Z",
       "ttl": "2025-09-26T12:30:21.155Z"
+    },
+    "470629": {
+      "type": "player",
+      "id": "470629",
+      "name": "Janis Ribler",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.227Z",
+      "ttl": "2025-09-26T12:46:05.227Z"
     },
     "470887": {
       "type": "player",
@@ -319,6 +637,69 @@
       "lastUpdated": "2025-09-19T12:30:21.148Z",
       "ttl": "2025-09-26T12:30:21.148Z"
     },
+    "471982": {
+      "type": "player",
+      "id": "471982",
+      "name": "Pablo Mariotti",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.231Z",
+      "ttl": "2025-09-26T12:46:05.231Z"
+    },
+    "472283": {
+      "type": "player",
+      "id": "472283",
+      "name": "Silvan Hänsch",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.239Z",
+      "ttl": "2025-09-26T12:46:05.239Z"
+    },
+    "472284": {
+      "type": "player",
+      "id": "472284",
+      "name": "Levin Peter",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.233Z",
+      "ttl": "2025-09-26T12:46:05.233Z"
+    },
+    "472917": {
+      "type": "player",
+      "id": "472917",
+      "name": "Robin Nilsberth",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.076Z",
+      "ttl": "2025-09-26T12:46:31.076Z"
+    },
+    "474612": {
+      "type": "player",
+      "id": "474612",
+      "name": "Dario Bürgler",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.080Z",
+      "ttl": "2025-09-26T12:46:31.080Z"
+    },
+    "475212": {
+      "type": "player",
+      "id": "475212",
+      "name": "Noah Bisig",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.082Z",
+      "ttl": "2025-09-26T12:46:31.082Z"
+    },
+    "476471": {
+      "type": "player",
+      "id": "476471",
+      "name": "Ramon Zenger",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.226Z",
+      "ttl": "2025-09-26T12:46:05.226Z"
+    },
     "477056": {
       "type": "player",
       "id": "477056",
@@ -327,6 +708,24 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.680Z",
       "ttl": "2025-09-26T10:22:26.680Z"
+    },
+    "478474": {
+      "type": "player",
+      "id": "478474",
+      "name": "Yannic Fitzi",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.230Z",
+      "ttl": "2025-09-26T12:46:05.230Z"
+    },
+    "478628": {
+      "type": "player",
+      "id": "478628",
+      "name": "Lian Schefer",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.235Z",
+      "ttl": "2025-09-26T12:46:05.235Z"
     },
     "478908": {
       "type": "player",
@@ -337,6 +736,15 @@
       "lastUpdated": "2025-09-19T12:30:21.154Z",
       "ttl": "2025-09-26T12:30:21.154Z"
     },
+    "479203": {
+      "type": "player",
+      "id": "479203",
+      "name": "Linus Arnold",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.077Z",
+      "ttl": "2025-09-26T12:46:31.077Z"
+    },
     "479785": {
       "type": "player",
       "id": "479785",
@@ -345,6 +753,24 @@
       "teamId": "428535",
       "lastUpdated": "2025-09-19T12:30:21.160Z",
       "ttl": "2025-09-26T12:30:21.160Z"
+    },
+    "479980": {
+      "type": "player",
+      "id": "479980",
+      "name": "Andrin Christen",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.080Z",
+      "ttl": "2025-09-26T12:46:31.080Z"
+    },
+    "479981": {
+      "type": "player",
+      "id": "479981",
+      "name": "Maurus Christen",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.078Z",
+      "ttl": "2025-09-26T12:46:31.078Z"
     },
     "480130": {
       "type": "player",
@@ -355,6 +781,42 @@
       "lastUpdated": "2025-09-19T12:30:21.149Z",
       "ttl": "2025-09-26T12:30:21.149Z"
     },
+    "480215": {
+      "type": "player",
+      "id": "480215",
+      "name": "Fabio Flütsch",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.079Z",
+      "ttl": "2025-09-26T12:46:31.079Z"
+    },
+    "481508": {
+      "type": "player",
+      "id": "481508",
+      "name": "Luis Graf",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.237Z",
+      "ttl": "2025-09-26T12:46:05.237Z"
+    },
+    "481510": {
+      "type": "player",
+      "id": "481510",
+      "name": "Janis Graf",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.225Z",
+      "ttl": "2025-09-26T12:46:05.225Z"
+    },
+    "481524": {
+      "type": "player",
+      "id": "481524",
+      "name": "Lars Birchmeier",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.220Z",
+      "ttl": "2025-09-26T12:46:05.220Z"
+    },
     "482361": {
       "type": "player",
       "id": "482361",
@@ -363,6 +825,15 @@
       "teamId": "428535",
       "lastUpdated": "2025-09-19T12:30:21.156Z",
       "ttl": "2025-09-26T12:30:21.156Z"
+    },
+    "483904": {
+      "type": "player",
+      "id": "483904",
+      "name": "Tino von Pritzbuer",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.913Z",
+      "ttl": "2025-09-26T12:46:12.913Z"
     },
     "484285": {
       "type": "player",
@@ -373,6 +844,42 @@
       "lastUpdated": "2025-09-19T12:30:21.159Z",
       "ttl": "2025-09-26T12:30:21.159Z"
     },
+    "484793": {
+      "type": "player",
+      "id": "484793",
+      "name": "Linus Hedlund",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.076Z",
+      "ttl": "2025-09-26T12:46:31.076Z"
+    },
+    "489102": {
+      "type": "player",
+      "id": "489102",
+      "name": "Florin Fehr",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.227Z",
+      "ttl": "2025-09-26T12:46:05.227Z"
+    },
+    "489116": {
+      "type": "player",
+      "id": "489116",
+      "name": "Mika Hänni",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.224Z",
+      "ttl": "2025-09-26T12:46:05.224Z"
+    },
+    "492284": {
+      "type": "player",
+      "id": "492284",
+      "name": "Rovin Thalmann",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.234Z",
+      "ttl": "2025-09-26T12:46:05.234Z"
+    },
     "512012": {
       "type": "player",
       "id": "512012",
@@ -381,6 +888,15 @@
       "teamId": "428535",
       "lastUpdated": "2025-09-19T12:30:21.155Z",
       "ttl": "2025-09-26T12:30:21.155Z"
+    },
+    "512020": {
+      "type": "player",
+      "id": "512020",
+      "name": "Aaro Helin",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.232Z",
+      "ttl": "2025-09-26T12:46:05.232Z"
     },
     "515622": {
       "type": "player",
@@ -400,6 +916,42 @@
       "lastUpdated": "2025-09-19T10:22:26.673Z",
       "ttl": "2025-09-26T10:22:26.673Z"
     },
+    "516882": {
+      "type": "player",
+      "id": "516882",
+      "name": "Jesper Silvonen",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.932Z",
+      "ttl": "2025-09-26T12:46:12.932Z"
+    },
+    "521510": {
+      "type": "player",
+      "id": "521510",
+      "name": "Albin Sjögren",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.078Z",
+      "ttl": "2025-09-26T12:46:31.078Z"
+    },
+    "521511": {
+      "type": "player",
+      "id": "521511",
+      "name": "Miko Kailiala",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.081Z",
+      "ttl": "2025-09-26T12:46:31.081Z"
+    },
+    "521512": {
+      "type": "player",
+      "id": "521512",
+      "name": "Sami Johansson",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.081Z",
+      "ttl": "2025-09-26T12:46:31.081Z"
+    },
     "526718": {
       "type": "player",
       "id": "526718",
@@ -418,6 +970,15 @@
       "lastUpdated": "2025-09-19T12:30:21.158Z",
       "ttl": "2025-09-26T12:30:21.158Z"
     },
+    "526816": {
+      "type": "player",
+      "id": "526816",
+      "name": "Tobias Gustafsson",
+      "team": "Zug United",
+      "teamId": "429603",
+      "lastUpdated": "2025-09-19T12:46:31.072Z",
+      "ttl": "2025-09-26T12:46:31.072Z"
+    },
     "526927": {
       "type": "player",
       "id": "526927",
@@ -427,6 +988,42 @@
       "lastUpdated": "2025-09-19T12:30:21.154Z",
       "ttl": "2025-09-26T12:30:21.154Z"
     },
+    "526957": {
+      "type": "player",
+      "id": "526957",
+      "name": "Markus Sipronen",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.236Z",
+      "ttl": "2025-09-26T12:46:05.236Z"
+    },
+    "532043": {
+      "type": "player",
+      "id": "532043",
+      "name": "Johannes Vähäkangas",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.924Z",
+      "ttl": "2025-09-26T12:46:12.924Z"
+    },
+    "532044": {
+      "type": "player",
+      "id": "532044",
+      "name": "Adam Zukal",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.930Z",
+      "ttl": "2025-09-26T12:46:12.930Z"
+    },
+    "532045": {
+      "type": "player",
+      "id": "532045",
+      "name": "Joona Larte",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T12:46:12.935Z",
+      "ttl": "2025-09-26T12:46:12.935Z"
+    },
     "532160": {
       "type": "player",
       "id": "532160",
@@ -435,6 +1032,24 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.680Z",
       "ttl": "2025-09-26T10:22:26.680Z"
+    },
+    "532713": {
+      "type": "player",
+      "id": "532713",
+      "name": "Oskari Fälden",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.238Z",
+      "ttl": "2025-09-26T12:46:05.238Z"
+    },
+    "532714": {
+      "type": "player",
+      "id": "532714",
+      "name": "Tim Lindberg",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T12:46:05.238Z",
+      "ttl": "2025-09-26T12:46:05.238Z"
     }
   }
 }
