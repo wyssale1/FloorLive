@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import LeagueTable from '../components/LeagueTable'
 import LeagueTableSkeleton from '../components/LeagueTableSkeleton'
 import CombinedLeagueSeasonSelector from '../components/CombinedLeagueSeasonSelector'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { apiClient } from '../lib/apiClient'
+import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
+import { useMetaTags } from '../hooks/useMetaTags'
 import type { TeamRanking } from '../shared/types'
 
 // League configuration based on API research
@@ -61,8 +64,26 @@ interface RankingsState {
 }
 
 export default function Rankings() {
-  const [activeTab, setActiveTab] = useState('nla-men')
-  const [currentSeason, setCurrentSeason] = useState(getCurrentSeasonYear().toString())
+  const navigate = useNavigate()
+  const search = useSearch({ from: '/rankings' })
+
+  // Get initial values from URL or defaults
+  const getInitialLeague = useCallback(() => {
+    if (search?.league && LEAGUES.find(l => l.id === search.league)) {
+      return search.league
+    }
+    return 'nla-men' // default
+  }, [search?.league])
+
+  const getInitialYear = useCallback(() => {
+    if (search?.year && /^\d{4}$/.test(search.year)) {
+      return search.year
+    }
+    return getCurrentSeasonYear().toString() // default
+  }, [search?.year])
+
+  const [activeTab, setActiveTab] = useState(() => getInitialLeague())
+  const [currentSeason, setCurrentSeason] = useState(() => getInitialYear())
   const [availableSeasons] = useState(['2025', '2024', '2023', '2022', '2021'])
   const [rankingsState, setRankingsState] = useState<RankingsState>(() => {
     // Initialize state for all leagues
@@ -149,18 +170,55 @@ export default function Rankings() {
   }, [activeTab, currentSeason])
 
   // Handle season change
-  const handleSeasonChange = (newSeason: string) => {
+  const handleSeasonChange = useCallback((newSeason: string) => {
     setCurrentSeason(newSeason)
-  }
+    // Update URL without triggering navigation
+    navigate({
+      to: '/rankings',
+      search: { league: activeTab, year: newSeason },
+      replace: true
+    })
+  }, [navigate, activeTab])
 
   // Handle league change
-  const handleLeagueChange = (league: typeof LEAGUES[0]) => {
+  const handleLeagueChange = useCallback((league: typeof LEAGUES[0]) => {
     setActiveTab(league.id)
-  }
+    // Update URL without triggering navigation
+    navigate({
+      to: '/rankings',
+      search: { league: league.id, year: currentSeason },
+      replace: true
+    })
+  }, [navigate, currentSeason])
+
+  // Update state when URL changes (back/forward navigation)
+  useEffect(() => {
+    const urlLeague = getInitialLeague()
+    const urlYear = getInitialYear()
+
+    if (urlLeague !== activeTab) {
+      setActiveTab(urlLeague)
+    }
+    if (urlYear !== currentSeason) {
+      setCurrentSeason(urlYear)
+    }
+  }, [search?.league, search?.year, activeTab, currentSeason, getInitialLeague, getInitialYear])
 
   // Get current league data
   const currentLeague = LEAGUES.find(l => l.id === activeTab)
   const currentData = rankingsState[activeTab]
+
+  // Set dynamic page title and meta tags
+  const pageTitle = pageTitles.rankings(currentLeague?.label || 'Swiss Unihockey', currentSeason)
+  const pageDescription = `View ${currentLeague?.label || 'Swiss Unihockey'} league standings and team rankings for the ${currentSeason} season. Complete table with points, games played, and team statistics.`
+
+  usePageTitle(pageTitle)
+  useMetaTags({
+    title: pageTitle,
+    description: pageDescription,
+    type: 'website',
+    url: `https://floorlive.ch/rankings${activeTab !== 'nla-men' || currentSeason !== getCurrentSeasonYear().toString() ? `?league=${activeTab}&year=${currentSeason}` : ''}`
+  })
 
   return (
     <div className="min-h-screen bg-gray-50/30 pt-4">

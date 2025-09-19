@@ -46,10 +46,13 @@ export const pageTitles = {
   team: (teamName: string) => teamName,
   
   player: (playerName: string) => playerName,
-  
+
+  rankings: (leagueName: string, season: string) =>
+    `${leagueName} Rankings ${season}`,
+
   error: 'Page Not Found',
-  
-  loading: (type: 'game' | 'team' | 'player') => `Loading ${type}...`
+
+  loading: (type: 'game' | 'team' | 'player' | 'rankings') => `Loading ${type}...`
 }
 
 export default usePageTitle

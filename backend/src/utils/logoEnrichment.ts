@@ -6,15 +6,21 @@ import { logoService } from '../services/logoService.js';
  * Uses simple team overrides mapping
  */
 export async function addOptimisticLogosToGames(games: any[]): Promise<void> {
+  // Process all teams in parallel instead of sequentially
+  const logoPromises: Promise<void>[] = [];
+
   for (const game of games) {
     if (game.home_team) {
-      await processTeamLogos(game.home_team);
+      logoPromises.push(processTeamLogos(game.home_team));
     }
-    
+
     if (game.away_team) {
-      await processTeamLogos(game.away_team);
+      logoPromises.push(processTeamLogos(game.away_team));
     }
   }
+
+  // Wait for all logo processing to complete in parallel
+  await Promise.all(logoPromises);
 }
 
 /**

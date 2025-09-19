@@ -73,11 +73,17 @@ const playerRoute = createRoute({
   component: PlayerDetail,
 })
 
-// Step 6: Create rankings route
+// Step 6: Create rankings route with search params
 const rankingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/rankings',
   component: Rankings,
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      league: typeof search.league === 'string' ? search.league : undefined,
+      year: typeof search.year === 'string' ? search.year : undefined,
+    }
+  },
 })
 
 // Step 7: Create the route tree

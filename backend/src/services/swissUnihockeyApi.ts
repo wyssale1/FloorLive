@@ -72,24 +72,34 @@ export class SwissUnihockeyApiClient {
         return [];
       }
 
+      return this.getGameEventsOptimized(gameId, gameDetails);
+    } catch (error) {
+      console.error(`Error fetching events for game ${gameId}:`, error);
+      return [];
+    }
+  }
+
+  async getGameEventsOptimized(gameId: string, gameDetails: any | null): Promise<GameEvent[]> {
+    try {
+      if (!gameDetails) {
+        console.error(`No game details provided for ${gameId}`);
+        return [];
+      }
+
       const homeTeamName = gameDetails.home_team?.name || '';
       const awayTeamName = gameDetails.away_team?.name || '';
 
       // Get game events from Swiss API
       const eventsResponse = await this.client.get<any>(`/game_events/${gameId}`);
-      
+
       if (!eventsResponse.data) {
         return [];
       }
 
-      // Console log: Raw Swiss API response
-      // Process events from Swiss API
-
       // Process events using new mapping function
       const events = this.mapGameEventsFromApi(eventsResponse.data, gameId, homeTeamName, awayTeamName);
-      
+
       // Return events in their original order (Swiss API returns reverse chronological)
-      // The reverse operation will be handled in the API route at the last moment
       return events;
     } catch (error) {
       console.error(`Error fetching events for game ${gameId}:`, error);

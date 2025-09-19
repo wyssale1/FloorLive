@@ -9,7 +9,8 @@ interface CacheEntry<T> {
 export class CacheService {
   private cache = new Map<string, CacheEntry<any>>();
   private readonly DEFAULT_TTL = 60 * 60 * 1000; // 1 hour
-  private readonly LIVE_GAME_TTL = 30 * 1000; // 30 seconds for live games
+  private readonly LIVE_GAME_TTL = 15 * 1000; // 15 seconds for live games (faster updates)
+  private readonly FINISHED_GAME_TTL = 24 * 60 * 60 * 1000; // 24 hours for finished games
 
   set<T>(key: string, data: T, ttl?: number): void {
     const entry: CacheEntry<T> = {
@@ -66,11 +67,24 @@ export class CacheService {
     }
   }
 
-  // Helper methods for games
+  // Helper methods for games with smarter TTL
   setGames(date: string, games: Game[]): void {
-    // Always cache the result, even if it's empty
+    // Smart cache TTL based on game status distribution
     const hasLiveGames = games.some(game => game.status === 'live');
-    const ttl = hasLiveGames ? this.LIVE_GAME_TTL : this.DEFAULT_TTL;
+    const hasUpcomingGames = games.some(game => game.status === 'upcoming');
+    const allFinished = games.length > 0 && games.every(game => game.status === 'finished');
+
+    let ttl: number;
+    if (hasLiveGames) {
+      ttl = this.LIVE_GAME_TTL; // 15 seconds for live games
+    } else if (allFinished) {
+      ttl = this.FINISHED_GAME_TTL; // 24 hours for finished games
+    } else if (hasUpcomingGames) {
+      ttl = this.DEFAULT_TTL; // 1 hour for upcoming games
+    } else {
+      ttl = this.DEFAULT_TTL; // Default
+    }
+
     this.set(`games:${date}`, games, ttl);
   }
 

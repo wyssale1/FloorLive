@@ -11,9 +11,11 @@ import teamsRouter from './routes/teams.js';
 import leaguesRouter from './routes/leagues.js';
 import logosRouter from './routes/logos.js';
 import playersRouter from './routes/players.js';
+import sitemapRouter from './routes/sitemap.js';
 import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
+import { SEOService } from './services/seoService.js';
 
 // Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -50,12 +52,18 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// SEO middleware for bots (before routes)
+app.use(SEOService.middleware());
+
 // Routes
 app.use('/api/games', gamesRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/leagues', leaguesRouter);
 app.use('/api/logos', logosRouter);
 app.use('/api/players', playersRouter);
+
+// SEO routes (no /api prefix for sitemap.xml)
+app.use('/', sitemapRouter);
 
 // Static assets serving - use absolute path to ensure it works regardless of working directory
 const assetsPath = path.join(__dirname, '..', 'assets', 'players');

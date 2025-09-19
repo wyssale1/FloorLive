@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { format, parseISO, isValid } from 'date-fns';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
+import { requestBatcher } from '../services/requestBatcher.js';
 import { sortLeagues } from '../shared/utils/teamMapping.js';
 import { addOptimisticLogosToGames, triggerBackgroundLogoProcessing } from '../utils/logoEnrichment.js';
 
@@ -33,7 +34,10 @@ router.get('/', async (req, res) => {
     
     if (games === null) {
       try {
-        games = await apiClient.getGamesByDate(dateString);
+        // Use request batcher to deduplicate simultaneous requests for same date
+        games = await requestBatcher.execute(`games:${dateString}`, () =>
+          apiClient.getGamesByDate(dateString)
+        );
         // Always cache the result, even if empty
         cache.setGames(dateString, games);
       } catch (error) {
@@ -63,8 +67,10 @@ router.get('/', async (req, res) => {
     const leagueNames = Object.keys(gamesByLeague);
     const orderedLeagues = sortLeagues(leagueNames);
 
-    // Add optimistic logo URLs to all games (async operation)
-    await addOptimisticLogosToGames(games);
+    // Add optimistic logo URLs to all games (async operation) - but don't block response
+    addOptimisticLogosToGames(games).catch(err =>
+      console.warn('Non-critical logo processing failed:', err)
+    );
 
     res.json({
       date: dateString,
@@ -97,8 +103,10 @@ router.get('/live', async (req, res) => {
       }
     }
 
-    // Add optimistic logo URLs to live games
-    await addOptimisticLogosToGames(liveGames);
+    // Add optimistic logo URLs to live games (non-blocking)
+    addOptimisticLogosToGames(liveGames).catch(err =>
+      console.warn('Non-critical logo processing failed:', err)
+    );
 
     res.json({
       games: liveGames,
@@ -140,8 +148,10 @@ router.get('/:gameId', async (req, res) => {
       cache.set(cacheKey, game, ttl);
     }
 
-    // Add optimistic logo URLs to the game
-    await addOptimisticLogosToGames([game]);
+    // Add optimistic logo URLs to the game (non-blocking)
+    addOptimisticLogosToGames([game]).catch(err =>
+      console.warn('Non-critical logo processing failed:', err)
+    );
 
     // Trigger background logo processing (after response)
     triggerBackgroundLogoProcessing([game]);
@@ -161,17 +171,31 @@ router.get('/:gameId', async (req, res) => {
 router.get('/:gameId/events', async (req, res) => {
   try {
     const { gameId } = req.params;
-    
+
     if (!gameId) {
       return res.status(400).json({ error: 'Game ID is required' });
     }
 
     const cacheKey = `events:${gameId}`;
     let events = cache.get(cacheKey);
-    
+
     if (!events) {
-      events = await apiClient.getGameEvents(gameId);
-      
+      // Try to get cached game details first to avoid redundant API call
+      const gameCacheKey = `game:${gameId}`;
+      let gameDetails = cache.get(gameCacheKey);
+
+      if (!gameDetails) {
+        // If no cached game details, get them and cache for future use
+        gameDetails = await apiClient.getGameDetails(gameId);
+        if (gameDetails) {
+          const ttl = (gameDetails as any).status === 'live' ? 30000 : 3600000;
+          cache.set(gameCacheKey, gameDetails, ttl);
+        }
+      }
+
+      // Now get events with optimized API client call
+      events = await apiClient.getGameEventsOptimized(gameId, gameDetails);
+
       // Cache events for 30 seconds (they update frequently during live games)
       cache.set(cacheKey, events, 30000);
     }
