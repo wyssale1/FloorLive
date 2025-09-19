@@ -52,7 +52,7 @@ export default function TeamDetail() {
   // Use React Query hooks for all data fetching
   const { data: team, isLoading: teamLoading } = useTeamDetail(teamId)
   const { data: players = [], isLoading: playersLoading } = useTeamPlayers(teamId)
-  const { data: statistics, isLoading: statisticsLoading } = useTeamStatistics(teamId)
+  const { data: statistics } = useTeamStatistics(teamId)
   const { data: upcomingGames = [], isLoading: gamesLoading } = useTeamUpcomingGames(teamId, false) // Lazy load
   
 
@@ -79,7 +79,7 @@ export default function TeamDetail() {
   const {
     data: rankingsData,
     isLoading: rankingsLoading,
-    isError: rankingsError
+    isError: _rankingsError
   } = useRankings({
     season: targetSeason,
     league: leagueId || undefined,

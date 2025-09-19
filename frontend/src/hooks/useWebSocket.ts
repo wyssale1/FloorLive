@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Game, GameEvent } from '../lib/apiClient';
+import type { Game, GameEvent } from '../shared/types';
 
 interface WebSocketMessage {
   type: 'live_games_update' | 'game_update' | 'pong' | 'error';

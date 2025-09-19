@@ -1,4 +1,4 @@
-import type { GameEvent } from './apiClient'
+import type { GameEvent } from '../shared/types'
 
 export interface LiveGameStatus {
   isLive: boolean

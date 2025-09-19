@@ -27,6 +27,14 @@ export interface Game {
     name: string;
   };
   location?: string;
+  venue?: {
+    name: string;
+    address?: string;
+  };
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
   referees?: {
     first?: string;
     second?: string;
@@ -43,6 +51,12 @@ export interface GameEvent {
   assist?: string;
   description?: string;
   team: 'home' | 'away';
+  // New fields from enhanced backend processing
+  team_name?: string;
+  team_side?: 'home' | 'away' | 'neutral';
+  event_type?: string;
+  icon?: string;
+  display_as?: string;
 }
 
 export interface SwissUnihockeyApiResponse<T> {
@@ -79,6 +93,55 @@ export interface ApiResponse<T> {
 export type GameStatus = 'live' | 'upcoming' | 'finished';
 export type LeagueType = 'NLA Men' | 'NLA Women' | 'NLB Men' | 'NLB Women';
 
+// Additional types for new features
+export interface RankingsApiResponse {
+  type: string;
+  subtype: string;
+  doc: string;
+  data: {
+    context: {
+      season?: string;
+      league?: string;
+      game_class?: string;
+      group?: string;
+    };
+    headers: string[];
+    title: string;
+    tabs?: any[];
+    regions: TeamRanking[][];
+  };
+}
+
+export interface TeamRanking {
+  position: number;
+  teamId: string;
+  teamName: string;
+  teamLogo?: string | null;
+  games: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  points: number;
+}
+
+export interface TeamStatistics {
+  achievements?: Array<{
+    competition: string;
+    season: string;
+    result: string;
+  }>;
+  seasons?: Array<{
+    season: string;
+    league: string;
+    position?: string;
+    games?: number;
+    wins?: number;
+  }>;
+}
+
 // Frontend Game interface (camelCase version)
 export interface FrontendGame {
   id: string;
@@ -103,4 +166,71 @@ export interface FrontendGame {
   startTime: string;
   gameDate: string;
   isLive: boolean;
+}
+
+// Player-related interfaces (updated definitions)
+export interface Player {
+  id: string;
+  name: string;
+  number?: string;
+  position?: string;
+  yearOfBirth?: number;
+  height?: string;
+  weight?: string;
+  licenseType?: string;
+  profileImage?: string;
+  club?: {
+    id: string;
+    name: string;
+    logo?: string;
+  };
+  // Additional fields from rich API response
+  nationality?: string;
+  birthPlace?: string;
+  shoots?: 'L' | 'R'; // Left or Right handed
+  // Career statistics summary
+  careerStats?: {
+    totalGames: number;
+    totalGoals: number;
+    totalAssists: number;
+    totalPoints: number;
+  };
+  // Current season info
+  currentSeason?: {
+    league: string;
+    team: string;
+    jerseyNumber?: string;
+  };
+}
+
+export interface PlayerStatistics {
+  season: string;
+  league: string;
+  team: string;
+  teamId?: string;
+  games: number;
+  goals: number;
+  assists: number;
+  points: number;
+  penalties: {
+    twoMinute: number;
+    fiveMinute: number;
+    tenMinute: number;
+    matchPenalty: number;
+  };
+}
+
+export interface PlayerGamePerformance {
+  gameDate: string;
+  venue: string;
+  gameTime: string;
+  homeTeam: string;
+  homeTeamId?: string;
+  awayTeam: string;
+  awayTeamId?: string;
+  gameScore: string;
+  playerGoals: number;
+  playerAssists: number;
+  playerPoints: number;
+  matchPenalties: number;
 }

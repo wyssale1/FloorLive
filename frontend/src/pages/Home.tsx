@@ -8,6 +8,7 @@ import { format, parseISO } from 'date-fns'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags } from '../hooks/useMetaTags'
 import { useGamesByDate } from '../hooks/useQueries'
+import { useStructuredData, generateWebSiteData, generateOrganizationData, generateGamesListData } from '../hooks/useStructuredData'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -33,6 +34,14 @@ export default function Home() {
   // Use React Query for games data
   const { data: games = [], isLoading, isError } = useGamesByDate(formattedDate)
 
+  // League ordering preferences (same as backend)
+  const LEAGUE_ORDER_PREFERENCES = [
+    'Herren L-UPL',    // NLA Men
+    'Damen L-UPL',     // NLA Women
+    'Herren NLB',      // NLB Men
+    'Damen NLB'        // NLB Women
+  ]
+
   // Group games by league (memoized)
   const gamesByLeague = useMemo(() => {
     const grouped: Record<string, any[]> = {}
@@ -48,13 +57,41 @@ export default function Home() {
     return grouped
   }, [games])
 
+  // Get ordered league names (memoized)
+  const orderedLeagueNames = useMemo(() => {
+    const leagueNames = Object.keys(gamesByLeague)
+
+    return [
+      // First, add leagues in preferred order (only if they have games)
+      ...LEAGUE_ORDER_PREFERENCES.filter(league => leagueNames.includes(league)),
+      // Then add remaining leagues alphabetically
+      ...leagueNames.filter(league => !LEAGUE_ORDER_PREFERENCES.includes(league)).sort()
+    ]
+  }, [gamesByLeague, LEAGUE_ORDER_PREFERENCES])
+
   // Set dynamic page title and meta tags
   usePageTitle(pageTitles.home(formattedDate))
   useMetaTags({
     title: pageTitles.home(formattedDate),
     description: `Swiss Unihockey games and live scores for ${format(selectedDate, 'MMMM d, yyyy')}. Track your favorite teams and follow live games.`,
-    type: 'website'
+    type: 'website',
+    url: `https://floorlive.ch${search?.date ? `?date=${search.date}` : ''}`
   })
+
+  // Add structured data for SEO
+  useStructuredData([
+    generateOrganizationData(),
+    generateWebSiteData(),
+    ...generateGamesListData(games.map(game => ({
+      id: game.id,
+      homeTeam: { name: game.home_team.name, logo: game.home_team.logo },
+      awayTeam: { name: game.away_team.name, logo: game.away_team.logo },
+      startTime: game.start_time,
+      venue: game.venue?.name || game.location,
+      status: game.status,
+      league: game.league
+    })))
+  ])
 
   const handleDateSelect = useCallback((date: Date) => {
     setSelectedDate(date)
@@ -116,7 +153,7 @@ export default function Home() {
             <GameCardSkeleton variant="section" />
             <GameCardSkeleton variant="section" />
           </div>
-        ) : Object.keys(gamesByLeague).length === 0 ? (
+        ) : orderedLeagueNames.length === 0 ? (
           <div className="text-center py-12">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">No games scheduled</h2>
             <p className="text-gray-600">
@@ -125,9 +162,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-6">
-            {Object.entries(gamesByLeague)
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([leagueName, leagueGames], index) => (
+            {orderedLeagueNames.map((leagueName, index) => (
                 <motion.div
                   key={leagueName}
                   initial={{ opacity: 0, y: 20 }}
@@ -136,7 +171,7 @@ export default function Home() {
                 >
                   <GameSection
                     title={leagueName}
-                    games={leagueGames}
+                    games={gamesByLeague[leagueName]}
                     index={index}
                   />
                 </motion.div>
