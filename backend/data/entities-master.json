@@ -2,7 +2,7 @@
   "_metadata": {
     "description": "Master entity registry for Swiss Unihockey teams and players",
     "version": "1.0.0",
-    "lastUpdated": "2025-09-19T12:01:47.083Z",
+    "lastUpdated": "2025-09-19T12:13:21.957Z",
     "instructions": "This file manages core entity data with TTL-based refresh. Feature services consume and extend this data."
   },
   "teams": {
@@ -10,8 +10,8 @@
       "type": "team",
       "id": "429523",
       "name": "Tigers Langnau",
-      "lastUpdated": "2025-09-19T12:01:32.481Z",
-      "ttl": "2025-09-26T12:01:32.481Z"
+      "lastUpdated": "2025-09-19T12:13:21.956Z",
+      "ttl": "2025-09-26T12:13:21.956Z"
     }
   },
   "players": {
@@ -21,8 +21,8 @@
       "name": "Kevin Kropf",
       "team": "Tigers Langnau",
       "teamId": "",
-      "lastUpdated": "2025-09-19T12:01:47.082Z",
-      "ttl": "2025-09-26T12:01:47.082Z"
+      "lastUpdated": "2025-09-19T12:13:13.611Z",
+      "ttl": "2025-09-26T12:13:13.611Z"
     },
     "419910": {
       "type": "player",
