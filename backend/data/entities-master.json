@@ -2,10 +2,17 @@
   "_metadata": {
     "description": "Master entity registry for Swiss Unihockey teams and players",
     "version": "1.0.0",
-    "lastUpdated": "2025-09-19T12:13:21.957Z",
+    "lastUpdated": "2025-09-19T12:30:21.160Z",
     "instructions": "This file manages core entity data with TTL-based refresh. Feature services consume and extend this data."
   },
   "teams": {
+    "428535": {
+      "type": "team",
+      "id": "428535",
+      "name": "UHC Uster",
+      "lastUpdated": "2025-09-19T12:30:21.159Z",
+      "ttl": "2025-09-26T12:30:21.159Z"
+    },
     "429523": {
       "type": "team",
       "id": "429523",
@@ -32,6 +39,15 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.677Z",
       "ttl": "2025-09-26T10:22:26.677Z"
+    },
+    "422303": {
+      "type": "player",
+      "id": "422303",
+      "name": "Remo Gallati",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.153Z",
+      "ttl": "2025-09-26T12:30:21.153Z"
     },
     "424701": {
       "type": "player",
@@ -60,6 +76,15 @@
       "lastUpdated": "2025-09-19T10:22:26.674Z",
       "ttl": "2025-09-26T10:22:26.674Z"
     },
+    "427708": {
+      "type": "player",
+      "id": "427708",
+      "name": "Tobias Ledergerber",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.150Z",
+      "ttl": "2025-09-26T12:30:21.150Z"
+    },
     "428957": {
       "type": "player",
       "id": "428957",
@@ -68,6 +93,24 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.678Z",
       "ttl": "2025-09-26T10:22:26.678Z"
+    },
+    "431821": {
+      "type": "player",
+      "id": "431821",
+      "name": "Lukas Deola",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.153Z",
+      "ttl": "2025-09-26T12:30:21.153Z"
+    },
+    "439570": {
+      "type": "player",
+      "id": "439570",
+      "name": "Nicola Brütsch",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.147Z",
+      "ttl": "2025-09-26T12:30:21.147Z"
     },
     "443595": {
       "type": "player",
@@ -86,6 +129,24 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.675Z",
       "ttl": "2025-09-26T10:22:26.675Z"
+    },
+    "445347": {
+      "type": "player",
+      "id": "445347",
+      "name": "Jean-Luc Klöti",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.150Z",
+      "ttl": "2025-09-26T12:30:21.150Z"
+    },
+    "448604": {
+      "type": "player",
+      "id": "448604",
+      "name": "Noel Knüsel",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.149Z",
+      "ttl": "2025-09-26T12:30:21.149Z"
     },
     "449492": {
       "type": "player",
@@ -114,6 +175,15 @@
       "lastUpdated": "2025-09-19T10:22:26.676Z",
       "ttl": "2025-09-26T10:22:26.676Z"
     },
+    "453562": {
+      "type": "player",
+      "id": "453562",
+      "name": "Filip Karlsson",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.151Z",
+      "ttl": "2025-09-26T12:30:21.151Z"
+    },
     "453913": {
       "type": "player",
       "id": "453913",
@@ -141,6 +211,15 @@
       "lastUpdated": "2025-09-19T10:22:26.679Z",
       "ttl": "2025-09-26T10:22:26.679Z"
     },
+    "458876": {
+      "type": "player",
+      "id": "458876",
+      "name": "Yves Klöti",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.151Z",
+      "ttl": "2025-09-26T12:30:21.151Z"
+    },
     "459198": {
       "type": "player",
       "id": "459198",
@@ -149,6 +228,15 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.679Z",
       "ttl": "2025-09-26T10:22:26.679Z"
+    },
+    "459278": {
+      "type": "player",
+      "id": "459278",
+      "name": "Marcel Arnet",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.150Z",
+      "ttl": "2025-09-26T12:30:21.150Z"
     },
     "459565": {
       "type": "player",
@@ -177,6 +265,15 @@
       "lastUpdated": "2025-09-19T10:22:26.672Z",
       "ttl": "2025-09-26T10:22:26.672Z"
     },
+    "465593": {
+      "type": "player",
+      "id": "465593",
+      "name": "Josia Pfister",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.152Z",
+      "ttl": "2025-09-26T12:30:21.152Z"
+    },
     "468880": {
       "type": "player",
       "id": "468880",
@@ -185,6 +282,42 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.679Z",
       "ttl": "2025-09-26T10:22:26.679Z"
+    },
+    "469383": {
+      "type": "player",
+      "id": "469383",
+      "name": "Micha Zürcher",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.155Z",
+      "ttl": "2025-09-26T12:30:21.155Z"
+    },
+    "470887": {
+      "type": "player",
+      "id": "470887",
+      "name": "Sebastian Kuhn",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.146Z",
+      "ttl": "2025-09-26T12:30:21.146Z"
+    },
+    "470889": {
+      "type": "player",
+      "id": "470889",
+      "name": "Fadri Burkhart",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.156Z",
+      "ttl": "2025-09-26T12:30:21.156Z"
+    },
+    "471214": {
+      "type": "player",
+      "id": "471214",
+      "name": "Timon Günthard",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.148Z",
+      "ttl": "2025-09-26T12:30:21.148Z"
     },
     "477056": {
       "type": "player",
@@ -195,6 +328,69 @@
       "lastUpdated": "2025-09-19T10:22:26.680Z",
       "ttl": "2025-09-26T10:22:26.680Z"
     },
+    "478908": {
+      "type": "player",
+      "id": "478908",
+      "name": "Kilian Franzen",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.154Z",
+      "ttl": "2025-09-26T12:30:21.154Z"
+    },
+    "479785": {
+      "type": "player",
+      "id": "479785",
+      "name": "Isaac Andersson",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.160Z",
+      "ttl": "2025-09-26T12:30:21.160Z"
+    },
+    "480130": {
+      "type": "player",
+      "id": "480130",
+      "name": "Timon Anderegg",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.149Z",
+      "ttl": "2025-09-26T12:30:21.149Z"
+    },
+    "482361": {
+      "type": "player",
+      "id": "482361",
+      "name": "Joris Hänseler",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.156Z",
+      "ttl": "2025-09-26T12:30:21.156Z"
+    },
+    "484285": {
+      "type": "player",
+      "id": "484285",
+      "name": "Markus Kulmala",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.159Z",
+      "ttl": "2025-09-26T12:30:21.159Z"
+    },
+    "512012": {
+      "type": "player",
+      "id": "512012",
+      "name": "Daniels Janis Anis",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.155Z",
+      "ttl": "2025-09-26T12:30:21.155Z"
+    },
+    "515622": {
+      "type": "player",
+      "id": "515622",
+      "name": "Marek Jurkulak",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.157Z",
+      "ttl": "2025-09-26T12:30:21.157Z"
+    },
     "516733": {
       "type": "player",
       "id": "516733",
@@ -203,6 +399,33 @@
       "teamId": "429523",
       "lastUpdated": "2025-09-19T10:22:26.673Z",
       "ttl": "2025-09-26T10:22:26.673Z"
+    },
+    "526718": {
+      "type": "player",
+      "id": "526718",
+      "name": "Ted Nivestam",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.158Z",
+      "ttl": "2025-09-26T12:30:21.158Z"
+    },
+    "526719": {
+      "type": "player",
+      "id": "526719",
+      "name": "Johannes Wilhelmsson",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.158Z",
+      "ttl": "2025-09-26T12:30:21.158Z"
+    },
+    "526927": {
+      "type": "player",
+      "id": "526927",
+      "name": "Albert Koskinen",
+      "team": "UHC Uster",
+      "teamId": "428535",
+      "lastUpdated": "2025-09-19T12:30:21.154Z",
+      "ttl": "2025-09-26T12:30:21.154Z"
     },
     "532160": {
       "type": "player",
