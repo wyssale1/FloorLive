@@ -1,0 +1,636 @@
+{
+  "_metadata": {
+    "description": "Master entity registry for Swiss Unihockey teams and players",
+    "version": "1.0.0",
+    "lastUpdated": "2025-09-19T10:17:56.741Z",
+    "instructions": "This file manages core entity data with TTL-based refresh. Feature services consume and extend this data."
+  },
+  "teams": {
+    "428322": {
+      "type": "team",
+      "id": "428322",
+      "name": "Floorball Thurgau",
+      "lastUpdated": "2025-09-19T10:16:20.817Z",
+      "ttl": "2025-09-26T10:16:20.817Z"
+    },
+    "429523": {
+      "type": "team",
+      "id": "429523",
+      "name": "Tigers Langnau",
+      "lastUpdated": "2025-09-19T10:17:14.939Z",
+      "ttl": "2025-09-26T10:17:14.939Z"
+    },
+    "432307": {
+      "type": "team",
+      "id": "432307",
+      "name": "WASA St. Gallen",
+      "lastUpdated": "2025-09-19T10:16:46.037Z",
+      "ttl": "2025-09-26T10:16:46.037Z"
+    }
+  },
+  "players": {
+    "418460": {
+      "type": "player",
+      "id": "418460",
+      "name": "Kevin Kropf",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:17:28.361Z",
+      "ttl": "2025-09-26T10:17:28.361Z"
+    },
+    "419910": {
+      "type": "player",
+      "id": "419910",
+      "name": "Thomas Gfeller",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:31.591Z",
+      "ttl": "2025-09-26T10:14:31.591Z"
+    },
+    "424701": {
+      "type": "player",
+      "id": "424701",
+      "name": "Micha Strohl",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:28.075Z",
+      "ttl": "2025-09-26T10:14:28.075Z"
+    },
+    "424703": {
+      "type": "player",
+      "id": "424703",
+      "name": "Martin Mosimann",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:29.585Z",
+      "ttl": "2025-09-26T10:14:29.585Z"
+    },
+    "426729": {
+      "type": "player",
+      "id": "426729",
+      "name": "Lucas Schlegel",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:28.582Z",
+      "ttl": "2025-09-26T10:14:28.582Z"
+    },
+    "428957": {
+      "type": "player",
+      "id": "428957",
+      "name": "Simon Steiner",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:32.593Z",
+      "ttl": "2025-09-26T10:14:32.593Z"
+    },
+    "432130": {
+      "type": "player",
+      "id": "432130",
+      "name": "David Gross",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.133Z",
+      "ttl": "2025-09-26T10:16:30.133Z"
+    },
+    "443595": {
+      "type": "player",
+      "id": "443595",
+      "name": "Janis Lauber",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:31.090Z",
+      "ttl": "2025-09-26T10:14:31.090Z"
+    },
+    "443598": {
+      "type": "player",
+      "id": "443598",
+      "name": "Luca Steiner",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:29.083Z",
+      "ttl": "2025-09-26T10:14:29.083Z"
+    },
+    "443702": {
+      "type": "player",
+      "id": "443702",
+      "name": "Mike Zahner",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.132Z",
+      "ttl": "2025-09-26T10:16:30.132Z"
+    },
+    "443950": {
+      "type": "player",
+      "id": "443950",
+      "name": "Rahul Chiplunkar",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.133Z",
+      "ttl": "2025-09-26T10:16:30.133Z"
+    },
+    "446678": {
+      "type": "player",
+      "id": "446678",
+      "name": "Romano Schubiger",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.126Z",
+      "ttl": "2025-09-26T10:16:30.126Z"
+    },
+    "449492": {
+      "type": "player",
+      "id": "449492",
+      "name": "Nick Pfister",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:36.103Z",
+      "ttl": "2025-09-26T10:14:36.103Z"
+    },
+    "449772": {
+      "type": "player",
+      "id": "449772",
+      "name": "Severin Moser",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.132Z",
+      "ttl": "2025-09-26T10:16:30.132Z"
+    },
+    "450690": {
+      "type": "player",
+      "id": "450690",
+      "name": "Roman Beck",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:17:56.741Z",
+      "ttl": "2025-09-26T10:17:56.741Z"
+    },
+    "450697": {
+      "type": "player",
+      "id": "450697",
+      "name": "Markus Wellauer",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.129Z",
+      "ttl": "2025-09-26T10:16:30.129Z"
+    },
+    "451968": {
+      "type": "player",
+      "id": "451968",
+      "name": "Luca Holenstein",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.128Z",
+      "ttl": "2025-09-26T10:16:30.128Z"
+    },
+    "453479": {
+      "type": "player",
+      "id": "453479",
+      "name": "Lukas Münger",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:30.587Z",
+      "ttl": "2025-09-26T10:14:30.587Z"
+    },
+    "453913": {
+      "type": "player",
+      "id": "453913",
+      "name": "Matteo Nico Steiner",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:33.596Z",
+      "ttl": "2025-09-26T10:14:33.596Z"
+    },
+    "454050": {
+      "type": "player",
+      "id": "454050",
+      "name": "Mauro Stingelin",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.131Z",
+      "ttl": "2025-09-26T10:16:30.131Z"
+    },
+    "455331": {
+      "type": "player",
+      "id": "455331",
+      "name": "Luca Fankhauser",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:30.085Z",
+      "ttl": "2025-09-26T10:14:30.085Z"
+    },
+    "455609": {
+      "type": "player",
+      "id": "455609",
+      "name": "Mias Wellauer",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.805Z",
+      "ttl": "2025-09-26T10:16:20.805Z"
+    },
+    "456965": {
+      "type": "player",
+      "id": "456965",
+      "name": "Gian Mühlemann",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:35.601Z",
+      "ttl": "2025-09-26T10:14:35.601Z"
+    },
+    "459198": {
+      "type": "player",
+      "id": "459198",
+      "name": "Maurice Aebersold",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:34.599Z",
+      "ttl": "2025-09-26T10:14:34.599Z"
+    },
+    "459261": {
+      "type": "player",
+      "id": "459261",
+      "name": "Michael Schwizer",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.127Z",
+      "ttl": "2025-09-26T10:16:30.127Z"
+    },
+    "459565": {
+      "type": "player",
+      "id": "459565",
+      "name": "Christian Stucki",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:33.094Z",
+      "ttl": "2025-09-26T10:14:33.094Z"
+    },
+    "459971": {
+      "type": "player",
+      "id": "459971",
+      "name": "Joel Bachmann",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.131Z",
+      "ttl": "2025-09-26T10:16:30.131Z"
+    },
+    "460281": {
+      "type": "player",
+      "id": "460281",
+      "name": "Levin Gügi",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.125Z",
+      "ttl": "2025-09-26T10:16:30.125Z"
+    },
+    "460606": {
+      "type": "player",
+      "id": "460606",
+      "name": "Arno Althaus",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:34.098Z",
+      "ttl": "2025-09-26T10:14:34.098Z"
+    },
+    "461516": {
+      "type": "player",
+      "id": "461516",
+      "name": "Oliver Wiedmer",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.811Z",
+      "ttl": "2025-09-26T10:16:20.811Z"
+    },
+    "461593": {
+      "type": "player",
+      "id": "461593",
+      "name": "Gian Luca Schiessl",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:27.072Z",
+      "ttl": "2025-09-26T10:14:27.072Z"
+    },
+    "462541": {
+      "type": "player",
+      "id": "462541",
+      "name": "Ramon Zeller",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.129Z",
+      "ttl": "2025-09-26T10:16:30.129Z"
+    },
+    "464828": {
+      "type": "player",
+      "id": "464828",
+      "name": "Ivo Lüthi",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.807Z",
+      "ttl": "2025-09-26T10:16:20.807Z"
+    },
+    "464885": {
+      "type": "player",
+      "id": "464885",
+      "name": "Elia Seiler",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.810Z",
+      "ttl": "2025-09-26T10:16:20.810Z"
+    },
+    "465407": {
+      "type": "player",
+      "id": "465407",
+      "name": "Livio Zeller",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.123Z",
+      "ttl": "2025-09-26T10:16:30.123Z"
+    },
+    "465906": {
+      "type": "player",
+      "id": "465906",
+      "name": "Rohit Chiplunkar",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.130Z",
+      "ttl": "2025-09-26T10:16:30.130Z"
+    },
+    "466282": {
+      "type": "player",
+      "id": "466282",
+      "name": "Michael Haenle",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.125Z",
+      "ttl": "2025-09-26T10:16:30.125Z"
+    },
+    "467692": {
+      "type": "player",
+      "id": "467692",
+      "name": "Joshua Villiger",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.805Z",
+      "ttl": "2025-09-26T10:16:20.805Z"
+    },
+    "468880": {
+      "type": "player",
+      "id": "468880",
+      "name": "Janis Schwarz",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:35.100Z",
+      "ttl": "2025-09-26T10:14:35.100Z"
+    },
+    "469117": {
+      "type": "player",
+      "id": "469117",
+      "name": "Silas Fitzi",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.801Z",
+      "ttl": "2025-09-26T10:16:20.801Z"
+    },
+    "469253": {
+      "type": "player",
+      "id": "469253",
+      "name": "Niklas Graf",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.809Z",
+      "ttl": "2025-09-26T10:16:20.809Z"
+    },
+    "470629": {
+      "type": "player",
+      "id": "470629",
+      "name": "Janis Ribler",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.804Z",
+      "ttl": "2025-09-26T10:16:20.804Z"
+    },
+    "471982": {
+      "type": "player",
+      "id": "471982",
+      "name": "Pablo Mariotti",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.806Z",
+      "ttl": "2025-09-26T10:16:20.806Z"
+    },
+    "472283": {
+      "type": "player",
+      "id": "472283",
+      "name": "Silvan Hänsch",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.812Z",
+      "ttl": "2025-09-26T10:16:20.812Z"
+    },
+    "472284": {
+      "type": "player",
+      "id": "472284",
+      "name": "Levin Peter",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.808Z",
+      "ttl": "2025-09-26T10:16:20.808Z"
+    },
+    "476471": {
+      "type": "player",
+      "id": "476471",
+      "name": "Ramon Zenger",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.803Z",
+      "ttl": "2025-09-26T10:16:20.803Z"
+    },
+    "477056": {
+      "type": "player",
+      "id": "477056",
+      "name": "Tim Glücki",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:36.605Z",
+      "ttl": "2025-09-26T10:14:36.605Z"
+    },
+    "478474": {
+      "type": "player",
+      "id": "478474",
+      "name": "Yannic Fitzi",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.806Z",
+      "ttl": "2025-09-26T10:16:20.806Z"
+    },
+    "478628": {
+      "type": "player",
+      "id": "478628",
+      "name": "Lian Schefer",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.810Z",
+      "ttl": "2025-09-26T10:16:20.810Z"
+    },
+    "481508": {
+      "type": "player",
+      "id": "481508",
+      "name": "Luis Graf",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.811Z",
+      "ttl": "2025-09-26T10:16:20.811Z"
+    },
+    "481510": {
+      "type": "player",
+      "id": "481510",
+      "name": "Janis Graf",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.802Z",
+      "ttl": "2025-09-26T10:16:20.802Z"
+    },
+    "481524": {
+      "type": "player",
+      "id": "481524",
+      "name": "Lars Birchmeier",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.800Z",
+      "ttl": "2025-09-26T10:16:20.800Z"
+    },
+    "483904": {
+      "type": "player",
+      "id": "483904",
+      "name": "Tino von Pritzbuer",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.128Z",
+      "ttl": "2025-09-26T10:16:30.128Z"
+    },
+    "484111": {
+      "type": "player",
+      "id": "484111",
+      "name": "Marvin Egg",
+      "team": "I. M. Davos-Klosters",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:37.607Z",
+      "ttl": "2025-09-26T10:14:37.607Z"
+    },
+    "489102": {
+      "type": "player",
+      "id": "489102",
+      "name": "Florin Fehr",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.803Z",
+      "ttl": "2025-09-26T10:16:20.803Z"
+    },
+    "489116": {
+      "type": "player",
+      "id": "489116",
+      "name": "Mika Hänni",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.801Z",
+      "ttl": "2025-09-26T10:16:20.801Z"
+    },
+    "492284": {
+      "type": "player",
+      "id": "492284",
+      "name": "Rovin Thalmann",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.808Z",
+      "ttl": "2025-09-26T10:16:20.808Z"
+    },
+    "512020": {
+      "type": "player",
+      "id": "512020",
+      "name": "Aaro Helin",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.807Z",
+      "ttl": "2025-09-26T10:16:20.807Z"
+    },
+    "516733": {
+      "type": "player",
+      "id": "516733",
+      "name": "Gustav Svensson",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:27.572Z",
+      "ttl": "2025-09-26T10:14:27.572Z"
+    },
+    "516882": {
+      "type": "player",
+      "id": "516882",
+      "name": "Jesper Silvonen",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.135Z",
+      "ttl": "2025-09-26T10:16:30.135Z"
+    },
+    "526957": {
+      "type": "player",
+      "id": "526957",
+      "name": "Markus Sipronen",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.811Z",
+      "ttl": "2025-09-26T10:16:20.811Z"
+    },
+    "532043": {
+      "type": "player",
+      "id": "532043",
+      "name": "Johannes Vähäkangas",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.134Z",
+      "ttl": "2025-09-26T10:16:30.134Z"
+    },
+    "532044": {
+      "type": "player",
+      "id": "532044",
+      "name": "Adam Zukal",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.135Z",
+      "ttl": "2025-09-26T10:16:30.135Z"
+    },
+    "532045": {
+      "type": "player",
+      "id": "532045",
+      "name": "Joona Larte",
+      "team": "WASA St. Gallen",
+      "teamId": "432307",
+      "lastUpdated": "2025-09-19T10:16:30.136Z",
+      "ttl": "2025-09-26T10:16:30.136Z"
+    },
+    "532160": {
+      "type": "player",
+      "id": "532160",
+      "name": "Alexander Hedlund",
+      "team": "Tigers Langnau",
+      "teamId": "",
+      "lastUpdated": "2025-09-19T10:14:37.105Z",
+      "ttl": "2025-09-26T10:14:37.105Z"
+    },
+    "532713": {
+      "type": "player",
+      "id": "532713",
+      "name": "Oskari Fälden",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.812Z",
+      "ttl": "2025-09-26T10:16:20.812Z"
+    },
+    "532714": {
+      "type": "player",
+      "id": "532714",
+      "name": "Tim Lindberg",
+      "team": "Floorball Thurgau",
+      "teamId": "428322",
+      "lastUpdated": "2025-09-19T10:16:20.812Z",
+      "ttl": "2025-09-26T10:16:20.812Z"
+    }
+  }
+}

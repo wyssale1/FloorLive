@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
 import { playerImageService } from '../services/playerImageService.js';
+import { entityMasterService } from '../services/entityMasterService.js';
+import { backgroundEntityService } from '../services/backgroundEntityService.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -51,24 +53,59 @@ async function processPlayersWithApiDetails(
 router.get('/:teamId', async (req, res) => {
   try {
     const { teamId } = req.params;
-    
+
     if (!teamId) {
       return res.status(400).json({ error: 'Team ID is required' });
     }
 
-    // Check cache first
+    // Check master registry for team entity (background refresh logic)
+    const teamEntity = await entityMasterService.getTeam(teamId);
+    let shouldRefresh = false;
+
+    if (!teamEntity) {
+      // New team - add to registry and mark for refresh
+      shouldRefresh = true;
+      console.log(`🆕 New team discovered: ${teamId}`);
+    } else {
+      // Check if team needs refresh based on TTL
+      const ttlDate = new Date(teamEntity.ttl);
+      if (new Date() > ttlDate) {
+        shouldRefresh = true;
+        console.log(`🕐 Team ${teamId} (${teamEntity.name}) needs refresh`);
+      }
+    }
+
+    // Check API cache first for immediate response
     const cacheKey = `team:${teamId}`;
     let team = cache.get(cacheKey);
-    
+
     if (!team) {
       team = await apiClient.getTeamDetails(teamId);
-      
+
       if (!team) {
         return res.status(404).json({ error: 'Team not found' });
       }
 
       // Cache team details for 1 hour (they don't change frequently)
       cache.set(cacheKey, team, 3600000);
+    }
+
+    // Schedule background refresh if needed (non-blocking)
+    if (shouldRefresh) {
+      const teamName = (team as any).name || `Team ${teamId}`;
+
+      if (!teamEntity) {
+        console.log(`🆕 New team discovered: ${teamName} (${teamId}) - scheduling background refresh`);
+      } else {
+        console.log(`🕐 Team ${teamName} (${teamId}) TTL expired - scheduling background refresh`);
+      }
+
+      backgroundEntityService.scheduleEntityRefresh(teamId, 'team', teamName, 'normal')
+        .catch(error => {
+          console.error(`❌ Failed to schedule team refresh for ${teamId}:`, error);
+        });
+    } else if (teamEntity) {
+      console.log(`✅ Team ${teamEntity.name} (${teamId}) TTL valid - no refresh needed`);
     }
 
     res.json(team);
@@ -101,22 +138,66 @@ router.get('/:teamId/players', async (req, res) => {
       cache.set(cacheKey, players, 21600000);
     }
 
-    // Process player images directly (check timestamps and refresh if needed)
+    // Process players: add to master registry and check for updates
     try {
       const playersData = [];
       const playersToProcess = [];
-      
+      const playersToRefresh = [];
+
+      // Get team name for player entities
+      let teamName = `Team ${teamId}`;
+      try {
+        const teamCacheKey = `team:${teamId}`;
+        let teamDetails = cache.get(teamCacheKey);
+        if (!teamDetails) {
+          teamDetails = await apiClient.getTeamDetails(teamId);
+          if (teamDetails) {
+            cache.set(teamCacheKey, teamDetails, 3600000);
+          }
+        }
+        if (teamDetails && (teamDetails as any).name) {
+          teamName = (teamDetails as any).name;
+        }
+      } catch (error) {
+        console.warn('Could not get team name, using default');
+      }
+
       // Extract player data and check who needs processing
       for (const player of (players as any[])) {
         if (player.id) {
+          const playerName = player.name || `Player ${player.id}`;
           const playerData = {
             id: player.id,
-            name: player.name || `Player ${player.id}`,
+            name: playerName,
             imageUrl: player.profileImage
           };
           playersData.push(playerData);
-          
-          // Check if this player needs processing (older than 1 week or new)
+
+          // Check master registry for player entity (non-blocking approach)
+          const playerEntity = await entityMasterService.getPlayer(player.id);
+          let shouldRefreshPlayer = false;
+
+          if (!playerEntity) {
+            // New player - add stub to master registry (minimal data, non-blocking)
+            await entityMasterService.addPlayerStub(player.id, playerName, teamName, teamId);
+            shouldRefreshPlayer = true;
+            console.log(`🆕 New player discovered: ${playerName} (${player.id}) - added stub to registry`);
+          } else {
+            // Check if player needs refresh based on TTL (background only)
+            const ttlDate = new Date(playerEntity.ttl);
+            if (new Date() > ttlDate) {
+              shouldRefreshPlayer = true;
+              console.log(`🕐 Player ${playerName} (${player.id}) TTL expired - scheduling background refresh`);
+            } else {
+              console.log(`✅ Player ${playerName} (${player.id}) TTL valid - no refresh needed`);
+            }
+          }
+
+          if (shouldRefreshPlayer) {
+            playersToRefresh.push({ id: player.id, name: playerName });
+          }
+
+          // Check if this player needs image processing (legacy system)
           const metadata = playerImageService.getPlayerMetadata(player.id);
           if (!metadata) {
             // New player - needs processing
@@ -126,34 +207,26 @@ router.get('/:teamId/players', async (req, res) => {
             const lastUpdated = new Date(metadata.lastUpdated);
             const now = new Date();
             const daysSinceUpdate = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24);
-            
+
             if (daysSinceUpdate >= 7) {
               playersToProcess.push(playerData);
             }
           }
         }
       }
-      
-      // If there are players to process, do it in the background (don't await)
-      if (playersToProcess.length > 0) {
-        // Get team name
-        let teamName = `Team ${teamId}`;
-        try {
-          const teamCacheKey = `team:${teamId}`;
-          let teamDetails = cache.get(teamCacheKey);
-          if (!teamDetails) {
-            teamDetails = await apiClient.getTeamDetails(teamId);
-            if (teamDetails) {
-              cache.set(teamCacheKey, teamDetails, 3600000);
-            }
-          }
-          if (teamDetails && (teamDetails as any).name) {
-            teamName = (teamDetails as any).name;
-          }
-        } catch (error) {
-          console.warn('Could not get team name, using default');
+      // Schedule background player entity refreshes (non-blocking)
+      if (playersToRefresh.length > 0) {
+        for (const player of playersToRefresh) {
+          backgroundEntityService.scheduleEntityRefresh(player.id, 'player', player.name, 'normal')
+            .catch(error => {
+              console.error(`❌ Failed to schedule player refresh for ${player.id}:`, error);
+            });
         }
+        console.log(`🔄 Scheduled ${playersToRefresh.length} players for entity refresh`);
+      }
 
+      // If there are players to process for images, do it in the background (don't await)
+      if (playersToProcess.length > 0) {
         // Process players in background (fire and forget)
         processPlayersWithApiDetails(teamId, teamName, playersToProcess)
           .then(result => {
@@ -162,8 +235,8 @@ router.get('/:teamId/players', async (req, res) => {
           .catch(error => {
             console.error('❌ Failed to process players for team:', teamId, error);
           });
-        
-        console.log(`🎯 Processing ${playersToProcess.length} players for team ${teamName} (${playersToProcess.length} need refresh)`);
+
+        console.log(`🎯 Processing ${playersToProcess.length} players for team ${teamName} (${playersToProcess.length} need image refresh)`);
       }
     } catch (error) {
       // Don't fail the request if background processing fails
