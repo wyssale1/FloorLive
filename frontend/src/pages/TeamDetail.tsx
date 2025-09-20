@@ -85,7 +85,7 @@ export default function TeamDetail() {
     league: leagueId || undefined,
     leagueName: team?.league?.name,
     teamNames: team ? [team.name].filter(Boolean) : undefined
-  }, false) // Lazy load rankings
+  }, !!team) // Enable rankings when team data is available
 
   // Transform rankings data to table format
   const leagueTables = useMemo(() => {
