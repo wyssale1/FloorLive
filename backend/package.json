@@ -15,7 +15,10 @@
     "process-images:players": "cd ../scripts && npm run process-players",
     "process-images:clean": "cd ../scripts && npm run clean",
     "process-images:force": "cd ../scripts && node image-processor.js --force",
-    "process-images:help": "cd ../scripts && node image-processor.js --help"
+    "process-images:help": "cd ../scripts && node image-processor.js --help",
+    "crawl-entities": "cd ../scripts && node entity-crawler.js",
+    "crawl-entities:dry-run": "cd ../scripts && node entity-crawler.js --dry-run",
+    "crawl-entities:force": "cd ../scripts && node entity-crawler.js --force"
   },
   "keywords": [
     "unihockey",

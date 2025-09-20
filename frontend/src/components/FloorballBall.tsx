@@ -18,7 +18,7 @@ const FloorballBall: React.FC<FloorballBallProps> = ({
       className={`${className} select-none`}
       alt="Floorball"
       style={{
-        filter: 'drop-shadow(1px 1px 3px rgba(0,0,0,0.2))', // Lighter shadow for performance
+        filter: 'sepia(100%) saturate(300%) hue-rotate(200deg) brightness(0.8) drop-shadow(1px 1px 3px rgba(0,0,0,0.2))', // Strong blue color + shadow
         imageRendering: 'optimizeSpeed' as any, // Optimize for animation performance
         transform: 'translateZ(0)' // Force GPU acceleration
       }}

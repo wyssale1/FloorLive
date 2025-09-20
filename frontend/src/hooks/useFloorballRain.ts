@@ -27,8 +27,8 @@ export const useFloorballRain = () => {
       id: i,
       x: Math.random() * (window.innerWidth + 100) - 50,
       size: isMobile ? 18 + Math.random() * 10 : 22 + Math.random() * 16,
-      delay: Math.random() * 4, // Stagger over 4 seconds
-      duration: 6 + Math.random() * 3 // 6-9 seconds to fall (faster for less lag)
+      delay: Math.random() * 0.5, // Appear within 0.5 seconds for immediate impact
+      duration: 2 + Math.random() * 1 // 2-3 seconds to fall (much faster)
     }))
 
     setParticles(newParticles)

@@ -28,18 +28,18 @@ const FloorballRain: React.FC = () => {
               }}
               initial={{
                 y: -100,
-                opacity: 0
+                opacity: 1 // Start immediately at full opacity
               }}
               animate={{
                 y: window.innerHeight + 100,
-                opacity: [0, 1, 1, 0] // Fade in/out for better performance
+                opacity: [1, 1, 0] // Stay visible, then fade out at the end
               }}
               transition={{
                 delay: particle.delay,
                 duration: particle.duration,
                 ease: "easeIn", // Slightly accelerating like gravity
                 opacity: {
-                  times: [0, 0.1, 0.9, 1],
+                  times: [0, 0.8, 1], // Visible for 80%, fade out in last 20%
                   duration: particle.duration
                 }
               }}
