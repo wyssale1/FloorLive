@@ -2,156 +2,37 @@
   "_metadata": {
     "description": "Master entity registry for Swiss Unihockey teams and players",
     "version": "1.0.0",
-    "lastUpdated": "2025-09-19T13:48:40.960Z",
+    "lastUpdated": "2025-09-19T21:16:47.764Z",
     "instructions": "This file manages core entity data with TTL-based refresh. Feature services consume and extend this data."
   },
   "teams": {
-    "427766": {
-      "type": "team",
-      "id": "427766",
-      "name": "Skorpion Emmental Zollbrück",
-      "lastUpdated": "2025-09-19T13:06:10.926Z",
-      "ttl": "2025-09-26T13:06:10.926Z"
-    },
-    "427952": {
-      "type": "team",
-      "id": "427952",
-      "name": "UHC Laupen ZH",
-      "lastUpdated": "2025-09-19T13:05:58.345Z",
-      "ttl": "2025-09-26T13:05:58.345Z"
-    },
-    "428322": {
-      "type": "team",
-      "id": "428322",
-      "name": "Floorball Thurgau",
-      "lastUpdated": "2025-09-19T12:46:05.239Z",
-      "ttl": "2025-09-26T12:46:05.239Z"
-    },
     "428499": {
       "type": "team",
       "id": "428499",
       "name": "HC Rychenberg Winterthur",
-      "lastUpdated": "2025-09-19T13:03:33.219Z",
-      "ttl": "2025-09-26T13:03:33.219Z"
+      "lastUpdated": "2025-09-19T14:21:42.929Z",
+      "ttl": "2025-09-26T14:21:42.929Z"
     },
     "428535": {
       "type": "team",
       "id": "428535",
       "name": "UHC Uster",
-      "lastUpdated": "2025-09-19T12:30:21.159Z",
-      "ttl": "2025-09-26T12:30:21.159Z"
+      "lastUpdated": "2025-09-19T14:18:52.040Z",
+      "ttl": "2025-09-26T14:18:52.040Z"
     },
-    "428665": {
+    "429494": {
       "type": "team",
-      "id": "428665",
-      "name": "Red Ants Winterthur",
-      "lastUpdated": "2025-09-19T13:05:25.139Z",
-      "ttl": "2025-09-26T13:05:25.139Z"
-    },
-    "428990": {
-      "type": "team",
-      "id": "428990",
-      "name": "FB Riders DBR",
-      "lastUpdated": "2025-09-19T13:06:27.315Z",
-      "ttl": "2025-09-26T13:06:27.315Z"
-    },
-    "429324": {
-      "type": "team",
-      "id": "429324",
-      "name": "Floorball Uri",
-      "lastUpdated": "2025-09-19T13:06:15.108Z",
-      "ttl": "2025-09-26T13:06:15.108Z"
-    },
-    "429485": {
-      "type": "team",
-      "id": "429485",
-      "name": "Grasshopper Club Zürich",
-      "lastUpdated": "2025-09-19T13:03:21.734Z",
-      "ttl": "2025-09-26T13:03:21.734Z"
-    },
-    "429523": {
-      "type": "team",
-      "id": "429523",
-      "name": "Tigers Langnau",
-      "lastUpdated": "2025-09-19T12:13:21.956Z",
-      "ttl": "2025-09-26T12:13:21.956Z"
-    },
-    "429578": {
-      "type": "team",
-      "id": "429578",
-      "name": "Zug United",
-      "lastUpdated": "2025-09-19T13:05:54.085Z",
-      "ttl": "2025-09-26T13:05:54.085Z"
-    },
-    "429603": {
-      "type": "team",
-      "id": "429603",
-      "name": "Zug United",
-      "lastUpdated": "2025-09-19T12:46:31.086Z",
-      "ttl": "2025-09-26T12:46:31.086Z"
-    },
-    "430107": {
-      "type": "team",
-      "id": "430107",
-      "name": "Wizards Bern Burgdorf",
-      "lastUpdated": "2025-09-19T13:06:06.412Z",
-      "ttl": "2025-09-26T13:06:06.412Z"
+      "id": "429494",
+      "name": "SV Wiler-Ersigen",
+      "lastUpdated": "2025-09-19T21:16:47.744Z",
+      "ttl": "2025-09-26T21:16:47.744Z"
     },
     "430113": {
       "type": "team",
       "id": "430113",
       "name": "Unihockey Basel Regio",
-      "lastUpdated": "2025-09-19T13:10:11.523Z",
-      "ttl": "2025-09-26T13:10:11.523Z"
-    },
-    "430340": {
-      "type": "team",
-      "id": "430340",
-      "name": "Unihockey Berner Oberland",
-      "lastUpdated": "2025-09-19T13:06:19.524Z",
-      "ttl": "2025-09-26T13:06:19.524Z"
-    },
-    "431153": {
-      "type": "team",
-      "id": "431153",
-      "name": "Kloten-Dietlikon Jets",
-      "lastUpdated": "2025-09-19T13:06:38.886Z",
-      "ttl": "2025-09-26T13:06:38.886Z"
-    },
-    "431166": {
-      "type": "team",
-      "id": "431166",
-      "name": "Kloten-Dietlikon Jets",
-      "lastUpdated": "2025-09-19T13:05:51.280Z",
-      "ttl": "2025-09-26T13:05:51.280Z"
-    },
-    "431869": {
-      "type": "team",
-      "id": "431869",
-      "name": "Ad Astra Obwalden",
-      "lastUpdated": "2025-09-19T13:48:40.925Z",
-      "ttl": "2025-09-26T13:48:40.925Z"
-    },
-    "432307": {
-      "type": "team",
-      "id": "432307",
-      "name": "WASA St. Gallen",
-      "lastUpdated": "2025-09-19T12:46:12.901Z",
-      "ttl": "2025-09-26T12:46:12.902Z"
-    },
-    "432516": {
-      "type": "team",
-      "id": "432516",
-      "name": "Floorball Chur United",
-      "lastUpdated": "2025-09-19T13:06:23.151Z",
-      "ttl": "2025-09-26T13:06:23.151Z"
-    },
-    "432520": {
-      "type": "team",
-      "id": "432520",
-      "name": "Floorball Chur United",
-      "lastUpdated": "2025-09-19T13:04:43.381Z",
-      "ttl": "2025-09-26T13:04:43.381Z"
+      "lastUpdated": "2025-09-19T21:15:57.435Z",
+      "ttl": "2025-09-26T21:15:57.435Z"
     }
   },
   "players": {
@@ -161,80 +42,26 @@
       "name": "Patrick Mendelin",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.563Z",
-      "ttl": "2025-09-26T13:10:11.563Z"
+      "lastUpdated": "2025-09-19T21:15:57.680Z",
+      "ttl": "2025-09-26T21:15:57.680Z"
     },
-    "403377": {
+    "420028": {
       "type": "player",
-      "id": "403377",
-      "name": "Mario Britschgi",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.906Z",
-      "ttl": "2025-09-26T13:48:40.906Z"
+      "id": "420028",
+      "name": "Marco Louis",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.762Z",
+      "ttl": "2025-09-26T21:16:47.762Z"
     },
-    "412052": {
+    "420032": {
       "type": "player",
-      "id": "412052",
-      "name": "Marcel Stucki",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.378Z",
-      "ttl": "2025-09-26T13:04:43.378Z"
-    },
-    "414901": {
-      "type": "player",
-      "id": "414901",
-      "name": "Nadia Cattaneo",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.441Z",
-      "ttl": "2025-09-26T13:06:06.441Z"
-    },
-    "418460": {
-      "type": "player",
-      "id": "418460",
-      "name": "Kevin Kropf",
-      "team": "Tigers Langnau",
-      "teamId": "",
-      "lastUpdated": "2025-09-19T12:13:13.611Z",
-      "ttl": "2025-09-26T12:13:13.611Z"
-    },
-    "419906": {
-      "type": "player",
-      "id": "419906",
-      "name": "Nathalie Spichiger",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.107Z",
-      "ttl": "2025-09-26T13:05:54.107Z"
-    },
-    "419910": {
-      "type": "player",
-      "id": "419910",
-      "name": "Thomas Gfeller",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.677Z",
-      "ttl": "2025-09-26T10:22:26.677Z"
-    },
-    "420351": {
-      "type": "player",
-      "id": "420351",
-      "name": "Vanessa Wetten",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.391Z",
-      "ttl": "2025-09-26T13:05:58.391Z"
-    },
-    "420512": {
-      "type": "player",
-      "id": "420512",
-      "name": "Manuel Staub",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.073Z",
-      "ttl": "2025-09-26T12:46:31.073Z"
+      "id": "420032",
+      "name": "Nicola Bischofberger",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.751Z",
+      "ttl": "2025-09-26T21:16:47.751Z"
     },
     "422303": {
       "type": "player",
@@ -242,8 +69,8 @@
       "name": "Remo Gallati",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.153Z",
-      "ttl": "2025-09-26T12:30:21.153Z"
+      "lastUpdated": "2025-09-19T14:18:52.028Z",
+      "ttl": "2025-09-26T14:18:52.028Z"
     },
     "423870": {
       "type": "player",
@@ -251,35 +78,8 @@
       "name": "Michel Wöcke",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.208Z",
-      "ttl": "2025-09-26T13:03:33.208Z"
-    },
-    "424701": {
-      "type": "player",
-      "id": "424701",
-      "name": "Micha Strohl",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.674Z",
-      "ttl": "2025-09-26T10:22:26.674Z"
-    },
-    "424703": {
-      "type": "player",
-      "id": "424703",
-      "name": "Martin Mosimann",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.675Z",
-      "ttl": "2025-09-26T10:22:26.675Z"
-    },
-    "425389": {
-      "type": "player",
-      "id": "425389",
-      "name": "Fabrice Göldi",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.737Z",
-      "ttl": "2025-09-26T13:03:21.737Z"
+      "lastUpdated": "2025-09-19T14:21:42.913Z",
+      "ttl": "2025-09-26T14:21:42.913Z"
     },
     "425967": {
       "type": "player",
@@ -287,8 +87,8 @@
       "name": "Manuel Maurer",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.215Z",
-      "ttl": "2025-09-26T13:03:33.215Z"
+      "lastUpdated": "2025-09-19T14:21:42.916Z",
+      "ttl": "2025-09-26T14:21:42.916Z"
     },
     "426705": {
       "type": "player",
@@ -296,26 +96,8 @@
       "name": "Nils Conrad",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.204Z",
-      "ttl": "2025-09-26T13:03:33.204Z"
-    },
-    "426729": {
-      "type": "player",
-      "id": "426729",
-      "name": "Lucas Schlegel",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.674Z",
-      "ttl": "2025-09-26T10:22:26.674Z"
-    },
-    "427177": {
-      "type": "player",
-      "id": "427177",
-      "name": "Christoph Reich",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.366Z",
-      "ttl": "2025-09-26T13:04:43.366Z"
+      "lastUpdated": "2025-09-19T14:21:42.911Z",
+      "ttl": "2025-09-26T14:21:42.911Z"
     },
     "427234": {
       "type": "player",
@@ -323,17 +105,8 @@
       "name": "Claudio Mutter",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.216Z",
-      "ttl": "2025-09-26T13:03:33.216Z"
-    },
-    "427432": {
-      "type": "player",
-      "id": "427432",
-      "name": "Mario Jung",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.911Z",
-      "ttl": "2025-09-26T13:48:40.911Z"
+      "lastUpdated": "2025-09-19T14:21:42.917Z",
+      "ttl": "2025-09-26T14:21:42.917Z"
     },
     "427708": {
       "type": "player",
@@ -341,44 +114,8 @@
       "name": "Tobias Ledergerber",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.150Z",
-      "ttl": "2025-09-26T12:30:21.150Z"
-    },
-    "427951": {
-      "type": "player",
-      "id": "427951",
-      "name": "Timon Stäubli",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.732Z",
-      "ttl": "2025-09-26T13:03:21.732Z"
-    },
-    "428957": {
-      "type": "player",
-      "id": "428957",
-      "name": "Simon Steiner",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.678Z",
-      "ttl": "2025-09-26T10:22:26.678Z"
-    },
-    "431282": {
-      "type": "player",
-      "id": "431282",
-      "name": "Moritz Krebs",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.902Z",
-      "ttl": "2025-09-26T13:06:38.902Z"
-    },
-    "431298": {
-      "type": "player",
-      "id": "431298",
-      "name": "Lea Hanimann",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.916Z",
-      "ttl": "2025-09-26T13:06:10.916Z"
+      "lastUpdated": "2025-09-19T14:18:52.025Z",
+      "ttl": "2025-09-26T14:18:52.025Z"
     },
     "431821": {
       "type": "player",
@@ -386,80 +123,26 @@
       "name": "Lukas Deola",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.153Z",
-      "ttl": "2025-09-26T12:30:21.153Z"
+      "lastUpdated": "2025-09-19T14:18:52.027Z",
+      "ttl": "2025-09-26T14:18:52.027Z"
     },
-    "432130": {
+    "431901": {
       "type": "player",
-      "id": "432130",
-      "name": "David Gross",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.920Z",
-      "ttl": "2025-09-26T12:46:12.920Z"
+      "id": "431901",
+      "name": "Deny Känzig",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.760Z",
+      "ttl": "2025-09-26T21:16:47.760Z"
     },
-    "432482": {
+    "436363": {
       "type": "player",
-      "id": "432482",
-      "name": "Joël Rüegger",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.741Z",
-      "ttl": "2025-09-26T13:03:21.741Z"
-    },
-    "432508": {
-      "type": "player",
-      "id": "432508",
-      "name": "Paolo Riedi",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.736Z",
-      "ttl": "2025-09-26T13:03:21.736Z"
-    },
-    "432928": {
-      "type": "player",
-      "id": "432928",
-      "name": "Lisa Devenoge",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.359Z",
-      "ttl": "2025-09-26T13:06:27.359Z"
-    },
-    "433156": {
-      "type": "player",
-      "id": "433156",
-      "name": "Simon Wagner",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.946Z",
-      "ttl": "2025-09-26T13:48:40.946Z"
-    },
-    "434355": {
-      "type": "player",
-      "id": "434355",
-      "name": "Sabrina Rüttimann-Bösch",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.160Z",
-      "ttl": "2025-09-26T13:06:15.160Z"
-    },
-    "434503": {
-      "type": "player",
-      "id": "434503",
-      "name": "Cornel von Wyl",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.937Z",
-      "ttl": "2025-09-26T13:48:40.937Z"
-    },
-    "434604": {
-      "type": "player",
-      "id": "434604",
-      "name": "Kay Bier",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.727Z",
-      "ttl": "2025-09-26T13:03:21.727Z"
+      "id": "436363",
+      "name": "Tim Kramer",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.751Z",
+      "ttl": "2025-09-26T21:16:47.751Z"
     },
     "436364": {
       "type": "player",
@@ -467,44 +150,17 @@
       "name": "Dennis Kramer",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.544Z",
-      "ttl": "2025-09-26T13:10:11.544Z"
+      "lastUpdated": "2025-09-19T21:15:57.673Z",
+      "ttl": "2025-09-26T21:15:57.673Z"
     },
-    "437245": {
+    "438777": {
       "type": "player",
-      "id": "437245",
-      "name": "Micheline Müller",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.086Z",
-      "ttl": "2025-09-26T13:05:54.086Z"
-    },
-    "438244": {
-      "type": "player",
-      "id": "438244",
-      "name": "Florian Wenk",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.738Z",
-      "ttl": "2025-09-26T13:03:21.738Z"
-    },
-    "438624": {
-      "type": "player",
-      "id": "438624",
-      "name": "Adrian Bachmann",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.940Z",
-      "ttl": "2025-09-26T13:48:40.940Z"
-    },
-    "438632": {
-      "type": "player",
-      "id": "438632",
-      "name": "Isabelle Gerig",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.105Z",
-      "ttl": "2025-09-26T13:05:54.105Z"
+      "id": "438777",
+      "name": "Andrin Hollenstein",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.754Z",
+      "ttl": "2025-09-26T21:16:47.754Z"
     },
     "439161": {
       "type": "player",
@@ -512,26 +168,8 @@
       "name": "Niklas Rutz",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.206Z",
-      "ttl": "2025-09-26T13:03:33.206Z"
-    },
-    "439440": {
-      "type": "player",
-      "id": "439440",
-      "name": "Selina Dominguez",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.926Z",
-      "ttl": "2025-09-26T13:06:10.926Z"
-    },
-    "439463": {
-      "type": "player",
-      "id": "439463",
-      "name": "Jolanda Maurer",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.448Z",
-      "ttl": "2025-09-26T13:06:06.448Z"
+      "lastUpdated": "2025-09-19T14:21:42.912Z",
+      "ttl": "2025-09-26T14:21:42.912Z"
     },
     "439529": {
       "type": "player",
@@ -539,8 +177,8 @@
       "name": "Nico Mutter",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.222Z",
-      "ttl": "2025-09-26T13:03:33.222Z"
+      "lastUpdated": "2025-09-19T14:21:42.919Z",
+      "ttl": "2025-09-26T14:21:42.919Z"
     },
     "439570": {
       "type": "player",
@@ -548,89 +186,17 @@
       "name": "Nicola Brütsch",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.147Z",
-      "ttl": "2025-09-26T12:30:21.147Z"
+      "lastUpdated": "2025-09-19T14:18:52.022Z",
+      "ttl": "2025-09-26T14:18:52.022Z"
     },
-    "439985": {
+    "440030": {
       "type": "player",
-      "id": "439985",
-      "name": "Lisa Kormann",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.558Z",
-      "ttl": "2025-09-26T13:06:19.558Z"
-    },
-    "440090": {
-      "type": "player",
-      "id": "440090",
-      "name": "Vera Meer",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.530Z",
-      "ttl": "2025-09-26T13:06:19.530Z"
-    },
-    "440181": {
-      "type": "player",
-      "id": "440181",
-      "name": "Nina Metzger",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.275Z",
-      "ttl": "2025-09-26T13:05:51.275Z"
-    },
-    "440201": {
-      "type": "player",
-      "id": "440201",
-      "name": "Basil von Wyl",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.935Z",
-      "ttl": "2025-09-26T13:48:40.935Z"
-    },
-    "440299": {
-      "type": "player",
-      "id": "440299",
-      "name": "Ladina Töndury",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.901Z",
-      "ttl": "2025-09-26T13:06:10.901Z"
-    },
-    "440343": {
-      "type": "player",
-      "id": "440343",
-      "name": "Sereina Zwissler",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.272Z",
-      "ttl": "2025-09-26T13:05:51.272Z"
-    },
-    "441862": {
-      "type": "player",
-      "id": "441862",
-      "name": "Patricia Greber",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.552Z",
-      "ttl": "2025-09-26T13:06:19.552Z"
-    },
-    "441978": {
-      "type": "player",
-      "id": "441978",
-      "name": "Alessandro Alliata",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.723Z",
-      "ttl": "2025-09-26T13:03:21.723Z"
-    },
-    "442729": {
-      "type": "player",
-      "id": "442729",
-      "name": "Ronja Bichsel",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.109Z",
-      "ttl": "2025-09-26T13:05:54.109Z"
+      "id": "440030",
+      "name": "Jan Bürki",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.754Z",
+      "ttl": "2025-09-26T21:16:47.754Z"
     },
     "442978": {
       "type": "player",
@@ -638,8 +204,8 @@
       "name": "Marco Eyer",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.209Z",
-      "ttl": "2025-09-26T13:03:33.209Z"
+      "lastUpdated": "2025-09-19T14:21:42.913Z",
+      "ttl": "2025-09-26T14:21:42.913Z"
     },
     "442986": {
       "type": "player",
@@ -647,8 +213,8 @@
       "name": "Tobias Studer",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.221Z",
-      "ttl": "2025-09-26T13:03:33.221Z"
+      "lastUpdated": "2025-09-19T14:21:42.918Z",
+      "ttl": "2025-09-26T14:21:42.918Z"
     },
     "443014": {
       "type": "player",
@@ -656,71 +222,17 @@
       "name": "Levin Conrad",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.212Z",
-      "ttl": "2025-09-26T13:03:33.212Z"
+      "lastUpdated": "2025-09-19T14:21:42.915Z",
+      "ttl": "2025-09-26T14:21:42.915Z"
     },
-    "443299": {
+    "443085": {
       "type": "player",
-      "id": "443299",
-      "name": "Celine Müller",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.379Z",
-      "ttl": "2025-09-26T13:05:58.379Z"
-    },
-    "443595": {
-      "type": "player",
-      "id": "443595",
-      "name": "Janis Lauber",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.677Z",
-      "ttl": "2025-09-26T10:22:26.677Z"
-    },
-    "443598": {
-      "type": "player",
-      "id": "443598",
-      "name": "Luca Steiner",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.675Z",
-      "ttl": "2025-09-26T10:22:26.675Z"
-    },
-    "443702": {
-      "type": "player",
-      "id": "443702",
-      "name": "Mike Zahner",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.918Z",
-      "ttl": "2025-09-26T12:46:12.918Z"
-    },
-    "443950": {
-      "type": "player",
-      "id": "443950",
-      "name": "Rahul Chiplunkar",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.919Z",
-      "ttl": "2025-09-26T12:46:12.919Z"
-    },
-    "444380": {
-      "type": "player",
-      "id": "444380",
-      "name": "Cyril Haldemann",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.717Z",
-      "ttl": "2025-09-26T13:03:21.717Z"
-    },
-    "444619": {
-      "type": "player",
-      "id": "444619",
-      "name": "Marcel Kramelhofer",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.915Z",
-      "ttl": "2025-09-26T13:48:40.915Z"
+      "id": "443085",
+      "name": "Jan Ziehli",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.753Z",
+      "ttl": "2025-09-26T21:16:47.753Z"
     },
     "445347": {
       "type": "player",
@@ -728,44 +240,8 @@
       "name": "Jean-Luc Klöti",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.150Z",
-      "ttl": "2025-09-26T12:30:21.150Z"
-    },
-    "446017": {
-      "type": "player",
-      "id": "446017",
-      "name": "Muriel Kristin Lotz",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.170Z",
-      "ttl": "2025-09-26T13:06:15.170Z"
-    },
-    "446510": {
-      "type": "player",
-      "id": "446510",
-      "name": "Jan Malte Lemke",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.874Z",
-      "ttl": "2025-09-26T13:06:38.874Z"
-    },
-    "446678": {
-      "type": "player",
-      "id": "446678",
-      "name": "Romano Schubiger",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.912Z",
-      "ttl": "2025-09-26T12:46:12.912Z"
-    },
-    "446889": {
-      "type": "player",
-      "id": "446889",
-      "name": "Marylin Thomi",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.908Z",
-      "ttl": "2025-09-26T13:06:10.908Z"
+      "lastUpdated": "2025-09-19T14:18:52.024Z",
+      "ttl": "2025-09-26T14:18:52.024Z"
     },
     "446906": {
       "type": "player",
@@ -773,26 +249,8 @@
       "name": "Noah Püntener",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.220Z",
-      "ttl": "2025-09-26T13:03:33.220Z"
-    },
-    "448055": {
-      "type": "player",
-      "id": "448055",
-      "name": "Lukas Schellenberg",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.896Z",
-      "ttl": "2025-09-26T13:06:38.896Z"
-    },
-    "448136": {
-      "type": "player",
-      "id": "448136",
-      "name": "Lukas Schürch",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.918Z",
-      "ttl": "2025-09-26T13:48:40.918Z"
+      "lastUpdated": "2025-09-19T14:21:42.918Z",
+      "ttl": "2025-09-26T14:21:42.918Z"
     },
     "448383": {
       "type": "player",
@@ -800,17 +258,8 @@
       "name": "Tobias Meier",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.546Z",
-      "ttl": "2025-09-26T13:10:11.546Z"
-    },
-    "448572": {
-      "type": "player",
-      "id": "448572",
-      "name": "Jan-Peter Burri",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.900Z",
-      "ttl": "2025-09-26T13:06:38.900Z"
+      "lastUpdated": "2025-09-19T21:15:57.674Z",
+      "ttl": "2025-09-26T21:15:57.674Z"
     },
     "448604": {
       "type": "player",
@@ -818,53 +267,8 @@
       "name": "Noel Knüsel",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.149Z",
-      "ttl": "2025-09-26T12:30:21.149Z"
-    },
-    "448626": {
-      "type": "player",
-      "id": "448626",
-      "name": "Noah Boschung",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.944Z",
-      "ttl": "2025-09-26T13:48:40.944Z"
-    },
-    "449177": {
-      "type": "player",
-      "id": "449177",
-      "name": "Aline Marti",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.921Z",
-      "ttl": "2025-09-26T13:06:10.921Z"
-    },
-    "449343": {
-      "type": "player",
-      "id": "449343",
-      "name": "Corinna Bluzet",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.520Z",
-      "ttl": "2025-09-26T13:06:19.520Z"
-    },
-    "449441": {
-      "type": "player",
-      "id": "449441",
-      "name": "Sabrina Ott",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.156Z",
-      "ttl": "2025-09-26T13:06:15.156Z"
-    },
-    "449492": {
-      "type": "player",
-      "id": "449492",
-      "name": "Nick Pfister",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.680Z",
-      "ttl": "2025-09-26T10:22:26.680Z"
+      "lastUpdated": "2025-09-19T14:18:52.024Z",
+      "ttl": "2025-09-26T14:18:52.024Z"
     },
     "449695": {
       "type": "player",
@@ -872,143 +276,35 @@
       "name": "Tim Aeschimann",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.210Z",
-      "ttl": "2025-09-26T13:03:33.210Z"
+      "lastUpdated": "2025-09-19T14:21:42.914Z",
+      "ttl": "2025-09-26T14:21:42.914Z"
     },
-    "449772": {
+    "450229": {
       "type": "player",
-      "id": "449772",
-      "name": "Severin Moser",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.918Z",
-      "ttl": "2025-09-26T12:46:12.918Z"
+      "id": "450229",
+      "name": "Noah Siegenthaler",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.756Z",
+      "ttl": "2025-09-26T21:16:47.756Z"
     },
-    "449828": {
+    "450495": {
       "type": "player",
-      "id": "449828",
-      "name": "Ariane Siegenthaler",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.435Z",
-      "ttl": "2025-09-26T13:06:06.435Z"
+      "id": "450495",
+      "name": "Simon Laubscher",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.758Z",
+      "ttl": "2025-09-26T21:16:47.758Z"
     },
-    "450072": {
+    "450860": {
       "type": "player",
-      "id": "450072",
-      "name": "Anna-Lena Arnold",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.142Z",
-      "ttl": "2025-09-26T13:06:15.142Z"
-    },
-    "450171": {
-      "type": "player",
-      "id": "450171",
-      "name": "Alexander Bitterli",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.943Z",
-      "ttl": "2025-09-26T13:48:40.943Z"
-    },
-    "450517": {
-      "type": "player",
-      "id": "450517",
-      "name": "Corina Maurer",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.541Z",
-      "ttl": "2025-09-26T13:06:19.541Z"
-    },
-    "450690": {
-      "type": "player",
-      "id": "450690",
-      "name": "Roman Beck",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T12:01:29.905Z",
-      "ttl": "2025-09-26T12:01:29.905Z"
-    },
-    "450697": {
-      "type": "player",
-      "id": "450697",
-      "name": "Markus Wellauer",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.916Z",
-      "ttl": "2025-09-26T12:46:12.916Z"
-    },
-    "450891": {
-      "type": "player",
-      "id": "450891",
-      "name": "Joël Stocker",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.080Z",
-      "ttl": "2025-09-26T12:46:31.080Z"
-    },
-    "451066": {
-      "type": "player",
-      "id": "451066",
-      "name": "Sandrine Goetz",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.343Z",
-      "ttl": "2025-09-26T13:06:27.343Z"
-    },
-    "451222": {
-      "type": "player",
-      "id": "451222",
-      "name": "Livia Werz",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.263Z",
-      "ttl": "2025-09-26T13:05:51.263Z"
-    },
-    "451253": {
-      "type": "player",
-      "id": "451253",
-      "name": "Tom Konrad",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.934Z",
-      "ttl": "2025-09-26T13:48:40.934Z"
-    },
-    "451968": {
-      "type": "player",
-      "id": "451968",
-      "name": "Luca Holenstein",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.914Z",
-      "ttl": "2025-09-26T12:46:12.914Z"
-    },
-    "452022": {
-      "type": "player",
-      "id": "452022",
-      "name": "Janine Hohl",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.125Z",
-      "ttl": "2025-09-26T13:05:25.125Z"
-    },
-    "453044": {
-      "type": "player",
-      "id": "453044",
-      "name": "Severin Nigg",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.077Z",
-      "ttl": "2025-09-26T12:46:31.077Z"
-    },
-    "453131": {
-      "type": "player",
-      "id": "453131",
-      "name": "Jessica Smeds",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.124Z",
-      "ttl": "2025-09-26T13:05:25.124Z"
+      "id": "450860",
+      "name": "Marc-André Vogt",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.759Z",
+      "ttl": "2025-09-26T21:16:47.759Z"
     },
     "453310": {
       "type": "player",
@@ -1016,17 +312,8 @@
       "name": "Simon Wahl",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.541Z",
-      "ttl": "2025-09-26T13:10:11.541Z"
-    },
-    "453479": {
-      "type": "player",
-      "id": "453479",
-      "name": "Lukas Münger",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.676Z",
-      "ttl": "2025-09-26T10:22:26.676Z"
+      "lastUpdated": "2025-09-19T21:15:57.672Z",
+      "ttl": "2025-09-26T21:15:57.672Z"
     },
     "453562": {
       "type": "player",
@@ -1034,80 +321,8 @@
       "name": "Filip Karlsson",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.151Z",
-      "ttl": "2025-09-26T12:30:21.151Z"
-    },
-    "453913": {
-      "type": "player",
-      "id": "453913",
-      "name": "Matteo Nico Steiner",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.678Z",
-      "ttl": "2025-09-26T10:22:26.678Z"
-    },
-    "454045": {
-      "type": "player",
-      "id": "454045",
-      "name": "Leon Schlegel",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.384Z",
-      "ttl": "2025-09-26T13:04:43.384Z"
-    },
-    "454046": {
-      "type": "player",
-      "id": "454046",
-      "name": "Tino Mettier",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.369Z",
-      "ttl": "2025-09-26T13:04:43.369Z"
-    },
-    "454050": {
-      "type": "player",
-      "id": "454050",
-      "name": "Mauro Stingelin",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.917Z",
-      "ttl": "2025-09-26T12:46:12.917Z"
-    },
-    "454196": {
-      "type": "player",
-      "id": "454196",
-      "name": "Vivien Kühne",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.266Z",
-      "ttl": "2025-09-26T13:05:51.266Z"
-    },
-    "454201": {
-      "type": "player",
-      "id": "454201",
-      "name": "Sina Krausz",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.403Z",
-      "ttl": "2025-09-26T13:05:58.403Z"
-    },
-    "455013": {
-      "type": "player",
-      "id": "455013",
-      "name": "Adriana Wey",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.152Z",
-      "ttl": "2025-09-26T13:06:15.152Z"
-    },
-    "455077": {
-      "type": "player",
-      "id": "455077",
-      "name": "Raphael Neidhart",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.074Z",
-      "ttl": "2025-09-26T12:46:31.074Z"
+      "lastUpdated": "2025-09-19T14:18:52.025Z",
+      "ttl": "2025-09-26T14:18:52.025Z"
     },
     "455164": {
       "type": "player",
@@ -1115,98 +330,26 @@
       "name": "Maxime Perroulaz",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.203Z",
-      "ttl": "2025-09-26T13:03:33.203Z"
+      "lastUpdated": "2025-09-19T14:21:42.911Z",
+      "ttl": "2025-09-26T14:21:42.911Z"
     },
-    "455197": {
+    "455454": {
       "type": "player",
-      "id": "455197",
-      "name": "Melea Brunner",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.131Z",
-      "ttl": "2025-09-26T13:05:25.131Z"
+      "id": "455454",
+      "name": "Claudio Schmid",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.758Z",
+      "ttl": "2025-09-26T21:16:47.758Z"
     },
-    "455331": {
+    "457485": {
       "type": "player",
-      "id": "455331",
-      "name": "Luca Fankhauser",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.676Z",
-      "ttl": "2025-09-26T10:22:26.676Z"
-    },
-    "455523": {
-      "type": "player",
-      "id": "455523",
-      "name": "Jens Odermatt",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.930Z",
-      "ttl": "2025-09-26T13:48:40.930Z"
-    },
-    "455609": {
-      "type": "player",
-      "id": "455609",
-      "name": "Mias Wellauer",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.228Z",
-      "ttl": "2025-09-26T12:46:05.228Z"
-    },
-    "456087": {
-      "type": "player",
-      "id": "456087",
-      "name": "Leonie Wieland",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.273Z",
-      "ttl": "2025-09-26T13:05:51.273Z"
-    },
-    "456466": {
-      "type": "player",
-      "id": "456466",
-      "name": "Nicole Siegenthaler",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.440Z",
-      "ttl": "2025-09-26T13:06:06.440Z"
-    },
-    "456704": {
-      "type": "player",
-      "id": "456704",
-      "name": "Selma Bergmann",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.923Z",
-      "ttl": "2025-09-26T13:06:10.923Z"
-    },
-    "456965": {
-      "type": "player",
-      "id": "456965",
-      "name": "Gian Mühlemann",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.679Z",
-      "ttl": "2025-09-26T10:22:26.679Z"
-    },
-    "457870": {
-      "type": "player",
-      "id": "457870",
-      "name": "Basil Schibli",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.894Z",
-      "ttl": "2025-09-26T13:06:38.894Z"
-    },
-    "458692": {
-      "type": "player",
-      "id": "458692",
-      "name": "Nadine Stadelmann",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.354Z",
-      "ttl": "2025-09-26T13:06:27.354Z"
+      "id": "457485",
+      "name": "Amelio Tambini",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.752Z",
+      "ttl": "2025-09-26T21:16:47.752Z"
     },
     "458876": {
       "type": "player",
@@ -1214,62 +357,8 @@
       "name": "Yves Klöti",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.151Z",
-      "ttl": "2025-09-26T12:30:21.151Z"
-    },
-    "459038": {
-      "type": "player",
-      "id": "459038",
-      "name": "Jari Portmann",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.070Z",
-      "ttl": "2025-09-26T12:46:31.070Z"
-    },
-    "459057": {
-      "type": "player",
-      "id": "459057",
-      "name": "Nicole Capatt",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.163Z",
-      "ttl": "2025-09-26T13:06:23.163Z"
-    },
-    "459118": {
-      "type": "player",
-      "id": "459118",
-      "name": "Jonas Nigg",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.079Z",
-      "ttl": "2025-09-26T12:46:31.079Z"
-    },
-    "459119": {
-      "type": "player",
-      "id": "459119",
-      "name": "Julian Nigg",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.939Z",
-      "ttl": "2025-09-26T13:48:40.939Z"
-    },
-    "459198": {
-      "type": "player",
-      "id": "459198",
-      "name": "Maurice Aebersold",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.679Z",
-      "ttl": "2025-09-26T10:22:26.679Z"
-    },
-    "459261": {
-      "type": "player",
-      "id": "459261",
-      "name": "Michael Schwizer",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.913Z",
-      "ttl": "2025-09-26T12:46:12.913Z"
+      "lastUpdated": "2025-09-19T14:18:52.026Z",
+      "ttl": "2025-09-26T14:18:52.026Z"
     },
     "459278": {
       "type": "player",
@@ -1277,62 +366,8 @@
       "name": "Marcel Arnet",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.150Z",
-      "ttl": "2025-09-26T12:30:21.150Z"
-    },
-    "459312": {
-      "type": "player",
-      "id": "459312",
-      "name": "Linus Heim",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.923Z",
-      "ttl": "2025-09-26T13:48:40.923Z"
-    },
-    "459448": {
-      "type": "player",
-      "id": "459448",
-      "name": "Andreas Ming",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.913Z",
-      "ttl": "2025-09-26T13:48:40.913Z"
-    },
-    "459449": {
-      "type": "player",
-      "id": "459449",
-      "name": "Nils Schälin",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.071Z",
-      "ttl": "2025-09-26T12:46:31.071Z"
-    },
-    "459471": {
-      "type": "player",
-      "id": "459471",
-      "name": "Andrea Wildermuth",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.396Z",
-      "ttl": "2025-09-26T13:05:58.396Z"
-    },
-    "459552": {
-      "type": "player",
-      "id": "459552",
-      "name": "Dario Decasper",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.374Z",
-      "ttl": "2025-09-26T13:04:43.374Z"
-    },
-    "459565": {
-      "type": "player",
-      "id": "459565",
-      "name": "Christian Stucki",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.678Z",
-      "ttl": "2025-09-26T10:22:26.678Z"
+      "lastUpdated": "2025-09-19T14:18:52.025Z",
+      "ttl": "2025-09-26T14:18:52.025Z"
     },
     "459615": {
       "type": "player",
@@ -1340,17 +375,8 @@
       "name": "Kimo Oesch",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.214Z",
-      "ttl": "2025-09-26T13:03:33.214Z"
-    },
-    "459630": {
-      "type": "player",
-      "id": "459630",
-      "name": "Chiara Bertini",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.267Z",
-      "ttl": "2025-09-26T13:05:51.267Z"
+      "lastUpdated": "2025-09-19T14:21:42.916Z",
+      "ttl": "2025-09-26T14:21:42.916Z"
     },
     "459793": {
       "type": "player",
@@ -1358,152 +384,17 @@
       "name": "Aron Roselli",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.561Z",
-      "ttl": "2025-09-26T13:10:11.561Z"
+      "lastUpdated": "2025-09-19T21:15:57.679Z",
+      "ttl": "2025-09-26T21:15:57.679Z"
     },
-    "459971": {
+    "462223": {
       "type": "player",
-      "id": "459971",
-      "name": "Joel Bachmann",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.917Z",
-      "ttl": "2025-09-26T12:46:12.917Z"
-    },
-    "460112": {
-      "type": "player",
-      "id": "460112",
-      "name": "Janine Salzmann",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.914Z",
-      "ttl": "2025-09-26T13:06:10.914Z"
-    },
-    "460168": {
-      "type": "player",
-      "id": "460168",
-      "name": "Felix Haenle",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.915Z",
-      "ttl": "2025-09-26T13:06:38.915Z"
-    },
-    "460281": {
-      "type": "player",
-      "id": "460281",
-      "name": "Levin Gügi",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.912Z",
-      "ttl": "2025-09-26T12:46:12.912Z"
-    },
-    "460573": {
-      "type": "player",
-      "id": "460573",
-      "name": "Nolan Bratschi",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.911Z",
-      "ttl": "2025-09-26T13:06:38.911Z"
-    },
-    "460574": {
-      "type": "player",
-      "id": "460574",
-      "name": "Elias Bürge",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.954Z",
-      "ttl": "2025-09-26T13:48:40.954Z"
-    },
-    "460579": {
-      "type": "player",
-      "id": "460579",
-      "name": "Jonas Stettler",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.075Z",
-      "ttl": "2025-09-26T12:46:31.075Z"
-    },
-    "460606": {
-      "type": "player",
-      "id": "460606",
-      "name": "Arno Althaus",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.679Z",
-      "ttl": "2025-09-26T10:22:26.679Z"
-    },
-    "460688": {
-      "type": "player",
-      "id": "460688",
-      "name": "Loris Hofmann",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.075Z",
-      "ttl": "2025-09-26T12:46:31.075Z"
-    },
-    "461150": {
-      "type": "player",
-      "id": "461150",
-      "name": "Sindy Rüegger",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.094Z",
-      "ttl": "2025-09-26T13:05:54.094Z"
-    },
-    "461499": {
-      "type": "player",
-      "id": "461499",
-      "name": "Hanka Lackova",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.398Z",
-      "ttl": "2025-09-26T13:05:58.398Z"
-    },
-    "461516": {
-      "type": "player",
-      "id": "461516",
-      "name": "Oliver Wiedmer",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.236Z",
-      "ttl": "2025-09-26T12:46:05.236Z"
-    },
-    "461557": {
-      "type": "player",
-      "id": "461557",
-      "name": "Alan Strässle",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.740Z",
-      "ttl": "2025-09-26T13:03:21.740Z"
-    },
-    "461593": {
-      "type": "player",
-      "id": "461593",
-      "name": "Gian Luca Schiessl",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.672Z",
-      "ttl": "2025-09-26T10:22:26.672Z"
-    },
-    "461618": {
-      "type": "player",
-      "id": "461618",
-      "name": "Sandrine Eggel",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.535Z",
-      "ttl": "2025-09-26T13:06:19.535Z"
-    },
-    "461905": {
-      "type": "player",
-      "id": "461905",
-      "name": "Simona Chinotti",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.349Z",
-      "ttl": "2025-09-26T13:06:27.349Z"
+      "id": "462223",
+      "name": "Janis Siegenthaler",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.757Z",
+      "ttl": "2025-09-26T21:16:47.757Z"
     },
     "462465": {
       "type": "player",
@@ -1511,44 +402,8 @@
       "name": "Benjamin Arm",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.565Z",
-      "ttl": "2025-09-26T13:10:11.565Z"
-    },
-    "462541": {
-      "type": "player",
-      "id": "462541",
-      "name": "Ramon Zeller",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.914Z",
-      "ttl": "2025-09-26T12:46:12.914Z"
-    },
-    "463908": {
-      "type": "player",
-      "id": "463908",
-      "name": "Doris Berger",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.909Z",
-      "ttl": "2025-09-26T13:06:10.909Z"
-    },
-    "463960": {
-      "type": "player",
-      "id": "463960",
-      "name": "Chantal Grundbacher",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.417Z",
-      "ttl": "2025-09-26T13:06:06.417Z"
-    },
-    "464210": {
-      "type": "player",
-      "id": "464210",
-      "name": "Manuel Rieder",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.908Z",
-      "ttl": "2025-09-26T13:06:38.908Z"
+      "lastUpdated": "2025-09-19T21:15:57.680Z",
+      "ttl": "2025-09-26T21:15:57.680Z"
     },
     "464346": {
       "type": "player",
@@ -1556,8 +411,8 @@
       "name": "Erin Degen",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.567Z",
-      "ttl": "2025-09-26T13:10:11.567Z"
+      "lastUpdated": "2025-09-19T21:15:57.681Z",
+      "ttl": "2025-09-26T21:15:57.681Z"
     },
     "464354": {
       "type": "player",
@@ -1565,26 +420,8 @@
       "name": "Laurin Überschlag",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.570Z",
-      "ttl": "2025-09-26T13:10:11.570Z"
-    },
-    "464391": {
-      "type": "player",
-      "id": "464391",
-      "name": "Tobias Flütsch",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.074Z",
-      "ttl": "2025-09-26T12:46:31.074Z"
-    },
-    "464553": {
-      "type": "player",
-      "id": "464553",
-      "name": "Jil Looser",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.136Z",
-      "ttl": "2025-09-26T13:05:25.136Z"
+      "lastUpdated": "2025-09-19T21:15:57.682Z",
+      "ttl": "2025-09-26T21:15:57.682Z"
     },
     "464589": {
       "type": "player",
@@ -1592,53 +429,17 @@
       "name": "Manuel Matt",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.217Z",
-      "ttl": "2025-09-26T13:03:33.217Z"
+      "lastUpdated": "2025-09-19T14:21:42.917Z",
+      "ttl": "2025-09-26T14:21:42.917Z"
     },
-    "464614": {
+    "464877": {
       "type": "player",
-      "id": "464614",
-      "name": "Niklas Nussbaumer",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.898Z",
-      "ttl": "2025-09-26T13:06:38.898Z"
-    },
-    "464730": {
-      "type": "player",
-      "id": "464730",
-      "name": "Lara Wüthrich",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.528Z",
-      "ttl": "2025-09-26T13:06:19.528Z"
-    },
-    "464828": {
-      "type": "player",
-      "id": "464828",
-      "name": "Ivo Lüthi",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.233Z",
-      "ttl": "2025-09-26T12:46:05.233Z"
-    },
-    "464885": {
-      "type": "player",
-      "id": "464885",
-      "name": "Elia Seiler",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.235Z",
-      "ttl": "2025-09-26T12:46:05.235Z"
-    },
-    "464913": {
-      "type": "player",
-      "id": "464913",
-      "name": "Dylan Hasenböhler",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.722Z",
-      "ttl": "2025-09-26T13:03:21.722Z"
+      "id": "464877",
+      "name": "Gian Thöni",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.761Z",
+      "ttl": "2025-09-26T21:16:47.761Z"
     },
     "464930": {
       "type": "player",
@@ -1646,8 +447,8 @@
       "name": "Claude Feigenwinter",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.531Z",
-      "ttl": "2025-09-26T13:10:11.531Z"
+      "lastUpdated": "2025-09-19T21:15:57.669Z",
+      "ttl": "2025-09-26T21:15:57.669Z"
     },
     "464941": {
       "type": "player",
@@ -1655,62 +456,8 @@
       "name": "Patrick Krähenbühl",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.558Z",
-      "ttl": "2025-09-26T13:10:11.558Z"
-    },
-    "465213": {
-      "type": "player",
-      "id": "465213",
-      "name": "Vivienne Knüsel",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.090Z",
-      "ttl": "2025-09-26T13:05:54.090Z"
-    },
-    "465301": {
-      "type": "player",
-      "id": "465301",
-      "name": "Fabienne Fankhauser",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.560Z",
-      "ttl": "2025-09-26T13:06:19.560Z"
-    },
-    "465354": {
-      "type": "player",
-      "id": "465354",
-      "name": "Selina Lüthi",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.910Z",
-      "ttl": "2025-09-26T13:06:10.910Z"
-    },
-    "465407": {
-      "type": "player",
-      "id": "465407",
-      "name": "Livio Zeller",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.910Z",
-      "ttl": "2025-09-26T12:46:12.910Z"
-    },
-    "465508": {
-      "type": "player",
-      "id": "465508",
-      "name": "Ramon Fontana",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.905Z",
-      "ttl": "2025-09-26T13:06:38.905Z"
-    },
-    "465530": {
-      "type": "player",
-      "id": "465530",
-      "name": "Luzia Kessler",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.148Z",
-      "ttl": "2025-09-26T13:06:15.148Z"
+      "lastUpdated": "2025-09-19T21:15:57.678Z",
+      "ttl": "2025-09-26T21:15:57.678Z"
     },
     "465593": {
       "type": "player",
@@ -1718,278 +465,35 @@
       "name": "Josia Pfister",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.152Z",
-      "ttl": "2025-09-26T12:30:21.152Z"
+      "lastUpdated": "2025-09-19T14:18:52.026Z",
+      "ttl": "2025-09-26T14:18:52.026Z"
     },
-    "465906": {
+    "467494": {
       "type": "player",
-      "id": "465906",
-      "name": "Rohit Chiplunkar",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.916Z",
-      "ttl": "2025-09-26T12:46:12.916Z"
+      "id": "467494",
+      "name": "Lars Weibel",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.755Z",
+      "ttl": "2025-09-26T21:16:47.755Z"
     },
-    "465977": {
+    "467646": {
       "type": "player",
-      "id": "465977",
-      "name": "Michelle Stieger",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.138Z",
-      "ttl": "2025-09-26T13:06:23.138Z"
+      "id": "467646",
+      "name": "Tim Döbeli",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.759Z",
+      "ttl": "2025-09-26T21:16:47.759Z"
     },
-    "465979": {
+    "468749": {
       "type": "player",
-      "id": "465979",
-      "name": "Rahel Wyss",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.158Z",
-      "ttl": "2025-09-26T13:06:23.158Z"
-    },
-    "466060": {
-      "type": "player",
-      "id": "466060",
-      "name": "Gian-Luca Flisch",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.733Z",
-      "ttl": "2025-09-26T13:03:21.733Z"
-    },
-    "466147": {
-      "type": "player",
-      "id": "466147",
-      "name": "Ryan Ulrich",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.877Z",
-      "ttl": "2025-09-26T13:06:38.877Z"
-    },
-    "466187": {
-      "type": "player",
-      "id": "466187",
-      "name": "Jelena Zurbriggen",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.557Z",
-      "ttl": "2025-09-26T13:06:19.557Z"
-    },
-    "466218": {
-      "type": "player",
-      "id": "466218",
-      "name": "Sarina Hutter",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.372Z",
-      "ttl": "2025-09-26T13:06:27.372Z"
-    },
-    "466282": {
-      "type": "player",
-      "id": "466282",
-      "name": "Michael Haenle",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.911Z",
-      "ttl": "2025-09-26T12:46:12.911Z"
-    },
-    "466338": {
-      "type": "player",
-      "id": "466338",
-      "name": "Alina Fritsche",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.136Z",
-      "ttl": "2025-09-26T13:05:25.136Z"
-    },
-    "466596": {
-      "type": "player",
-      "id": "466596",
-      "name": "Esther Jeyabalasingam",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.375Z",
-      "ttl": "2025-09-26T13:06:27.375Z"
-    },
-    "466708": {
-      "type": "player",
-      "id": "466708",
-      "name": "Janine Lüthi",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.931Z",
-      "ttl": "2025-09-26T13:06:10.931Z"
-    },
-    "466908": {
-      "type": "player",
-      "id": "466908",
-      "name": "Noé Siegfried",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.879Z",
-      "ttl": "2025-09-26T13:06:38.879Z"
-    },
-    "467039": {
-      "type": "player",
-      "id": "467039",
-      "name": "Milena Näf",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.174Z",
-      "ttl": "2025-09-26T13:06:15.174Z"
-    },
-    "467045": {
-      "type": "player",
-      "id": "467045",
-      "name": "Tanja Kyburz",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.453Z",
-      "ttl": "2025-09-26T13:06:06.453Z"
-    },
-    "467064": {
-      "type": "player",
-      "id": "467064",
-      "name": "Raphael Zellweger",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.381Z",
-      "ttl": "2025-09-26T13:04:43.381Z"
-    },
-    "467258": {
-      "type": "player",
-      "id": "467258",
-      "name": "Robin Kernwein",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.918Z",
-      "ttl": "2025-09-26T13:06:38.918Z"
-    },
-    "467308": {
-      "type": "player",
-      "id": "467308",
-      "name": "Ella-Fée Greber",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.421Z",
-      "ttl": "2025-09-26T13:06:06.421Z"
-    },
-    "467640": {
-      "type": "player",
-      "id": "467640",
-      "name": "Emma Hedlund",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.095Z",
-      "ttl": "2025-09-26T13:05:54.095Z"
-    },
-    "467692": {
-      "type": "player",
-      "id": "467692",
-      "name": "Joshua Villiger",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.229Z",
-      "ttl": "2025-09-26T12:46:05.229Z"
-    },
-    "468129": {
-      "type": "player",
-      "id": "468129",
-      "name": "Evelina Garbare",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.913Z",
-      "ttl": "2025-09-26T13:06:10.913Z"
-    },
-    "468222": {
-      "type": "player",
-      "id": "468222",
-      "name": "Katarína Klapitová",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.135Z",
-      "ttl": "2025-09-26T13:05:25.135Z"
-    },
-    "468320": {
-      "type": "player",
-      "id": "468320",
-      "name": "Gentiana Behluli",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.277Z",
-      "ttl": "2025-09-26T13:05:51.277Z"
-    },
-    "468327": {
-      "type": "player",
-      "id": "468327",
-      "name": "Tamara Fritschi",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.389Z",
-      "ttl": "2025-09-26T13:05:58.389Z"
-    },
-    "468373": {
-      "type": "player",
-      "id": "468373",
-      "name": "Nadir Monighetti",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.389Z",
-      "ttl": "2025-09-26T13:04:43.389Z"
-    },
-    "468753": {
-      "type": "player",
-      "id": "468753",
-      "name": "David Dürler",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.726Z",
-      "ttl": "2025-09-26T13:03:21.726Z"
-    },
-    "468880": {
-      "type": "player",
-      "id": "468880",
-      "name": "Janis Schwarz",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.679Z",
-      "ttl": "2025-09-26T10:22:26.679Z"
-    },
-    "469117": {
-      "type": "player",
-      "id": "469117",
-      "name": "Silas Fitzi",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.223Z",
-      "ttl": "2025-09-26T12:46:05.223Z"
-    },
-    "469118": {
-      "type": "player",
-      "id": "469118",
-      "name": "David Foelix",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.881Z",
-      "ttl": "2025-09-26T13:06:38.881Z"
-    },
-    "469212": {
-      "type": "player",
-      "id": "469212",
-      "name": "Yasmin Inderbitzin",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.270Z",
-      "ttl": "2025-09-26T13:05:51.270Z"
-    },
-    "469253": {
-      "type": "player",
-      "id": "469253",
-      "name": "Niklas Graf",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.234Z",
-      "ttl": "2025-09-26T12:46:05.234Z"
+      "id": "468749",
+      "name": "Gianluca Persici",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.757Z",
+      "ttl": "2025-09-26T21:16:47.757Z"
     },
     "469383": {
       "type": "player",
@@ -1997,152 +501,26 @@
       "name": "Micha Zürcher",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.155Z",
-      "ttl": "2025-09-26T12:30:21.155Z"
+      "lastUpdated": "2025-09-19T14:18:52.029Z",
+      "ttl": "2025-09-26T14:18:52.029Z"
     },
-    "469551": {
+    "469932": {
       "type": "player",
-      "id": "469551",
-      "name": "Yasmine Renz",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.352Z",
-      "ttl": "2025-09-26T13:06:27.352Z"
-    },
-    "469590": {
-      "type": "player",
-      "id": "469590",
-      "name": "Chantal Renée Engler",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.385Z",
-      "ttl": "2025-09-26T13:05:58.385Z"
-    },
-    "469648": {
-      "type": "player",
-      "id": "469648",
-      "name": "Pedro Gasser",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.959Z",
-      "ttl": "2025-09-26T13:48:40.959Z"
-    },
-    "469966": {
-      "type": "player",
-      "id": "469966",
-      "name": "Nina Hoffmann",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.268Z",
-      "ttl": "2025-09-26T13:05:51.268Z"
-    },
-    "470065": {
-      "type": "player",
-      "id": "470065",
-      "name": "Melea von Känel",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.524Z",
-      "ttl": "2025-09-26T13:06:19.524Z"
-    },
-    "470091": {
-      "type": "player",
-      "id": "470091",
-      "name": "Anja Jakob",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.145Z",
-      "ttl": "2025-09-26T13:06:23.145Z"
-    },
-    "470099": {
-      "type": "player",
-      "id": "470099",
-      "name": "Luana Rensch",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.143Z",
-      "ttl": "2025-09-26T13:06:23.143Z"
-    },
-    "470114": {
-      "type": "player",
-      "id": "470114",
-      "name": "Damaris Hangartner",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.123Z",
-      "ttl": "2025-09-26T13:05:25.123Z"
-    },
-    "470155": {
-      "type": "player",
-      "id": "470155",
-      "name": "Cedric Söderberg",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.371Z",
-      "ttl": "2025-09-26T13:04:43.371Z"
-    },
-    "470162": {
-      "type": "player",
-      "id": "470162",
-      "name": "Gian-Luca Lanfranchi",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.376Z",
-      "ttl": "2025-09-26T13:04:43.376Z"
-    },
-    "470169": {
-      "type": "player",
-      "id": "470169",
-      "name": "Andri Bass",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.382Z",
-      "ttl": "2025-09-26T13:04:43.382Z"
+      "id": "469932",
+      "name": "Jamie Martinjas",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.760Z",
+      "ttl": "2025-09-26T21:16:47.760Z"
     },
     "470276": {
       "type": "player",
       "id": "470276",
       "name": "Patrick Zürcher",
       "team": "Unihockey Basel Regio",
-      "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.520Z",
-      "ttl": "2025-09-26T13:10:11.520Z"
-    },
-    "470348": {
-      "type": "player",
-      "id": "470348",
-      "name": "Sophie Carbogno",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.141Z",
-      "ttl": "2025-09-26T13:05:25.141Z"
-    },
-    "470386": {
-      "type": "player",
-      "id": "470386",
-      "name": "Sina Duner",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.911Z",
-      "ttl": "2025-09-26T13:06:10.911Z"
-    },
-    "470629": {
-      "type": "player",
-      "id": "470629",
-      "name": "Janis Ribler",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.227Z",
-      "ttl": "2025-09-26T12:46:05.227Z"
-    },
-    "470632": {
-      "type": "player",
-      "id": "470632",
-      "name": "Daria Leu",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.365Z",
-      "ttl": "2025-09-26T13:06:27.365Z"
+      "teamId": "",
+      "lastUpdated": "2025-09-19T21:15:57.714Z",
+      "ttl": "2025-09-26T21:15:57.714Z"
     },
     "470887": {
       "type": "player",
@@ -2150,8 +528,8 @@
       "name": "Sebastian Kuhn",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.146Z",
-      "ttl": "2025-09-26T12:30:21.146Z"
+      "lastUpdated": "2025-09-19T14:18:52.021Z",
+      "ttl": "2025-09-26T14:18:52.021Z"
     },
     "470889": {
       "type": "player",
@@ -2159,8 +537,8 @@
       "name": "Fadri Burkhart",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.156Z",
-      "ttl": "2025-09-26T12:30:21.156Z"
+      "lastUpdated": "2025-09-19T14:18:52.029Z",
+      "ttl": "2025-09-26T14:18:52.029Z"
     },
     "471214": {
       "type": "player",
@@ -2168,26 +546,8 @@
       "name": "Timon Günthard",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.148Z",
-      "ttl": "2025-09-26T12:30:21.148Z"
-    },
-    "471242": {
-      "type": "player",
-      "id": "471242",
-      "name": "Stefanie Schwendener",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.409Z",
-      "ttl": "2025-09-26T13:05:58.409Z"
-    },
-    "471273": {
-      "type": "player",
-      "id": "471273",
-      "name": "Maxim Frei",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.737Z",
-      "ttl": "2025-09-26T13:03:21.737Z"
+      "lastUpdated": "2025-09-19T14:18:52.023Z",
+      "ttl": "2025-09-26T14:18:52.023Z"
     },
     "471548": {
       "type": "player",
@@ -2195,98 +555,26 @@
       "name": "Jonas Tschan",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.556Z",
-      "ttl": "2025-09-26T13:10:11.556Z"
+      "lastUpdated": "2025-09-19T21:15:57.677Z",
+      "ttl": "2025-09-26T21:15:57.677Z"
     },
-    "471661": {
+    "472335": {
       "type": "player",
-      "id": "471661",
-      "name": "Michelle Gerber",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.920Z",
-      "ttl": "2025-09-26T13:06:10.920Z"
+      "id": "472335",
+      "name": "Merlin Picariello",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.763Z",
+      "ttl": "2025-09-26T21:16:47.763Z"
     },
-    "471982": {
+    "472905": {
       "type": "player",
-      "id": "471982",
-      "name": "Pablo Mariotti",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.231Z",
-      "ttl": "2025-09-26T12:46:05.231Z"
-    },
-    "472032": {
-      "type": "player",
-      "id": "472032",
-      "name": "Cédric Schumacher",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.907Z",
-      "ttl": "2025-09-26T13:06:38.907Z"
-    },
-    "472273": {
-      "type": "player",
-      "id": "472273",
-      "name": "Lea Suter",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.280Z",
-      "ttl": "2025-09-26T13:05:51.280Z"
-    },
-    "472283": {
-      "type": "player",
-      "id": "472283",
-      "name": "Silvan Hänsch",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.239Z",
-      "ttl": "2025-09-26T12:46:05.239Z"
-    },
-    "472284": {
-      "type": "player",
-      "id": "472284",
-      "name": "Levin Peter",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.233Z",
-      "ttl": "2025-09-26T12:46:05.233Z"
-    },
-    "472286": {
-      "type": "player",
-      "id": "472286",
-      "name": "Livia Simon",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.134Z",
-      "ttl": "2025-09-26T13:05:25.134Z"
-    },
-    "472565": {
-      "type": "player",
-      "id": "472565",
-      "name": "Robin Hostettler",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.742Z",
-      "ttl": "2025-09-26T13:03:21.742Z"
-    },
-    "472906": {
-      "type": "player",
-      "id": "472906",
-      "name": "Martin Östholm",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.379Z",
-      "ttl": "2025-09-26T13:04:43.379Z"
-    },
-    "472917": {
-      "type": "player",
-      "id": "472917",
-      "name": "Robin Nilsberth",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.076Z",
-      "ttl": "2025-09-26T12:46:31.076Z"
+      "id": "472905",
+      "name": "Alexander Galante Carlström",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.756Z",
+      "ttl": "2025-09-26T21:16:47.756Z"
     },
     "473105": {
       "type": "player",
@@ -2294,17 +582,8 @@
       "name": "Mike Gerber",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.554Z",
-      "ttl": "2025-09-26T13:10:11.554Z"
-    },
-    "473266": {
-      "type": "player",
-      "id": "473266",
-      "name": "Andrin Caviezel",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.890Z",
-      "ttl": "2025-09-26T13:06:38.890Z"
+      "lastUpdated": "2025-09-19T21:15:57.676Z",
+      "ttl": "2025-09-26T21:15:57.676Z"
     },
     "473373": {
       "type": "player",
@@ -2312,116 +591,8 @@
       "name": "Lorén Oliva",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.572Z",
-      "ttl": "2025-09-26T13:10:11.572Z"
-    },
-    "473529": {
-      "type": "player",
-      "id": "473529",
-      "name": "Livia Riboni",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.139Z",
-      "ttl": "2025-09-26T13:06:15.139Z"
-    },
-    "473601": {
-      "type": "player",
-      "id": "473601",
-      "name": "Mirjam Vonder Mühll",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.113Z",
-      "ttl": "2025-09-26T13:05:54.113Z"
-    },
-    "473610": {
-      "type": "player",
-      "id": "473610",
-      "name": "Lisa Von Arx",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.423Z",
-      "ttl": "2025-09-26T13:06:06.423Z"
-    },
-    "473942": {
-      "type": "player",
-      "id": "473942",
-      "name": "Alisha Niggli",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.164Z",
-      "ttl": "2025-09-26T13:06:23.164Z"
-    },
-    "473965": {
-      "type": "player",
-      "id": "473965",
-      "name": "Dario Eberhardt",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.932Z",
-      "ttl": "2025-09-26T13:48:40.932Z"
-    },
-    "474122": {
-      "type": "player",
-      "id": "474122",
-      "name": "Naja Ritter",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.906Z",
-      "ttl": "2025-09-26T13:06:10.906Z"
-    },
-    "474137": {
-      "type": "player",
-      "id": "474137",
-      "name": "Noah Mühlebach",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.724Z",
-      "ttl": "2025-09-26T13:03:21.724Z"
-    },
-    "474144": {
-      "type": "player",
-      "id": "474144",
-      "name": "Stephanie Jucker",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.383Z",
-      "ttl": "2025-09-26T13:06:27.383Z"
-    },
-    "474228": {
-      "type": "player",
-      "id": "474228",
-      "name": "Mia Schütz",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.458Z",
-      "ttl": "2025-09-26T13:06:06.458Z"
-    },
-    "474591": {
-      "type": "player",
-      "id": "474591",
-      "name": "Bianca Joos",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.148Z",
-      "ttl": "2025-09-26T13:06:23.148Z"
-    },
-    "474612": {
-      "type": "player",
-      "id": "474612",
-      "name": "Dario Bürgler",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.080Z",
-      "ttl": "2025-09-26T12:46:31.080Z"
-    },
-    "475052": {
-      "type": "player",
-      "id": "475052",
-      "name": "Yannic Hüppi",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.919Z",
-      "ttl": "2025-09-26T13:06:38.919Z"
+      "lastUpdated": "2025-09-19T21:15:57.683Z",
+      "ttl": "2025-09-26T21:15:57.683Z"
     },
     "475086": {
       "type": "player",
@@ -2429,8 +600,8 @@
       "name": "Severin Ott",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.216Z",
-      "ttl": "2025-09-26T13:03:33.216Z"
+      "lastUpdated": "2025-09-19T14:21:42.916Z",
+      "ttl": "2025-09-26T14:21:42.916Z"
     },
     "475087": {
       "type": "player",
@@ -2438,8 +609,8 @@
       "name": "Timo Graf",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.223Z",
-      "ttl": "2025-09-26T13:03:33.223Z"
+      "lastUpdated": "2025-09-19T14:21:42.919Z",
+      "ttl": "2025-09-26T14:21:42.919Z"
     },
     "475088": {
       "type": "player",
@@ -2447,107 +618,8 @@
       "name": "Flavio Graf",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.213Z",
-      "ttl": "2025-09-26T13:03:33.213Z"
-    },
-    "475212": {
-      "type": "player",
-      "id": "475212",
-      "name": "Noah Bisig",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.082Z",
-      "ttl": "2025-09-26T12:46:31.082Z"
-    },
-    "475475": {
-      "type": "player",
-      "id": "475475",
-      "name": "Lino Behringer",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.892Z",
-      "ttl": "2025-09-26T13:06:38.892Z"
-    },
-    "475490": {
-      "type": "player",
-      "id": "475490",
-      "name": "Vanessa Koch",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.159Z",
-      "ttl": "2025-09-26T13:06:23.159Z"
-    },
-    "475596": {
-      "type": "player",
-      "id": "475596",
-      "name": "Ann Zurbuchen",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.406Z",
-      "ttl": "2025-09-26T13:05:58.406Z"
-    },
-    "475624": {
-      "type": "player",
-      "id": "475624",
-      "name": "Liv-Emma Lotz",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.172Z",
-      "ttl": "2025-09-26T13:06:15.172Z"
-    },
-    "475633": {
-      "type": "player",
-      "id": "475633",
-      "name": "Jan Fleisch",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.729Z",
-      "ttl": "2025-09-26T13:03:21.729Z"
-    },
-    "475907": {
-      "type": "player",
-      "id": "475907",
-      "name": "Vanessa Schmuki",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.269Z",
-      "ttl": "2025-09-26T13:05:51.269Z"
-    },
-    "475979": {
-      "type": "player",
-      "id": "475979",
-      "name": "Alyssa Buri",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.928Z",
-      "ttl": "2025-09-26T13:06:10.928Z"
-    },
-    "476471": {
-      "type": "player",
-      "id": "476471",
-      "name": "Ramon Zenger",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.226Z",
-      "ttl": "2025-09-26T12:46:05.226Z"
-    },
-    "476474": {
-      "type": "player",
-      "id": "476474",
-      "name": "Rebecca Harder",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.370Z",
-      "ttl": "2025-09-26T13:06:27.370Z"
-    },
-    "476526": {
-      "type": "player",
-      "id": "476526",
-      "name": "Chantal Renz",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.279Z",
-      "ttl": "2025-09-26T13:05:51.279Z"
+      "lastUpdated": "2025-09-19T14:21:42.915Z",
+      "ttl": "2025-09-26T14:21:42.915Z"
     },
     "476619": {
       "type": "player",
@@ -2555,17 +627,8 @@
       "name": "Almiro Stüdeli",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.211Z",
-      "ttl": "2025-09-26T13:03:33.211Z"
-    },
-    "476630": {
-      "type": "player",
-      "id": "476630",
-      "name": "Annina Stoll",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.387Z",
-      "ttl": "2025-09-26T13:05:58.387Z"
+      "lastUpdated": "2025-09-19T14:21:42.914Z",
+      "ttl": "2025-09-26T14:21:42.914Z"
     },
     "476672": {
       "type": "player",
@@ -2573,44 +636,8 @@
       "name": "Nils Boman",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.218Z",
-      "ttl": "2025-09-26T13:03:33.218Z"
-    },
-    "476888": {
-      "type": "player",
-      "id": "476888",
-      "name": "Fiona Stemmler",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.401Z",
-      "ttl": "2025-09-26T13:05:58.401Z"
-    },
-    "477054": {
-      "type": "player",
-      "id": "477054",
-      "name": "Marla Siegenthaler",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.918Z",
-      "ttl": "2025-09-26T13:06:10.918Z"
-    },
-    "477056": {
-      "type": "player",
-      "id": "477056",
-      "name": "Tim Glücki",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.680Z",
-      "ttl": "2025-09-26T10:22:26.680Z"
-    },
-    "477225": {
-      "type": "player",
-      "id": "477225",
-      "name": "Svenja Schuler",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.154Z",
-      "ttl": "2025-09-26T13:06:15.154Z"
+      "lastUpdated": "2025-09-19T14:21:42.917Z",
+      "ttl": "2025-09-26T14:21:42.917Z"
     },
     "477268": {
       "type": "player",
@@ -2618,8 +645,8 @@
       "name": "Damian Hocevar",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.221Z",
-      "ttl": "2025-09-26T13:03:33.221Z"
+      "lastUpdated": "2025-09-19T14:21:42.918Z",
+      "ttl": "2025-09-26T14:21:42.918Z"
     },
     "477285": {
       "type": "player",
@@ -2627,107 +654,17 @@
       "name": "Emanuele Pasotti",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.539Z",
-      "ttl": "2025-09-26T13:10:11.539Z"
+      "lastUpdated": "2025-09-19T21:15:57.671Z",
+      "ttl": "2025-09-26T21:15:57.671Z"
     },
-    "477301": {
+    "477288": {
       "type": "player",
-      "id": "477301",
-      "name": "Noelle Weis",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.150Z",
-      "ttl": "2025-09-26T13:06:23.150Z"
-    },
-    "477718": {
-      "type": "player",
-      "id": "477718",
-      "name": "Noora Holle",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.082Z",
-      "ttl": "2025-09-26T13:05:54.082Z"
-    },
-    "477884": {
-      "type": "player",
-      "id": "477884",
-      "name": "Jonas Isler",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.865Z",
-      "ttl": "2025-09-26T13:06:38.865Z"
-    },
-    "477888": {
-      "type": "player",
-      "id": "477888",
-      "name": "Jasmin Bieri",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.924Z",
-      "ttl": "2025-09-26T13:06:10.924Z"
-    },
-    "478080": {
-      "type": "player",
-      "id": "478080",
-      "name": "Annika Huter",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.127Z",
-      "ttl": "2025-09-26T13:05:25.127Z"
-    },
-    "478126": {
-      "type": "player",
-      "id": "478126",
-      "name": "Karin Wenger",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.548Z",
-      "ttl": "2025-09-26T13:06:19.548Z"
-    },
-    "478290": {
-      "type": "player",
-      "id": "478290",
-      "name": "Lisa Isler",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.122Z",
-      "ttl": "2025-09-26T13:05:25.122Z"
-    },
-    "478411": {
-      "type": "player",
-      "id": "478411",
-      "name": "Anja Gross",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.459Z",
-      "ttl": "2025-09-26T13:06:06.459Z"
-    },
-    "478427": {
-      "type": "player",
-      "id": "478427",
-      "name": "Sandra Briggen",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.437Z",
-      "ttl": "2025-09-26T13:06:06.437Z"
-    },
-    "478428": {
-      "type": "player",
-      "id": "478428",
-      "name": "Karin Bieri",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.554Z",
-      "ttl": "2025-09-26T13:06:19.554Z"
-    },
-    "478474": {
-      "type": "player",
-      "id": "478474",
-      "name": "Yannic Fitzi",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.230Z",
-      "ttl": "2025-09-26T12:46:05.230Z"
+      "id": "477288",
+      "name": "Till Eser",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.763Z",
+      "ttl": "2025-09-26T21:16:47.763Z"
     },
     "478530": {
       "type": "player",
@@ -2735,26 +672,8 @@
       "name": "Elisha Ekmann",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.224Z",
-      "ttl": "2025-09-26T13:03:33.224Z"
-    },
-    "478551": {
-      "type": "player",
-      "id": "478551",
-      "name": "Carina Zeller",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.456Z",
-      "ttl": "2025-09-26T13:06:06.456Z"
-    },
-    "478555": {
-      "type": "player",
-      "id": "478555",
-      "name": "Lara Meisel",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.537Z",
-      "ttl": "2025-09-26T13:06:19.537Z"
+      "lastUpdated": "2025-09-19T14:21:42.919Z",
+      "ttl": "2025-09-26T14:21:42.919Z"
     },
     "478568": {
       "type": "player",
@@ -2762,44 +681,8 @@
       "name": "Andrin Jäggi",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.536Z",
-      "ttl": "2025-09-26T13:10:11.536Z"
-    },
-    "478628": {
-      "type": "player",
-      "id": "478628",
-      "name": "Lian Schefer",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.235Z",
-      "ttl": "2025-09-26T12:46:05.235Z"
-    },
-    "478672": {
-      "type": "player",
-      "id": "478672",
-      "name": "Sheryl Kiener",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.919Z",
-      "ttl": "2025-09-26T13:06:10.919Z"
-    },
-    "478677": {
-      "type": "player",
-      "id": "478677",
-      "name": "Valerie Gasser",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.905Z",
-      "ttl": "2025-09-26T13:06:10.905Z"
-    },
-    "478710": {
-      "type": "player",
-      "id": "478710",
-      "name": "Alina Hofmann",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.383Z",
-      "ttl": "2025-09-26T13:05:58.383Z"
+      "lastUpdated": "2025-09-19T21:15:57.670Z",
+      "ttl": "2025-09-26T21:15:57.670Z"
     },
     "478908": {
       "type": "player",
@@ -2807,89 +690,8 @@
       "name": "Kilian Franzen",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.154Z",
-      "ttl": "2025-09-26T12:30:21.154Z"
-    },
-    "478983": {
-      "type": "player",
-      "id": "478983",
-      "name": "Alena Holst",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.381Z",
-      "ttl": "2025-09-26T13:05:58.381Z"
-    },
-    "478996": {
-      "type": "player",
-      "id": "478996",
-      "name": "Marcia Wick",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.278Z",
-      "ttl": "2025-09-26T13:05:51.278Z"
-    },
-    "479034": {
-      "type": "player",
-      "id": "479034",
-      "name": "Jael Nussbaumer",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.273Z",
-      "ttl": "2025-09-26T13:05:51.273Z"
-    },
-    "479037": {
-      "type": "player",
-      "id": "479037",
-      "name": "Fabienne Rüegg",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.407Z",
-      "ttl": "2025-09-26T13:05:58.407Z"
-    },
-    "479175": {
-      "type": "player",
-      "id": "479175",
-      "name": "Daniel Sesulka",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.373Z",
-      "ttl": "2025-09-26T13:04:43.373Z"
-    },
-    "479183": {
-      "type": "player",
-      "id": "479183",
-      "name": "Mattia Walker",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.949Z",
-      "ttl": "2025-09-26T13:48:40.949Z"
-    },
-    "479203": {
-      "type": "player",
-      "id": "479203",
-      "name": "Linus Arnold",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.077Z",
-      "ttl": "2025-09-26T12:46:31.077Z"
-    },
-    "479294": {
-      "type": "player",
-      "id": "479294",
-      "name": "Simona Schmucki",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.168Z",
-      "ttl": "2025-09-26T13:06:23.168Z"
-    },
-    "479522": {
-      "type": "player",
-      "id": "479522",
-      "name": "Robin Eggimann",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.942Z",
-      "ttl": "2025-09-26T13:48:40.942Z"
+      "lastUpdated": "2025-09-19T14:18:52.028Z",
+      "ttl": "2025-09-26T14:18:52.028Z"
     },
     "479785": {
       "type": "player",
@@ -2897,71 +699,8 @@
       "name": "Isaac Andersson",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.160Z",
-      "ttl": "2025-09-26T12:30:21.160Z"
-    },
-    "479918": {
-      "type": "player",
-      "id": "479918",
-      "name": "Noemi Anderegg",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.092Z",
-      "ttl": "2025-09-26T13:05:54.092Z"
-    },
-    "479921": {
-      "type": "player",
-      "id": "479921",
-      "name": "Mira Neele Horvath",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.100Z",
-      "ttl": "2025-09-26T13:05:54.100Z"
-    },
-    "479980": {
-      "type": "player",
-      "id": "479980",
-      "name": "Andrin Christen",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.080Z",
-      "ttl": "2025-09-26T12:46:31.080Z"
-    },
-    "479981": {
-      "type": "player",
-      "id": "479981",
-      "name": "Maurus Christen",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.078Z",
-      "ttl": "2025-09-26T12:46:31.078Z"
-    },
-    "479985": {
-      "type": "player",
-      "id": "479985",
-      "name": "Jens Huber",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.950Z",
-      "ttl": "2025-09-26T13:48:40.950Z"
-    },
-    "479992": {
-      "type": "player",
-      "id": "479992",
-      "name": "Simon Schwab",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.951Z",
-      "ttl": "2025-09-26T13:48:40.951Z"
-    },
-    "480058": {
-      "type": "player",
-      "id": "480058",
-      "name": "Ivana Härdi",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.110Z",
-      "ttl": "2025-09-26T13:05:54.110Z"
+      "lastUpdated": "2025-09-19T14:18:52.031Z",
+      "ttl": "2025-09-26T14:18:52.031Z"
     },
     "480130": {
       "type": "player",
@@ -2969,206 +708,8 @@
       "name": "Timon Anderegg",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.149Z",
-      "ttl": "2025-09-26T12:30:21.149Z"
-    },
-    "480215": {
-      "type": "player",
-      "id": "480215",
-      "name": "Fabio Flütsch",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.079Z",
-      "ttl": "2025-09-26T12:46:31.079Z"
-    },
-    "480234": {
-      "type": "player",
-      "id": "480234",
-      "name": "Noomi Überschlag",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.276Z",
-      "ttl": "2025-09-26T13:05:51.276Z"
-    },
-    "480265": {
-      "type": "player",
-      "id": "480265",
-      "name": "Anna Habersatter",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.125Z",
-      "ttl": "2025-09-26T13:05:25.125Z"
-    },
-    "480329": {
-      "type": "player",
-      "id": "480329",
-      "name": "Julia Schelbert",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.173Z",
-      "ttl": "2025-09-26T13:06:15.173Z"
-    },
-    "480380": {
-      "type": "player",
-      "id": "480380",
-      "name": "Tobias Ottiger",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.952Z",
-      "ttl": "2025-09-26T13:48:40.952Z"
-    },
-    "480427": {
-      "type": "player",
-      "id": "480427",
-      "name": "Ludmilla von Heydebrand",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.450Z",
-      "ttl": "2025-09-26T13:06:06.450Z"
-    },
-    "480443": {
-      "type": "player",
-      "id": "480443",
-      "name": "Ladina Müller",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.429Z",
-      "ttl": "2025-09-26T13:06:06.429Z"
-    },
-    "480478": {
-      "type": "player",
-      "id": "480478",
-      "name": "Janne Hofer",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.958Z",
-      "ttl": "2025-09-26T13:48:40.958Z"
-    },
-    "480750": {
-      "type": "player",
-      "id": "480750",
-      "name": "Alessia Garcia Magagnino",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.150Z",
-      "ttl": "2025-09-26T13:06:15.150Z"
-    },
-    "480838": {
-      "type": "player",
-      "id": "480838",
-      "name": "Zoe Kläy",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.135Z",
-      "ttl": "2025-09-26T13:05:25.135Z"
-    },
-    "481020": {
-      "type": "player",
-      "id": "481020",
-      "name": "Finja Helbling",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.274Z",
-      "ttl": "2025-09-26T13:05:51.274Z"
-    },
-    "481041": {
-      "type": "player",
-      "id": "481041",
-      "name": "Larinja Speck",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.400Z",
-      "ttl": "2025-09-26T13:05:58.400Z"
-    },
-    "481060": {
-      "type": "player",
-      "id": "481060",
-      "name": "Sebastian Mathis",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.731Z",
-      "ttl": "2025-09-26T13:03:21.731Z"
-    },
-    "481181": {
-      "type": "player",
-      "id": "481181",
-      "name": "Stefanie Brändle",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.382Z",
-      "ttl": "2025-09-26T13:06:27.382Z"
-    },
-    "481189": {
-      "type": "player",
-      "id": "481189",
-      "name": "Robyn Rieben",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.566Z",
-      "ttl": "2025-09-26T13:06:19.566Z"
-    },
-    "481268": {
-      "type": "player",
-      "id": "481268",
-      "name": "Mario Bardill",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.362Z",
-      "ttl": "2025-09-26T13:04:43.362Z"
-    },
-    "481287": {
-      "type": "player",
-      "id": "481287",
-      "name": "Malin Brolund",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.374Z",
-      "ttl": "2025-09-26T13:06:27.374Z"
-    },
-    "481508": {
-      "type": "player",
-      "id": "481508",
-      "name": "Luis Graf",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.237Z",
-      "ttl": "2025-09-26T12:46:05.237Z"
-    },
-    "481510": {
-      "type": "player",
-      "id": "481510",
-      "name": "Janis Graf",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.225Z",
-      "ttl": "2025-09-26T12:46:05.225Z"
-    },
-    "481524": {
-      "type": "player",
-      "id": "481524",
-      "name": "Lars Birchmeier",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.220Z",
-      "ttl": "2025-09-26T12:46:05.220Z"
-    },
-    "481887": {
-      "type": "player",
-      "id": "481887",
-      "name": "Marion Steiger",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.120Z",
-      "ttl": "2025-09-26T13:05:25.120Z"
-    },
-    "481900": {
-      "type": "player",
-      "id": "481900",
-      "name": "David Kissling",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.887Z",
-      "ttl": "2025-09-26T13:06:38.887Z"
+      "lastUpdated": "2025-09-19T14:18:52.023Z",
+      "ttl": "2025-09-26T14:18:52.023Z"
     },
     "482361": {
       "type": "player",
@@ -3176,116 +717,8 @@
       "name": "Joris Hänseler",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.156Z",
-      "ttl": "2025-09-26T12:30:21.156Z"
-    },
-    "482612": {
-      "type": "player",
-      "id": "482612",
-      "name": "Jana von Rotz",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.163Z",
-      "ttl": "2025-09-26T13:06:15.163Z"
-    },
-    "482630": {
-      "type": "player",
-      "id": "482630",
-      "name": "Jeanine Bieri",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.516Z",
-      "ttl": "2025-09-26T13:06:19.516Z"
-    },
-    "482918": {
-      "type": "player",
-      "id": "482918",
-      "name": "Nina Gerber",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.427Z",
-      "ttl": "2025-09-26T13:06:06.427Z"
-    },
-    "482976": {
-      "type": "player",
-      "id": "482976",
-      "name": "Marvin Germann",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.884Z",
-      "ttl": "2025-09-26T13:06:38.884Z"
-    },
-    "483034": {
-      "type": "player",
-      "id": "483034",
-      "name": "Rahel Odermatt",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.129Z",
-      "ttl": "2025-09-26T13:05:25.129Z"
-    },
-    "483570": {
-      "type": "player",
-      "id": "483570",
-      "name": "Lena Fleischlin",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.138Z",
-      "ttl": "2025-09-26T13:05:25.138Z"
-    },
-    "483667": {
-      "type": "player",
-      "id": "483667",
-      "name": "Vanessa Basler",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.411Z",
-      "ttl": "2025-09-26T13:05:58.411Z"
-    },
-    "483720": {
-      "type": "player",
-      "id": "483720",
-      "name": "Andrea Müller",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.546Z",
-      "ttl": "2025-09-26T13:06:19.546Z"
-    },
-    "483787": {
-      "type": "player",
-      "id": "483787",
-      "name": "Kristaps Vaicis",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.920Z",
-      "ttl": "2025-09-26T13:48:40.920Z"
-    },
-    "483904": {
-      "type": "player",
-      "id": "483904",
-      "name": "Tino von Pritzbuer",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.913Z",
-      "ttl": "2025-09-26T12:46:12.913Z"
-    },
-    "483958": {
-      "type": "player",
-      "id": "483958",
-      "name": "Enya Fassler",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.137Z",
-      "ttl": "2025-09-26T13:05:25.137Z"
-    },
-    "483986": {
-      "type": "player",
-      "id": "483986",
-      "name": "Anne Härtsch",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.461Z",
-      "ttl": "2025-09-26T13:06:06.461Z"
+      "lastUpdated": "2025-09-19T14:18:52.029Z",
+      "ttl": "2025-09-26T14:18:52.029Z"
     },
     "484285": {
       "type": "player",
@@ -3293,17 +726,8 @@
       "name": "Markus Kulmala",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.159Z",
-      "ttl": "2025-09-26T12:30:21.159Z"
-    },
-    "484509": {
-      "type": "player",
-      "id": "484509",
-      "name": "Hannah Soltermann",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.533Z",
-      "ttl": "2025-09-26T13:06:19.533Z"
+      "lastUpdated": "2025-09-19T14:18:52.030Z",
+      "ttl": "2025-09-26T14:18:52.030Z"
     },
     "484515": {
       "type": "player",
@@ -3311,449 +735,17 @@
       "name": "Eric Kunz",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.200Z",
-      "ttl": "2025-09-26T13:03:33.200Z"
+      "lastUpdated": "2025-09-19T14:21:42.908Z",
+      "ttl": "2025-09-26T14:21:42.908Z"
     },
-    "484713": {
+    "487286": {
       "type": "player",
-      "id": "484713",
-      "name": "Sophie Bandle",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.408Z",
-      "ttl": "2025-09-26T13:05:58.408Z"
-    },
-    "484793": {
-      "type": "player",
-      "id": "484793",
-      "name": "Linus Hedlund",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.076Z",
-      "ttl": "2025-09-26T12:46:31.076Z"
-    },
-    "484885": {
-      "type": "player",
-      "id": "484885",
-      "name": "Jorina Rutschi",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.446Z",
-      "ttl": "2025-09-26T13:06:06.446Z"
-    },
-    "484986": {
-      "type": "player",
-      "id": "484986",
-      "name": "Mirjam Wyss",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.433Z",
-      "ttl": "2025-09-26T13:06:06.433Z"
-    },
-    "485023": {
-      "type": "player",
-      "id": "485023",
-      "name": "Sheril Schmid",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.339Z",
-      "ttl": "2025-09-26T13:06:27.339Z"
-    },
-    "485239": {
-      "type": "player",
-      "id": "485239",
-      "name": "Annika Morf",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.455Z",
-      "ttl": "2025-09-26T13:06:06.455Z"
-    },
-    "485732": {
-      "type": "player",
-      "id": "485732",
-      "name": "Larisa Müller",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.425Z",
-      "ttl": "2025-09-26T13:06:06.425Z"
-    },
-    "486816": {
-      "type": "player",
-      "id": "486816",
-      "name": "Andri Kunz",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.730Z",
-      "ttl": "2025-09-26T13:03:21.730Z"
-    },
-    "486839": {
-      "type": "player",
-      "id": "486839",
-      "name": "Corin Haldemann",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.915Z",
-      "ttl": "2025-09-26T13:06:10.915Z"
-    },
-    "487397": {
-      "type": "player",
-      "id": "487397",
-      "name": "Livia Ankli",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.443Z",
-      "ttl": "2025-09-26T13:06:06.443Z"
-    },
-    "487421": {
-      "type": "player",
-      "id": "487421",
-      "name": "Naomi Keel",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.169Z",
-      "ttl": "2025-09-26T13:06:23.169Z"
-    },
-    "487491": {
-      "type": "player",
-      "id": "487491",
-      "name": "Salome Müller",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.102Z",
-      "ttl": "2025-09-26T13:05:54.102Z"
-    },
-    "487496": {
-      "type": "player",
-      "id": "487496",
-      "name": "Joel Söderberg",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.385Z",
-      "ttl": "2025-09-26T13:04:43.385Z"
-    },
-    "487905": {
-      "type": "player",
-      "id": "487905",
-      "name": "Angelina Juon",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.136Z",
-      "ttl": "2025-09-26T13:06:23.136Z"
-    },
-    "487919": {
-      "type": "player",
-      "id": "487919",
-      "name": "Levi Walser",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.390Z",
-      "ttl": "2025-09-26T13:04:43.390Z"
-    },
-    "487920": {
-      "type": "player",
-      "id": "487920",
-      "name": "Pascale Mir",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.376Z",
-      "ttl": "2025-09-26T13:05:58.376Z"
-    },
-    "488395": {
-      "type": "player",
-      "id": "488395",
-      "name": "Ronja Florin",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.134Z",
-      "ttl": "2025-09-26T13:06:23.134Z"
-    },
-    "488503": {
-      "type": "player",
-      "id": "488503",
-      "name": "Jessica Kenber",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.140Z",
-      "ttl": "2025-09-26T13:05:25.140Z"
-    },
-    "488548": {
-      "type": "player",
-      "id": "488548",
-      "name": "Meret Güttinger",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.138Z",
-      "ttl": "2025-09-26T13:05:25.138Z"
-    },
-    "488758": {
-      "type": "player",
-      "id": "488758",
-      "name": "Sara Piispa",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.278Z",
-      "ttl": "2025-09-26T13:05:51.278Z"
-    },
-    "489102": {
-      "type": "player",
-      "id": "489102",
-      "name": "Florin Fehr",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.227Z",
-      "ttl": "2025-09-26T12:46:05.227Z"
-    },
-    "489116": {
-      "type": "player",
-      "id": "489116",
-      "name": "Mika Hänni",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.224Z",
-      "ttl": "2025-09-26T12:46:05.224Z"
-    },
-    "489125": {
-      "type": "player",
-      "id": "489125",
-      "name": "Larissa Oertle",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.127Z",
-      "ttl": "2025-09-26T13:05:25.127Z"
-    },
-    "489354": {
-      "type": "player",
-      "id": "489354",
-      "name": "Mario Kunz",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.741Z",
-      "ttl": "2025-09-26T13:03:21.741Z"
-    },
-    "489372": {
-      "type": "player",
-      "id": "489372",
-      "name": "Livio Butzerin",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.377Z",
-      "ttl": "2025-09-26T13:04:43.377Z"
-    },
-    "489480": {
-      "type": "player",
-      "id": "489480",
-      "name": "Inga Schuler",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.561Z",
-      "ttl": "2025-09-26T13:06:19.561Z"
-    },
-    "489524": {
-      "type": "player",
-      "id": "489524",
-      "name": "Tobias Schaffner",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.728Z",
-      "ttl": "2025-09-26T13:03:21.728Z"
-    },
-    "489543": {
-      "type": "player",
-      "id": "489543",
-      "name": "Nico Branger",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.370Z",
-      "ttl": "2025-09-26T13:04:43.370Z"
-    },
-    "489547": {
-      "type": "player",
-      "id": "489547",
-      "name": "Yanik Castelberg",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.388Z",
-      "ttl": "2025-09-26T13:04:43.388Z"
-    },
-    "489867": {
-      "type": "player",
-      "id": "489867",
-      "name": "Jana Buchmann",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.142Z",
-      "ttl": "2025-09-26T13:06:23.142Z"
-    },
-    "489965": {
-      "type": "player",
-      "id": "489965",
-      "name": "Isabella Baumgartner",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.128Z",
-      "ttl": "2025-09-26T13:05:25.128Z"
-    },
-    "490074": {
-      "type": "player",
-      "id": "490074",
-      "name": "Siro Laurino",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.910Z",
-      "ttl": "2025-09-26T13:06:38.910Z"
-    },
-    "490568": {
-      "type": "player",
-      "id": "490568",
-      "name": "Lena Ehrensperger",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.141Z",
-      "ttl": "2025-09-26T13:05:25.141Z"
-    },
-    "490665": {
-      "type": "player",
-      "id": "490665",
-      "name": "Soraya Gansner",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.140Z",
-      "ttl": "2025-09-26T13:06:23.140Z"
-    },
-    "490948": {
-      "type": "player",
-      "id": "490948",
-      "name": "Pascal Kern",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.870Z",
-      "ttl": "2025-09-26T13:06:38.870Z"
-    },
-    "490956": {
-      "type": "player",
-      "id": "490956",
-      "name": "Luca Castelberg",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.387Z",
-      "ttl": "2025-09-26T13:04:43.387Z"
-    },
-    "490968": {
-      "type": "player",
-      "id": "490968",
-      "name": "Céline Vaerini",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.142Z",
-      "ttl": "2025-09-26T13:05:25.142Z"
-    },
-    "490975": {
-      "type": "player",
-      "id": "490975",
-      "name": "Michelle Schär",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.367Z",
-      "ttl": "2025-09-26T13:06:27.367Z"
-    },
-    "491020": {
-      "type": "player",
-      "id": "491020",
-      "name": "Sven Mathys",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.947Z",
-      "ttl": "2025-09-26T13:48:40.947Z"
-    },
-    "491163": {
-      "type": "player",
-      "id": "491163",
-      "name": "Yves Walliser",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.721Z",
-      "ttl": "2025-09-26T13:03:21.721Z"
-    },
-    "491184": {
-      "type": "player",
-      "id": "491184",
-      "name": "Dana Misteli",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.438Z",
-      "ttl": "2025-09-26T13:06:06.438Z"
-    },
-    "491351": {
-      "type": "player",
-      "id": "491351",
-      "name": "Nina Schmid",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.156Z",
-      "ttl": "2025-09-26T13:06:23.156Z"
-    },
-    "491907": {
-      "type": "player",
-      "id": "491907",
-      "name": "Dominique Schnetzer",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.126Z",
-      "ttl": "2025-09-26T13:05:25.126Z"
-    },
-    "491981": {
-      "type": "player",
-      "id": "491981",
-      "name": "Chiara Moser",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.146Z",
-      "ttl": "2025-09-26T13:06:23.146Z"
-    },
-    "492284": {
-      "type": "player",
-      "id": "492284",
-      "name": "Rovin Thalmann",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.234Z",
-      "ttl": "2025-09-26T12:46:05.234Z"
-    },
-    "492474": {
-      "type": "player",
-      "id": "492474",
-      "name": "Norina Reusser",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.556Z",
-      "ttl": "2025-09-26T13:06:19.556Z"
-    },
-    "493695": {
-      "type": "player",
-      "id": "493695",
-      "name": "Joel Nyh",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.917Z",
-      "ttl": "2025-09-26T13:48:40.917Z"
-    },
-    "495422": {
-      "type": "player",
-      "id": "495422",
-      "name": "Zoe Frey",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.347Z",
-      "ttl": "2025-09-26T13:06:27.347Z"
-    },
-    "495949": {
-      "type": "player",
-      "id": "495949",
-      "name": "Laurin Bernsteiner",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.735Z",
-      "ttl": "2025-09-26T13:03:21.735Z"
+      "id": "487286",
+      "name": "Matthias Störi",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.753Z",
+      "ttl": "2025-09-26T21:16:47.753Z"
     },
     "498257": {
       "type": "player",
@@ -3761,134 +753,17 @@
       "name": "Jonne Junkkarinen",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.549Z",
-      "ttl": "2025-09-26T13:10:11.549Z"
+      "lastUpdated": "2025-09-19T21:15:57.675Z",
+      "ttl": "2025-09-26T21:15:57.675Z"
     },
-    "498316": {
+    "503660": {
       "type": "player",
-      "id": "498316",
-      "name": "Vojtech Kucera",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.926Z",
-      "ttl": "2025-09-26T13:48:40.926Z"
-    },
-    "498757": {
-      "type": "player",
-      "id": "498757",
-      "name": "Annina Faisst",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.165Z",
-      "ttl": "2025-09-26T13:06:23.165Z"
-    },
-    "499424": {
-      "type": "player",
-      "id": "499424",
-      "name": "Martina Cerny",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.265Z",
-      "ttl": "2025-09-26T13:05:51.265Z"
-    },
-    "502116": {
-      "type": "player",
-      "id": "502116",
-      "name": "Tim McKibbin",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.955Z",
-      "ttl": "2025-09-26T13:48:40.955Z"
-    },
-    "502891": {
-      "type": "player",
-      "id": "502891",
-      "name": "Hana Uimonen",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.130Z",
-      "ttl": "2025-09-26T13:05:25.130Z"
-    },
-    "503839": {
-      "type": "player",
-      "id": "503839",
-      "name": "Julia Turunen",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.132Z",
-      "ttl": "2025-09-26T13:05:25.132Z"
-    },
-    "507481": {
-      "type": "player",
-      "id": "507481",
-      "name": "Martina Repková",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.103Z",
-      "ttl": "2025-09-26T13:05:54.103Z"
-    },
-    "507631": {
-      "type": "player",
-      "id": "507631",
-      "name": "Nikol Pekárková",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.539Z",
-      "ttl": "2025-09-26T13:06:19.539Z"
-    },
-    "507632": {
-      "type": "player",
-      "id": "507632",
-      "name": "Lucie Rezáčová",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.281Z",
-      "ttl": "2025-09-26T13:05:51.281Z"
-    },
-    "508148": {
-      "type": "player",
-      "id": "508148",
-      "name": "Anna Bachrata",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.357Z",
-      "ttl": "2025-09-26T13:06:27.357Z"
-    },
-    "508204": {
-      "type": "player",
-      "id": "508204",
-      "name": "Ivana Supakova",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.145Z",
-      "ttl": "2025-09-26T13:06:15.145Z"
-    },
-    "508205": {
-      "type": "player",
-      "id": "508205",
-      "name": "Eliska Trojankova",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.167Z",
-      "ttl": "2025-09-26T13:06:23.167Z"
-    },
-    "511485": {
-      "type": "player",
-      "id": "511485",
-      "name": "Jenna Taivaloja",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.368Z",
-      "ttl": "2025-09-26T13:06:27.368Z"
-    },
-    "511693": {
-      "type": "player",
-      "id": "511693",
-      "name": "Julija Rozite",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.160Z",
-      "ttl": "2025-09-26T13:06:23.160Z"
+      "id": "503660",
+      "name": "Ronald Gasparik",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.761Z",
+      "ttl": "2025-09-26T21:16:47.761Z"
     },
     "512012": {
       "type": "player",
@@ -3896,17 +771,8 @@
       "name": "Daniels Janis Anis",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.155Z",
-      "ttl": "2025-09-26T12:30:21.155Z"
-    },
-    "512020": {
-      "type": "player",
-      "id": "512020",
-      "name": "Aaro Helin",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.232Z",
-      "ttl": "2025-09-26T12:46:05.232Z"
+      "lastUpdated": "2025-09-19T14:18:52.029Z",
+      "ttl": "2025-09-26T14:18:52.029Z"
     },
     "512590": {
       "type": "player",
@@ -3914,8 +780,8 @@
       "name": "Elias Amstutz",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.573Z",
-      "ttl": "2025-09-26T13:10:11.573Z"
+      "lastUpdated": "2025-09-19T21:15:57.683Z",
+      "ttl": "2025-09-26T21:15:57.683Z"
     },
     "515622": {
       "type": "player",
@@ -3923,17 +789,8 @@
       "name": "Marek Jurkulak",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.157Z",
-      "ttl": "2025-09-26T12:30:21.157Z"
-    },
-    "516227": {
-      "type": "player",
-      "id": "516227",
-      "name": "Kate Meldere",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.379Z",
-      "ttl": "2025-09-26T13:06:27.379Z"
+      "lastUpdated": "2025-09-19T14:18:52.030Z",
+      "ttl": "2025-09-26T14:18:52.030Z"
     },
     "516313": {
       "type": "player",
@@ -3941,44 +798,8 @@
       "name": "Johan Larsson",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.205Z",
-      "ttl": "2025-09-26T13:03:33.205Z"
-    },
-    "516733": {
-      "type": "player",
-      "id": "516733",
-      "name": "Gustav Svensson",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.673Z",
-      "ttl": "2025-09-26T10:22:26.673Z"
-    },
-    "516780": {
-      "type": "player",
-      "id": "516780",
-      "name": "Denisa Ratajova",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.106Z",
-      "ttl": "2025-09-26T13:05:54.106Z"
-    },
-    "516882": {
-      "type": "player",
-      "id": "516882",
-      "name": "Jesper Silvonen",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.932Z",
-      "ttl": "2025-09-26T12:46:12.932Z"
-    },
-    "518114": {
-      "type": "player",
-      "id": "518114",
-      "name": "Jana Lauper",
-      "team": "UHC Laupen ZH",
-      "teamId": "427952",
-      "lastUpdated": "2025-09-19T13:05:58.404Z",
-      "ttl": "2025-09-26T13:05:58.404Z"
+      "lastUpdated": "2025-09-19T14:21:42.912Z",
+      "ttl": "2025-09-26T14:21:42.912Z"
     },
     "518727": {
       "type": "player",
@@ -3986,53 +807,8 @@
       "name": "Alexander Rinefalk",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.559Z",
-      "ttl": "2025-09-26T13:10:11.559Z"
-    },
-    "519484": {
-      "type": "player",
-      "id": "519484",
-      "name": "Elvira Lövén",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.176Z",
-      "ttl": "2025-09-26T13:06:15.176Z"
-    },
-    "520968": {
-      "type": "player",
-      "id": "520968",
-      "name": "Tereza Petrovà",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.130Z",
-      "ttl": "2025-09-26T13:05:25.130Z"
-    },
-    "521510": {
-      "type": "player",
-      "id": "521510",
-      "name": "Albin Sjögren",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.078Z",
-      "ttl": "2025-09-26T12:46:31.078Z"
-    },
-    "521511": {
-      "type": "player",
-      "id": "521511",
-      "name": "Miko Kailiala",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.081Z",
-      "ttl": "2025-09-26T12:46:31.081Z"
-    },
-    "521512": {
-      "type": "player",
-      "id": "521512",
-      "name": "Sami Johansson",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.081Z",
-      "ttl": "2025-09-26T12:46:31.081Z"
+      "lastUpdated": "2025-09-19T21:15:57.678Z",
+      "ttl": "2025-09-26T21:15:57.678Z"
     },
     "521748": {
       "type": "player",
@@ -4040,53 +816,8 @@
       "name": "Kristian Lamminen",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.568Z",
-      "ttl": "2025-09-26T13:10:11.568Z"
-    },
-    "522279": {
-      "type": "player",
-      "id": "522279",
-      "name": "Ida Sundberg",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.271Z",
-      "ttl": "2025-09-26T13:05:51.271Z"
-    },
-    "523525": {
-      "type": "player",
-      "id": "523525",
-      "name": "Jakub Pluhar",
-      "team": "Ad Astra Obwalden",
-      "teamId": "431869",
-      "lastUpdated": "2025-09-19T13:48:40.956Z",
-      "ttl": "2025-09-26T13:48:40.956Z"
-    },
-    "523632": {
-      "type": "player",
-      "id": "523632",
-      "name": "Ilse Stoffers",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.431Z",
-      "ttl": "2025-09-26T13:06:06.431Z"
-    },
-    "526135": {
-      "type": "player",
-      "id": "526135",
-      "name": "Tommy Bolin",
-      "team": "Grasshopper Club Zürich",
-      "teamId": "429485",
-      "lastUpdated": "2025-09-19T13:03:21.739Z",
-      "ttl": "2025-09-26T13:03:21.739Z"
-    },
-    "526562": {
-      "type": "player",
-      "id": "526562",
-      "name": "Eliska Chuda",
-      "team": "Skorpion Emmental Zollbrück",
-      "teamId": "427766",
-      "lastUpdated": "2025-09-19T13:06:10.933Z",
-      "ttl": "2025-09-26T13:06:10.933Z"
+      "lastUpdated": "2025-09-19T21:15:57.682Z",
+      "ttl": "2025-09-26T21:15:57.682Z"
     },
     "526718": {
       "type": "player",
@@ -4094,8 +825,8 @@
       "name": "Ted Nivestam",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.158Z",
-      "ttl": "2025-09-26T12:30:21.158Z"
+      "lastUpdated": "2025-09-19T14:18:52.030Z",
+      "ttl": "2025-09-26T14:18:52.030Z"
     },
     "526719": {
       "type": "player",
@@ -4103,35 +834,8 @@
       "name": "Johannes Wilhelmsson",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.158Z",
-      "ttl": "2025-09-26T12:30:21.158Z"
-    },
-    "526816": {
-      "type": "player",
-      "id": "526816",
-      "name": "Tobias Gustafsson",
-      "team": "Zug United",
-      "teamId": "429603",
-      "lastUpdated": "2025-09-19T12:46:31.072Z",
-      "ttl": "2025-09-26T12:46:31.072Z"
-    },
-    "526817": {
-      "type": "player",
-      "id": "526817",
-      "name": "Noora Rantanen",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.112Z",
-      "ttl": "2025-09-26T13:05:54.112Z"
-    },
-    "526820": {
-      "type": "player",
-      "id": "526820",
-      "name": "Gustavs Griezitis",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.914Z",
-      "ttl": "2025-09-26T13:06:38.914Z"
+      "lastUpdated": "2025-09-19T14:18:52.030Z",
+      "ttl": "2025-09-26T14:18:52.030Z"
     },
     "526902": {
       "type": "player",
@@ -4139,8 +843,8 @@
       "name": "Adam Lundgren",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.551Z",
-      "ttl": "2025-09-26T13:10:11.551Z"
+      "lastUpdated": "2025-09-19T21:15:57.676Z",
+      "ttl": "2025-09-26T21:15:57.676Z"
     },
     "526927": {
       "type": "player",
@@ -4148,161 +852,8 @@
       "name": "Albert Koskinen",
       "team": "UHC Uster",
       "teamId": "428535",
-      "lastUpdated": "2025-09-19T12:30:21.154Z",
-      "ttl": "2025-09-26T12:30:21.154Z"
-    },
-    "526957": {
-      "type": "player",
-      "id": "526957",
-      "name": "Markus Sipronen",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.236Z",
-      "ttl": "2025-09-26T12:46:05.236Z"
-    },
-    "530438": {
-      "type": "player",
-      "id": "530438",
-      "name": "Vendula Štolbová",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.380Z",
-      "ttl": "2025-09-26T13:06:27.380Z"
-    },
-    "530961": {
-      "type": "player",
-      "id": "530961",
-      "name": "Fredi Petersson",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.385Z",
-      "ttl": "2025-09-26T13:04:43.385Z"
-    },
-    "531213": {
-      "type": "player",
-      "id": "531213",
-      "name": "Wilma Johansson",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.377Z",
-      "ttl": "2025-09-26T13:06:27.377Z"
-    },
-    "531214": {
-      "type": "player",
-      "id": "531214",
-      "name": "Emma Hansson",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.385Z",
-      "ttl": "2025-09-26T13:06:27.385Z"
-    },
-    "531215": {
-      "type": "player",
-      "id": "531215",
-      "name": "Malin Hansson",
-      "team": "FB Riders DBR",
-      "teamId": "428990",
-      "lastUpdated": "2025-09-19T13:06:27.386Z",
-      "ttl": "2025-09-26T13:06:27.386Z"
-    },
-    "531666": {
-      "type": "player",
-      "id": "531666",
-      "name": "Kiia Kokko",
-      "team": "Floorball Uri",
-      "teamId": "429324",
-      "lastUpdated": "2025-09-19T13:06:15.168Z",
-      "ttl": "2025-09-26T13:06:15.168Z"
-    },
-    "532043": {
-      "type": "player",
-      "id": "532043",
-      "name": "Johannes Vähäkangas",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.924Z",
-      "ttl": "2025-09-26T12:46:12.924Z"
-    },
-    "532044": {
-      "type": "player",
-      "id": "532044",
-      "name": "Adam Zukal",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.930Z",
-      "ttl": "2025-09-26T12:46:12.930Z"
-    },
-    "532045": {
-      "type": "player",
-      "id": "532045",
-      "name": "Joona Larte",
-      "team": "WASA St. Gallen",
-      "teamId": "432307",
-      "lastUpdated": "2025-09-19T12:46:12.935Z",
-      "ttl": "2025-09-26T12:46:12.935Z"
-    },
-    "532107": {
-      "type": "player",
-      "id": "532107",
-      "name": "Manta Likki",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.162Z",
-      "ttl": "2025-09-26T13:06:23.162Z"
-    },
-    "532108": {
-      "type": "player",
-      "id": "532108",
-      "name": "Lotta Purhonen",
-      "team": "Floorball Chur United",
-      "teamId": "432516",
-      "lastUpdated": "2025-09-19T13:06:23.170Z",
-      "ttl": "2025-09-26T13:06:23.170Z"
-    },
-    "532160": {
-      "type": "player",
-      "id": "532160",
-      "name": "Alexander Hedlund",
-      "team": "Tigers Langnau",
-      "teamId": "429523",
-      "lastUpdated": "2025-09-19T10:22:26.680Z",
-      "ttl": "2025-09-26T10:22:26.680Z"
-    },
-    "532212": {
-      "type": "player",
-      "id": "532212",
-      "name": "Anna-Reetta Tölli",
-      "team": "Red Ants Winterthur",
-      "teamId": "428665",
-      "lastUpdated": "2025-09-19T13:05:25.133Z",
-      "ttl": "2025-09-26T13:05:25.133Z"
-    },
-    "532276": {
-      "type": "player",
-      "id": "532276",
-      "name": "Arvid Skrapste",
-      "team": "Floorball Chur United",
-      "teamId": "432520",
-      "lastUpdated": "2025-09-19T13:04:43.386Z",
-      "ttl": "2025-09-26T13:04:43.386Z"
-    },
-    "532334": {
-      "type": "player",
-      "id": "532334",
-      "name": "Wilda Deland",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.564Z",
-      "ttl": "2025-09-26T13:06:19.564Z"
-    },
-    "532335": {
-      "type": "player",
-      "id": "532335",
-      "name": "Wilma Bäcklund",
-      "team": "Unihockey Berner Oberland",
-      "teamId": "430340",
-      "lastUpdated": "2025-09-19T13:06:19.563Z",
-      "ttl": "2025-09-26T13:06:19.563Z"
+      "lastUpdated": "2025-09-19T14:18:52.028Z",
+      "ttl": "2025-09-26T14:18:52.028Z"
     },
     "532363": {
       "type": "player",
@@ -4310,53 +861,17 @@
       "name": "Lauri Palvaila",
       "team": "Unihockey Basel Regio",
       "teamId": "430113",
-      "lastUpdated": "2025-09-19T13:10:11.575Z",
-      "ttl": "2025-09-26T13:10:11.575Z"
+      "lastUpdated": "2025-09-19T21:15:57.684Z",
+      "ttl": "2025-09-26T21:15:57.684Z"
     },
-    "532390": {
+    "533033": {
       "type": "player",
-      "id": "532390",
-      "name": "Annu Selinummi",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431166",
-      "lastUpdated": "2025-09-19T13:05:51.282Z",
-      "ttl": "2025-09-26T13:05:51.282Z"
-    },
-    "532713": {
-      "type": "player",
-      "id": "532713",
-      "name": "Oskari Fälden",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.238Z",
-      "ttl": "2025-09-26T12:46:05.238Z"
-    },
-    "532714": {
-      "type": "player",
-      "id": "532714",
-      "name": "Tim Lindberg",
-      "team": "Floorball Thurgau",
-      "teamId": "428322",
-      "lastUpdated": "2025-09-19T12:46:05.238Z",
-      "ttl": "2025-09-26T12:46:05.238Z"
-    },
-    "532839": {
-      "type": "player",
-      "id": "532839",
-      "name": "Pyry Kauppinen",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.903Z",
-      "ttl": "2025-09-26T13:06:38.903Z"
-    },
-    "532963": {
-      "type": "player",
-      "id": "532963",
-      "name": "Markus Dumpiss",
-      "team": "Kloten-Dietlikon Jets",
-      "teamId": "431153",
-      "lastUpdated": "2025-09-19T13:06:38.916Z",
-      "ttl": "2025-09-26T13:06:38.916Z"
+      "id": "533033",
+      "name": "Ludwig Persson",
+      "team": "SV Wiler-Ersigen",
+      "teamId": "429494",
+      "lastUpdated": "2025-09-19T21:16:47.762Z",
+      "ttl": "2025-09-26T21:16:47.762Z"
     },
     "533038": {
       "type": "player",
@@ -4364,26 +879,8 @@
       "name": "Oskar Weissbach",
       "team": "HC Rychenberg Winterthur",
       "teamId": "428499",
-      "lastUpdated": "2025-09-19T13:03:33.224Z",
-      "ttl": "2025-09-26T13:03:33.224Z"
-    },
-    "533200": {
-      "type": "player",
-      "id": "533200",
-      "name": "Julia Croneld",
-      "team": "Zug United",
-      "teamId": "429578",
-      "lastUpdated": "2025-09-19T13:05:54.111Z",
-      "ttl": "2025-09-26T13:05:54.111Z"
-    },
-    "534844": {
-      "type": "player",
-      "id": "534844",
-      "name": "Alva Filander",
-      "team": "Wizards Bern Burgdorf",
-      "teamId": "430107",
-      "lastUpdated": "2025-09-19T13:06:06.457Z",
-      "ttl": "2025-09-26T13:06:06.457Z"
+      "lastUpdated": "2025-09-19T14:21:42.920Z",
+      "ttl": "2025-09-26T14:21:42.920Z"
     }
   }
 }

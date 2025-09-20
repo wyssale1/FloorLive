@@ -1,0 +1,33 @@
+{
+  "name": "floorlive-image-processor",
+  "version": "1.0.0",
+  "description": "Local image processing script for FloorLive assets",
+  "type": "module",
+  "main": "image-processor.js",
+  "scripts": {
+    "process": "node image-processor.js",
+    "process-teams": "node image-processor.js --teams-only",
+    "process-players": "node image-processor.js --players-only",
+    "clean": "node image-processor.js --clean"
+  },
+  "dependencies": {
+    "sharp": "^0.33.0",
+    "axios": "^1.6.0",
+    "fs-extra": "^11.1.1",
+    "chalk": "^5.3.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/yargs": "^17.0.24"
+  },
+  "keywords": [
+    "image-processing",
+    "floorlive",
+    "swiss-unihockey",
+    "assets"
+  ],
+  "author": "FloorLive Development Team",
+  "license": "MIT"
+}

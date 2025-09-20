@@ -1,102 +1,96 @@
 # FloorLive Deployment Guide
 
-This document explains the deployment setup for FloorLive, including automatic Node.js application restart in cPanel.
+This guide covers the deployment workflow for FloorLive, including the new build-time image processing system.
 
-## GitHub Actions Deployment
+## Image Processing & Deployment Workflow
 
-The project uses GitHub Actions to automatically deploy both frontend and backend when code is pushed to the `main` branch.
-
-### Deployment Flow
-
-1. **Frontend Deployment**: Builds React app and deploys via FTP to `/public_html/floorlive_frontend/`
-2. **Backend Deployment**: Builds TypeScript to JavaScript and deploys via FTP to `/app/floorlive_backend/`
-3. **Auto-Restart**: Automatically restarts the Node.js application in cPanel using SSH
-
-## Required GitHub Secrets
-
-To enable automatic deployment and Node.js app restart, configure these secrets in your GitHub repository:
-
-### Existing FTP Secrets
-- `FTP_SERVER`: Your cPanel FTP server hostname
-- `FTP_USERNAME`: Your cPanel FTP username
-- `FTP_PASSWORD`: Your cPanel FTP password
-
-### New SSH Secrets (for auto-restart)
-- `CPANEL_HOST`: Your cPanel server hostname - `srv9.tophost.ch` (extracted from your cPanel URL)
-- `CPANEL_USERNAME`: Your cPanel username
-- `CPANEL_SSH_KEY`: Private SSH key for authentication (see setup below)
-
-## SSH Key Setup
-
-To enable automatic Node.js application restart, you need to set up SSH key authentication:
-
-### 1. Generate SSH Key Pair
-```bash
-ssh-keygen -t rsa -b 4096 -f ~/.ssh/cpanel_deploy_key
-```
-
-### 2. Add Public Key to cPanel
-1. Log into cPanel
-2. Go to "SSH Access" or "Terminal"
-3. Add the public key content to `~/.ssh/authorized_keys`:
-   ```bash
-   cat ~/.ssh/cpanel_deploy_key.pub >> ~/.ssh/authorized_keys
-   chmod 600 ~/.ssh/authorized_keys
-   ```
-
-### 3. Add Private Key to GitHub Secrets
-1. Copy the private key content:
-   ```bash
-   cat ~/.ssh/cpanel_deploy_key
-   ```
-2. In GitHub repository: Settings → Secrets and variables → Actions
-3. Add new secret `CPANEL_SSH_KEY` with the private key content
-
-## Node.js Application Restart
-
-The deployment workflow uses CloudLinux's Node.js Selector to restart the application:
+### 1. Development Phase
 
 ```bash
-cloudlinux-selector restart --json --interpreter nodejs --app-root ~/app/floorlive_backend
+# Start backend to discover entities
+cd backend
+npm run dev
+
+# Visit team pages in frontend to populate entities-master.json
+# This happens automatically via the TTL system
 ```
 
-This command:
-- Restarts the Node.js application in cPanel
-- Uses the CloudLinux Node.js Selector (standard in most cPanel hosting)
-- Outputs JSON format for better error handling
-- Points to the correct application root directory
+### 2. Local Image Processing
 
-## Troubleshooting
-
-### SSH Connection Issues
-- Ensure SSH access is enabled in cPanel
-- Verify the SSH key is correctly added to `~/.ssh/authorized_keys`
-- Use `srv9.tophost.ch` as your `CPANEL_HOST` (from your cPanel URL: https://srv9.tophost.ch:2083/...)
-- SSH typically uses port 22, not 2083 (which is for cPanel web interface)
-
-### Application Restart Issues
-- Verify CloudLinux Node.js Selector is available on your hosting
-- Check that the app path `~/app/floorlive_backend` is correct
-- Ensure the Node.js application is properly configured in cPanel
-
-### Alternative Restart Methods
-If CloudLinux selector is not available, you can modify the SSH script to use:
 ```bash
-# Alternative: Direct application restart
-cd ~/app/floorlive_backend && npm run start
+# Process all discovered entities
+npm run process-images
+
+# Or process specific types
+npm run process-images:teams      # Only team logos
+npm run process-images:players    # Only player images
+
+# Force reprocess existing images
+npm run process-images:force
 ```
 
-## Manual Deployment
+### 3. Commit Processed Assets
 
-If automated deployment fails, you can manually:
+```bash
+# Add new processed images to git
+git add backend/assets/
 
-1. **Frontend**: Build with `npm run build` and upload `dist/` contents to `/public_html/floorlive_frontend/`
-2. **Backend**: Build with `npm run build` and upload `dist/`, `package.json`, and `assets/` to `/app/floorlive_backend/`
-3. **Restart**: Use cPanel Node.js interface to restart the application
+# Commit with descriptive message
+git commit -m "Add processed images for newly discovered entities"
 
-## Domain Configuration
+# Push to trigger deployment
+git push origin main
+```
 
-The application is configured for production domain `floorlive.ch`:
-- Frontend: Served from cPanel's public_html directory
-- Backend: Runs as Node.js application with API endpoints at `/api`
-- WebSocket: Configured for `wss://floorlive.ch/api`
+### 4. Automatic Deployment
+
+GitHub Actions automatically:
+- ✅ **Builds** frontend and backend
+- ✅ **Includes** all processed images in deployment
+- ✅ **Uploads only changed files** (incremental deployment)
+- ✅ **Restarts** backend application
+
+## Git Configuration Changes
+
+The following files have been updated to include processed images in the repository:
+
+### `.gitignore` - Updated to include processed images
+- ❌ **Removed**: `backend/assets/*` (was excluding all assets)
+- ✅ **Added**: Specific exclusions for temporary files only
+- ✅ **Result**: Processed images are now tracked in git
+
+### `.gitattributes` - New file for binary handling
+- ✅ **Binary files**: Properly marked as binary (*.png, *.webp, *.avif)
+- ✅ **Text files**: metadata.json treated as text for better diffs
+- ✅ **Performance**: Optimized git handling of image files
+
+### GitHub Actions - Updated for incremental deployment
+- ✅ **Incremental uploads**: Only changed files uploaded via FTP
+- ✅ **State tracking**: Uses `state-name` for change detection
+- ✅ **Excludes**: Temporary files and system files excluded
+- ✅ **Logging**: Verbose logging shows which files are uploaded
+
+## Benefits of This Approach
+
+### Network Efficiency
+- **Incremental uploads**: Only new/changed files transferred
+- **Smart deployment**: GitHub Actions tracks what changed
+- **Bandwidth savings**: Avoid re-uploading unchanged images
+
+### Development Workflow
+- **Local control**: Process images when convenient
+- **Git tracking**: Full history of image changes
+- **Automated deployment**: Push to deploy, no manual steps
+
+### Performance
+- **No runtime processing**: Server focuses on serving content
+- **Predictable uploads**: Only new entities require new images
+- **Efficient storage**: Modern image formats with optimal compression
+
+## Next Steps
+
+1. **Run image processing**: `npm run process-images`
+2. **Commit assets**: `git add backend/assets/ && git commit -m "Add processed images"`
+3. **Deploy**: `git push origin main`
+
+The deployment will now handle your processed images efficiently, uploading only what's new or changed! 🚀

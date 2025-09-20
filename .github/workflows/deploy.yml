@@ -69,14 +69,15 @@ jobs:
           mkdir -p backend-deploy
           cp -r backend/dist backend-deploy/
           cp backend/package*.json backend-deploy/
-          # Copy assets directory if it exists
+          # Copy processed images/assets (processed locally via npm run process-images)
           if [ -d "backend/assets" ]; then
             cp -r backend/assets backend-deploy/
+            echo "Copied $(find backend/assets -type f | wc -l) asset files"
           fi
           # Create a simple restart file for cPanel
           echo "Backend deployed at $(date)" > backend-deploy/restart.txt
 
-      - name: Deploy Backend via FTP
+      - name: Deploy Backend via FTP (Incremental)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -84,6 +85,19 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./backend-deploy/
           server-dir: /app/floorlive_backend/
+          # Only upload changed files (git-based comparison)
+          state-name: backend-deploy-state
+          dry-run: false
+          # Exclude files that don't need deployment
+          exclude: |
+            **/.git*
+            **/.DS_Store
+            **/Thumbs.db
+            **/*.tmp
+            **/*.temp
+            **/node_modules/
+          # Log changed files for debugging
+          log-level: verbose
 
       - name: Restart Node.js Application in cPanel
         uses: appleboy/ssh-action@v1.0.3
