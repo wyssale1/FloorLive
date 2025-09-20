@@ -113,7 +113,7 @@ export default function Header() {
             <div className="text-xl font-medium text-gray-900 tracking-tight relative">
               {crownUnlocked ? (
                 <div className="flex items-center">
-                  <span>Floor</span>
+                  <span>Zorro</span>
                   <div className="relative inline-block">
                     {/* Greyish "Live" */}
                     <span className="text-gray-300">
