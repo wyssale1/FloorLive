@@ -1,0 +1,43 @@
+# Git attributes for FloorLive
+
+# Handle line endings consistently
+* text=auto
+*.js text eol=lf
+*.ts text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.svg binary
+
+# Processed images in assets/ - mark as binary and track changes efficiently
+backend/assets/**/*.png binary
+backend/assets/**/*.jpg binary
+backend/assets/**/*.jpeg binary
+backend/assets/**/*.webp binary
+backend/assets/**/*.avif binary
+
+# Metadata files - treat as text for better diffs
+backend/assets/**/metadata.json text eol=lf
+
+# Font files
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Archive files
+*.zip binary
+*.tar.gz binary
+*.tgz binary
+
+# Documents
+*.pdf binary

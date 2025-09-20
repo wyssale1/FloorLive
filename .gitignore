@@ -23,5 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 
-# Backend assets
-backend/assets/*
+# Backend assets - include processed images but exclude temporary files
+backend/assets/.DS_Store
+backend/assets/**/.DS_Store
+backend/assets/**/Thumbs.db
+backend/assets/**/*.tmp
+backend/assets/**/*.temp
+
+# Keep processed images in git:
+# backend/assets/players/ - included
+# backend/assets/logos/ - included
