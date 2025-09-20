@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
-import { playerImageService } from '../services/playerImageService.js';
+import { assetService } from '../services/assetService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
 import { backgroundEntityService } from '../services/backgroundEntityService.js';
 import { EntityTtlHelper } from '../utils/entityTtlHelper.js';
@@ -32,61 +32,34 @@ router.get('/search', async (req, res) => {
     const searchLimit = limit && typeof limit === 'string' ? parseInt(limit, 10) : 20;
     const limitClamped = Math.min(Math.max(searchLimit, 1), 100); // Between 1 and 100
 
-    // Search using the master registry (faster and more comprehensive)
-    const masterResults = await entityMasterService.searchPlayers(q.trim(), limitClamped);
+    // Search using the master registry (guaranteed data with image processing lifecycle)
+    const players = await entityMasterService.searchPlayers(q.trim(), limitClamped);
 
-    // Also search using the legacy player image service for fallback
-    const legacyResults = playerImageService.searchPlayers(q.trim(), limitClamped);
-
-    // Merge results, prioritizing master registry
-    const resultMap = new Map();
-
-    // Add master registry results first
-    for (const player of masterResults) {
-      resultMap.set(player.id, {
+    // Format results with actual availability checks
+    // URLs are guaranteed to work via fallback middleware, but we check actual availability for UI
+    const finalResults = await Promise.all(players.map(async player => {
+      const hasImage = await assetService.hasPlayerImage(player.id);
+      return {
         id: player.id,
         name: player.name,
         teamName: player.team,
         teamId: player.teamId,
-        hasImage: false, // Will be updated below
-        imagePaths: null, // Will be updated below
+        hasImage,
+        imageUrl: `/assets/players/${player.id}/${player.id}_small.webp`,
+        imagePaths: {
+          small: `/assets/players/${player.id}/${player.id}_small.webp`,
+          medium: `/assets/players/${player.id}/${player.id}_medium.webp`
+        },
         source: 'master'
-      });
-    }
+      };
+    }));
 
-    // Enrich with legacy results and image data
-    for (const legacyPlayer of legacyResults) {
-      const existing = resultMap.get(legacyPlayer.id);
-      if (existing) {
-        // Update existing entry with image info
-        existing.hasImage = legacyPlayer.hasImage;
-        existing.imagePaths = legacyPlayer.hasImage ? playerImageService.getPlayerImagePaths(legacyPlayer.id) : null;
-      } else if (resultMap.size < limitClamped) {
-        // Add legacy result if space available
-        resultMap.set(legacyPlayer.id, {
-          id: legacyPlayer.id,
-          name: legacyPlayer.name,
-          teamName: legacyPlayer.teamName,
-          teamId: legacyPlayer.teamId,
-          hasImage: legacyPlayer.hasImage,
-          imagePaths: legacyPlayer.hasImage ? playerImageService.getPlayerImagePaths(legacyPlayer.id) : null,
-          source: 'legacy'
-        });
-      }
-    }
-
-    const finalResults = Array.from(resultMap.values()).slice(0, limitClamped);
 
     res.json({
       query: q.trim(),
       results: finalResults,
       count: finalResults.length,
       limit: limitClamped,
-      sources: {
-        master: masterResults.length,
-        legacy: legacyResults.length,
-        merged: finalResults.length
-      },
       timestamp: new Date().toISOString()
     });
 
@@ -230,10 +203,9 @@ router.get('/:playerId/images', async (req, res) => {
       return res.status(400).json({ error: 'Player ID is required' });
     }
 
-    const imagePaths = playerImageService.getPlayerImagePaths(playerId);
-    const metadata = playerImageService.getPlayerMetadata(playerId);
+    const hasImage = await assetService.hasPlayerImage(playerId);
 
-    if (!imagePaths || !metadata) {
+    if (!hasImage) {
       return res.status(404).json({
         error: 'Player images not found',
         message: `No processed images available for player ${playerId}`,
@@ -241,15 +213,16 @@ router.get('/:playerId/images', async (req, res) => {
       });
     }
 
+    const imageUrls = assetService.getPlayerImageUrls(playerId);
+
     res.json({
       playerId,
-      hasImage: metadata.hasImage,
-      imagePaths,
+      hasImage: true,
+      imageUrls,
       metadata: {
-        processedAt: metadata.processedAt,
-        lastUpdated: metadata.lastUpdated,
-        formats: metadata.formats,
-        sizes: Object.keys(metadata.sizes)
+        processedAt: new Date().toISOString(),
+        formats: ['avif', 'webp', 'png'],
+        sizes: ['small', 'medium', 'large']
       },
       timestamp: new Date().toISOString()
     });
@@ -266,8 +239,14 @@ router.get('/:playerId/images', async (req, res) => {
 // GET /api/players/stats/cache - Get cache statistics (for debugging/monitoring)
 router.get('/stats/cache', async (req, res) => {
   try {
-    const stats = playerImageService.getCacheStats();
-    
+    // Since we moved to build-time processing, return basic stats
+    const stats = {
+      message: 'Player images are now processed at build-time via local script',
+      buildTimeProcessing: true,
+      assetsLocation: '/assets/players/',
+      processingScript: 'scripts/image-processor.js'
+    };
+
     res.json({
       ...stats,
       timestamp: new Date().toISOString()

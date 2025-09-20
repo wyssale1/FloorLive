@@ -9,14 +9,15 @@ import fs from 'fs';
 import gamesRouter from './routes/games.js';
 import teamsRouter from './routes/teams.js';
 import leaguesRouter from './routes/leagues.js';
-import logosRouter from './routes/logos.js';
 import playersRouter from './routes/players.js';
 import searchRouter from './routes/search.js';
 import sitemapRouter from './routes/sitemap.js';
+import debugRouter from './routes/debug.js';
 import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
 import { SEOService } from './services/seoService.js';
+import { assetFallbackMiddleware } from './middleware/assetFallbackMiddleware.js';
 
 // Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -60,24 +61,30 @@ app.use(SEOService.middleware());
 app.use('/api/games', gamesRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/leagues', leaguesRouter);
-app.use('/api/logos', logosRouter);
 app.use('/api/players', playersRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/debug', debugRouter);
 
 // SEO routes (no /api prefix for sitemap.xml)
 app.use('/', sitemapRouter);
 
+// Asset fallback middleware - handles missing asset files with intelligent fallbacks
+app.use(assetFallbackMiddleware);
+
 // Static assets serving - use absolute path to ensure it works regardless of working directory
-const assetsPath = path.join(__dirname, '..', 'assets', 'players');
+const playersAssetsPath = path.join(__dirname, '..', 'assets', 'players');
+const logosAssetsPath = path.join(__dirname, '..', 'assets', 'logos');
 const assetsOptions = {
   maxAge: '7d', // Cache for 7 days
   etag: true,
   lastModified: true
 };
 
-// Serve assets at both paths for compatibility
-app.use('/assets/players', express.static(assetsPath, assetsOptions));
-app.use('/api/assets/players', express.static(assetsPath, assetsOptions));
+// Serve player and logo assets
+app.use('/assets/players', express.static(playersAssetsPath, assetsOptions));
+app.use('/assets/logos', express.static(logosAssetsPath, assetsOptions));
+app.use('/api/assets/players', express.static(playersAssetsPath, assetsOptions));
+app.use('/api/assets/logos', express.static(logosAssetsPath, assetsOptions));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -90,14 +97,15 @@ app.get('/health', (req, res) => {
 
 // Debug endpoint for assets path (remove in production)
 app.get('/debug/assets-path', (req, res) => {
-  const assetsPath = path.join(__dirname, '..', 'assets', 'players');
+  const playersPath = path.join(__dirname, '..', 'assets', 'players');
+  const logosPath = path.join(__dirname, '..', 'assets', 'logos');
   res.json({
-    assetsPath,
-    exists: fs.existsSync(assetsPath),
+    playersAssetsPath: playersPath,
+    logosAssetsPath: logosPath,
+    playersExists: fs.existsSync(playersPath),
+    logosExists: fs.existsSync(logosPath),
     workingDirectory: process.cwd(),
-    __dirname,
-    samplePlayerPath: path.join(assetsPath, '423870'),
-    samplePlayerExists: fs.existsSync(path.join(assetsPath, '423870'))
+    __dirname
   });
 });
 

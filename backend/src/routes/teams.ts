@@ -1,54 +1,15 @@
 import { Router } from 'express';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
-import { playerImageService } from '../services/playerImageService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
 import { backgroundEntityService } from '../services/backgroundEntityService.js';
 import { EntityTtlHelper } from '../utils/entityTtlHelper.js';
+import { assetService } from '../services/assetService.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
 const cache = new CacheService();
 
-// Helper function to process players with API details fetching
-async function processPlayersWithApiDetails(
-  teamId: string, 
-  teamName: string, 
-  playersToProcess: Array<{id: string, name: string, imageUrl?: string}>
-): Promise<{processed: number, successful: number, failed: number}> {
-  let processed = 0;
-  let successful = 0;
-  let failed = 0;
-
-  for (const [index, player] of playersToProcess.entries()) {
-    try {
-      // Add delay between API calls to be respectful (500ms)
-      if (index > 0) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-
-      const success = await playerImageService.processPlayerWithApiFetch(
-        player.id, 
-        player.name, 
-        { teamId, teamName }
-      );
-      
-      if (success) {
-        successful++;
-      } else {
-        failed++;
-      }
-      processed++;
-      
-    } catch (error) {
-      console.error(`❌ Failed to process player ${player.name}:`, error);
-      failed++;
-      processed++;
-    }
-  }
-
-  return { processed, successful, failed };
-}
 
 // GET /api/teams/search?q=query - Search teams (must be before /:teamId route)
 router.get('/search', async (req, res) => {
@@ -75,12 +36,15 @@ router.get('/search', async (req, res) => {
     // Search using the master registry
     const teams = await entityMasterService.searchTeams(q.trim(), limitClamped);
 
-    // Format results for frontend
-    const results = teams.map(team => ({
+    // Format results for frontend with actual availability checks
+    // URLs are guaranteed to work via fallback middleware, but we check actual availability for UI
+    const results = await Promise.all(teams.map(async team => ({
       id: team.id,
       name: team.name,
-      league: team.league || 'Swiss Unihockey'
-    }));
+      league: team.league || 'Swiss Unihockey',
+      hasLogo: await assetService.hasTeamLogo(team.id),
+      logoUrl: `/assets/logos/team-${team.id}/small.webp`
+    })));
 
     res.json({
       query: q.trim(),
@@ -167,10 +131,6 @@ router.get('/:teamId/players', async (req, res) => {
 
     // Process players: add to master registry and check for updates
     try {
-      const playersData = [];
-      const playersToProcess = [];
-      const playersToRefresh = [];
-
       // Get team name for player entities
       let teamName = `Team ${teamId}`;
       try {
@@ -189,59 +149,23 @@ router.get('/:teamId/players', async (req, res) => {
         console.warn('Could not get team name, using default');
       }
 
-      // Extract player data and check who needs processing
+      // Process players for TTL checking (entity registry updates)
       for (const player of (players as any[])) {
         if (player.id) {
           const playerName = player.name || `Player ${player.id}`;
-          const playerData = {
-            id: player.id,
-            name: playerName,
-            imageUrl: player.profileImage
-          };
-          playersData.push(playerData);
 
           // Check TTL and schedule refresh if needed (unified logic)
-          const ttlResult = await EntityTtlHelper.checkAndSchedulePlayerRefresh(
+          await EntityTtlHelper.checkAndSchedulePlayerRefresh(
             player.id,
             playerName,
             teamName,
             teamId
           );
-
-          if (ttlResult.shouldRefresh) {
-            playersToRefresh.push({ id: player.id, name: playerName });
-          }
-
-          // Check if this player needs image processing (legacy system)
-          const metadata = playerImageService.getPlayerMetadata(player.id);
-          if (!metadata) {
-            // New player - needs processing
-            playersToProcess.push(playerData);
-          } else {
-            // Check if data is older than 1 week
-            const lastUpdated = new Date(metadata.lastUpdated);
-            const now = new Date();
-            const daysSinceUpdate = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24);
-
-            if (daysSinceUpdate >= 7) {
-              playersToProcess.push(playerData);
-            }
-          }
         }
       }
-      // Note: Player refreshes are now handled by EntityTtlHelper.checkAndSchedulePlayerRefresh above
-
-      // If there are players to process for images, do it in the background (don't await)
-      if (playersToProcess.length > 0) {
-        // Process players in background (fire and forget)
-        processPlayersWithApiDetails(teamId, teamName, playersToProcess)
-          .catch(error => {
-            console.error('Failed to process players for team:', teamId, error);
-          });
-      }
     } catch (error) {
-      // Don't fail the request if background processing fails
-      console.error('Error processing players for team:', teamId, error);
+      // Don't fail the request if TTL processing fails
+      console.error('Error processing players TTL for team:', teamId, error);
     }
 
     // Check for duplicate jersey numbers (debug logging)
@@ -262,8 +186,8 @@ router.get('/:teamId/players', async (req, res) => {
       }
     }
 
-    // Enhance players with image information
-    const playersWithImages = (players as any[]).map(player => {
+    // Enhance players with image information (build-time processed assets)
+    const playersWithImages = await Promise.all((players as any[]).map(async player => {
       if (!player.id) {
         return {
           ...player,
@@ -273,31 +197,21 @@ router.get('/:teamId/players', async (req, res) => {
         };
       }
 
-      // Check if player has processed images
-      const metadata = playerImageService.getPlayerMetadata(player.id);
-      if (metadata?.hasImage) {
-        // Generate small image URLs for team player list (including high-DPI variants)
-        const imagePaths = playerImageService.getPlayerImagePaths(player.id);
-        const smallImageUrls = imagePaths ? {
-          // 1x images
-          avif: imagePaths.small.avif,
-          webp: imagePaths.small.webp,
-          png: imagePaths.small.png,
-          // 2x retina images
-          avif2x: imagePaths.small2x?.avif,
-          webp2x: imagePaths.small2x?.webp,
-          png2x: imagePaths.small2x?.png,
-          // 3x retina images
-          avif3x: imagePaths.small3x?.avif,
-          webp3x: imagePaths.small3x?.webp,
-          png3x: imagePaths.small3x?.png
-        } : null;
+      // Check if player has processed images (build-time assets)
+      const hasImage = await assetService.hasPlayerImage(player.id);
+      if (hasImage) {
+        // Generate image URLs for team player list (including retina variants)
+        const imageUrls = assetService.getPlayerImageUrls(player.id);
 
         return {
           ...player,
           imageInfo: {
             hasImage: true,
-            smallImageUrls
+            imageUrl: `/assets/players/${player.id}/${player.id}_small.webp`,
+            sizes: {
+              small: imageUrls.small,
+              medium: imageUrls.medium
+            }
           }
         };
       }
@@ -308,7 +222,7 @@ router.get('/:teamId/players', async (req, res) => {
           hasImage: false
         }
       };
-    });
+    }));
 
     res.json({
       teamId,

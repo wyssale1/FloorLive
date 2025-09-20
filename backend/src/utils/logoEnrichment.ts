@@ -1,5 +1,5 @@
 import { getTeamDisplayName, getTeamId } from '../shared/utils/teamMapping.js';
-import { logoService } from '../services/logoService.js';
+import { assetService } from '../services/assetService.js';
 
 /**
  * Add optimistic logo URLs to teams in games
@@ -25,21 +25,12 @@ export async function addOptimisticLogosToGames(games: any[]): Promise<void> {
 
 /**
  * Trigger background logo processing for games (fire-and-forget)
- * This downloads and processes logos from Swiss Unihockey if available
+ * Note: Logo processing is now done at build-time via scripts/image-processor.js
+ * This function is kept for compatibility but does minimal work
  */
 export function triggerBackgroundLogoProcessing(games: any[]): void {
-  // Fire-and-forget processing - don't await
-  setImmediate(() => {
-    for (const game of games) {
-      if (game.home_team) {
-        processTeamLogoBackground(game.home_team);
-      }
-      
-      if (game.away_team) {
-        processTeamLogoBackground(game.away_team);
-      }
-    }
-  });
+  // No-op since we moved to build-time processing
+  // Logos are now processed locally and committed to git
 }
 
 async function processTeamLogos(team: any): Promise<void> {
@@ -53,25 +44,11 @@ async function processTeamLogos(team: any): Promise<void> {
   
   if (teamId) {
     // Only add logoUrls if processed logo actually exists
-    const hasValidLogo = await logoService.hasValidLogo(teamId);
+    const hasValidLogo = await assetService.hasTeamLogo(teamId);
     if (hasValidLogo) {
-      team.logoUrls = logoService.getLogoUrls(teamId);
+      team.logoUrls = assetService.getTeamLogoUrls(teamId);
     }
   }
   // If no team ID mapping exists, no logo URLs are added
 }
 
-/**
- * Process team logo in background (from Swiss Unihockey URL)
- * Only processes if team has a Swiss Unihockey logo and we don't have a processed one
- */
-function processTeamLogoBackground(team: any): void {
-  if (!team?.id || !team?.logo) return;
-  
-  const teamId = team.id.toString();
-  const logoUrl = team.logo;
-  const teamName = team.name || team.short_name || '';
-  
-  // Trigger background processing - logoService handles duplicate checking
-  logoService.processTeamLogoBackground(teamId, logoUrl, teamName);
-}

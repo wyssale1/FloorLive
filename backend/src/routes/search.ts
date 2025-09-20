@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { entityMasterService } from '../services/entityMasterService.js';
-import { logoService } from '../services/logoService.js';
-import { playerImageService } from '../services/playerImageService.js';
+import { assetService } from '../services/assetService.js';
 
 const router = Router();
 
@@ -33,31 +32,23 @@ router.get('/', async (req, res) => {
       entityMasterService.searchPlayers(q.trim(), limitClamped)
     ]);
 
-    // Check image availability for teams and players in parallel
-    const [teamLogosAvailable, playerImagesAvailable] = await Promise.all([
-      Promise.all(teams.map(team => logoService.hasLogo(team.id))),
-      Promise.all(players.map(player => {
-        const playerData = playerImageService.getPlayerMetadata(player.id);
-        return playerData ? playerData.hasImage : false;
-      }))
-    ]);
-
-    // Format results for frontend (matching GlobalMenu.tsx expected format)
-    const formattedTeams = teams.map((team, index) => ({
+    // Format results for frontend with actual availability checks
+    // URLs are guaranteed to work via fallback middleware, but we check actual availability for UI
+    const formattedTeams = await Promise.all(teams.map(async team => ({
       id: team.id,
       name: team.name,
       league: team.league || 'Swiss Unihockey',
-      hasLogo: teamLogosAvailable[index],
-      logoUrl: teamLogosAvailable[index] ? `/api/logos/team-${team.id}/small.webp` : null
-    }));
+      hasLogo: await assetService.hasTeamLogo(team.id),
+      logoUrl: `/assets/logos/team-${team.id}/small.webp`
+    })));
 
-    const formattedPlayers = players.map((player, index) => ({
+    const formattedPlayers = await Promise.all(players.map(async player => ({
       id: player.id,
       name: player.name,
       team: player.team || null,
-      hasImage: playerImagesAvailable[index],
-      imageUrl: playerImagesAvailable[index] ? `/assets/players/${player.id}/profile.webp` : null
-    }));
+      hasImage: await assetService.hasPlayerImage(player.id),
+      imageUrl: `/assets/players/${player.id}/${player.id}_small.webp`
+    })));
 
     res.json({
       query: q.trim(),
