@@ -50,22 +50,6 @@ interface GlobalMenuProps {
   className?: string
 }
 
-// Types for search results with image data
-interface TeamSearchResult {
-  id: string;
-  name: string;
-  league?: string;
-  hasLogo?: boolean;
-  logoUrl?: string;
-}
-
-interface PlayerSearchResult {
-  id: string;
-  name: string;
-  team?: string;
-  hasImage?: boolean;
-  imageUrl?: string;
-}
 
 export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
   const {
@@ -234,7 +218,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                   />
                                 ) : null}
                                 <div className={`w-8 h-8 rounded-full bg-blue-500 text-white text-xs font-medium flex items-center justify-center ${team.hasLogo ? 'hidden' : ''}`}>
-                                  {team.name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase()}
+                                  {team.name.split(' ').map((word: string) => word[0]).join('').substring(0, 2).toUpperCase()}
                                 </div>
                                 <div className="flex-1">
                                   <div className="font-medium text-gray-900">{team.name}</div>
@@ -278,7 +262,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                   />
                                 ) : null}
                                 <div className={`w-8 h-8 rounded-full bg-green-500 text-white text-xs font-medium flex items-center justify-center ${player.hasImage ? 'hidden' : ''}`}>
-                                  {player.name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase()}
+                                  {player.name.split(' ').map((word: string) => word[0]).join('').substring(0, 2).toUpperCase()}
                                 </div>
                                 <div className="flex-1">
                                   <div className="font-medium text-gray-900">{player.name}</div>
