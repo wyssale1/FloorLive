@@ -1,0 +1,35 @@
+{
+  "playerId": "436979",
+  "playerName": "Loris Roulin",
+  "teamName": "Floorball Fribourg",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/pdrmdklecvpuewezxsoz.jpg",
+  "processedAt": "2025-09-20T12:32:02.627Z",
+  "sizes": {
+    "small": {
+      "width": 32,
+      "height": 32,
+      "suffix": "_small"
+    },
+    "medium": {
+      "width": 100,
+      "height": 100,
+      "suffix": "_medium"
+    },
+    "large": {
+      "width": 200,
+      "height": 200,
+      "suffix": "_large"
+    }
+  },
+  "formats": [
+    "avif",
+    "webp",
+    "png"
+  ],
+  "retinaScales": [
+    1,
+    2,
+    3
+  ],
+  "hasImage": true
+}

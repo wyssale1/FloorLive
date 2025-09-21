@@ -1,0 +1,35 @@
+{
+  "playerId": "418460",
+  "playerName": "Kevin Kropf",
+  "teamName": "Tigers Langnau",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/nacm3odobqdddxnecs5u.jpg",
+  "processedAt": "2025-09-20T12:29:38.438Z",
+  "sizes": {
+    "small": {
+      "width": 32,
+      "height": 32,
+      "suffix": "_small"
+    },
+    "medium": {
+      "width": 100,
+      "height": 100,
+      "suffix": "_medium"
+    },
+    "large": {
+      "width": 200,
+      "height": 200,
+      "suffix": "_large"
+    }
+  },
+  "formats": [
+    "avif",
+    "webp",
+    "png"
+  ],
+  "retinaScales": [
+    1,
+    2,
+    3
+  ],
+  "hasImage": true
+}

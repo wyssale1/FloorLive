@@ -1,0 +1,35 @@
+{
+  "playerId": "422627",
+  "playerName": "Luca Mocettini",
+  "teamName": "Regazzi Verbano UH Gordola",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/uf5nzzbp1gc0s7bcb9vc.jpg",
+  "processedAt": "2025-09-20T12:29:59.981Z",
+  "sizes": {
+    "small": {
+      "width": 32,
+      "height": 32,
+      "suffix": "_small"
+    },
+    "medium": {
+      "width": 100,
+      "height": 100,
+      "suffix": "_medium"
+    },
+    "large": {
+      "width": 200,
+      "height": 200,
+      "suffix": "_large"
+    }
+  },
+  "formats": [
+    "avif",
+    "webp",
+    "png"
+  ],
+  "retinaScales": [
+    1,
+    2,
+    3
+  ],
+  "hasImage": true
+}
