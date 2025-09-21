@@ -43,7 +43,7 @@ router.get('/search', async (req, res) => {
       name: team.name,
       league: team.league || 'Swiss Unihockey',
       hasLogo: await assetService.hasTeamLogo(team.id),
-      logoUrl: `/assets/logos/team-${team.id}/small.webp`
+      logoUrl: `/assets/teams/team-${team.id}/small.webp`
     })));
 
     res.json({
@@ -201,13 +201,13 @@ router.get('/:teamId/players', async (req, res) => {
       const hasImage = await assetService.hasPlayerImage(player.id);
       if (hasImage) {
         // Generate image URLs for team player list (including retina variants)
-        const imageUrls = assetService.getPlayerImageUrls(player.id);
+        const imageUrls = await assetService.getPlayerImageUrls(player.id);
 
         return {
           ...player,
           imageInfo: {
             hasImage: true,
-            imageUrl: `/assets/players/${player.id}/${player.id}_small.webp`,
+            imageUrl: imageUrls.small?.webp || `/assets/players/player-${player.id}/${player.id}_small.webp`,
             sizes: {
               small: imageUrls.small,
               medium: imageUrls.medium
