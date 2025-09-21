@@ -1,0 +1,25 @@
+{
+  "name": "@floorlive/shared",
+  "version": "1.0.0",
+  "description": "Shared types and utilities for FloorLive",
+  "main": "index.js",
+  "type": "module",
+  "types": "types/index.ts",
+  "exports": {
+    "./types": {
+      "types": "./types/index.ts",
+      "import": "./types/index.js",
+      "require": "./types/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

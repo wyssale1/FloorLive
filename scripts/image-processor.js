@@ -17,7 +17,7 @@ const BACKEND_DIR = path.join(ROOT_DIR, 'backend');
 const ENTITIES_FILE = path.join(BACKEND_DIR, 'data', 'entities-master.json');
 const ASSETS_DIR = path.join(BACKEND_DIR, 'assets');
 const PLAYERS_DIR = path.join(ASSETS_DIR, 'players');
-const LOGOS_DIR = path.join(ASSETS_DIR, 'logos');
+const TEAMS_DIR = path.join(ASSETS_DIR, 'teams');
 
 // Image processing configuration
 const PLAYER_SIZES = {
@@ -109,7 +109,7 @@ class ImageProcessor {
 
   async setupDirectories() {
     await fs.ensureDir(PLAYERS_DIR);
-    await fs.ensureDir(LOGOS_DIR);
+    await fs.ensureDir(TEAMS_DIR);
     console.log(chalk.blue('📁 Asset directories ready\\n'));
   }
 
@@ -121,9 +121,9 @@ class ImageProcessor {
       console.log(chalk.green('✅ Player assets cleaned'));
     }
 
-    if (await fs.pathExists(LOGOS_DIR)) {
-      await fs.emptyDir(LOGOS_DIR);
-      console.log(chalk.green('✅ Logo assets cleaned'));
+    if (await fs.pathExists(TEAMS_DIR)) {
+      await fs.emptyDir(TEAMS_DIR);
+      console.log(chalk.green('✅ Team assets cleaned'));
     }
 
     console.log(chalk.green.bold('🧹 Asset cleanup complete!'));
@@ -190,7 +190,7 @@ class ImageProcessor {
   }
 
   async processTeamLogo(teamId, teamName) {
-    const logoDir = path.join(LOGOS_DIR, `team-${teamId}`);
+    const logoDir = path.join(TEAMS_DIR, `team-${teamId}`);
 
     // Check if logo already exists (unless force)
     if (!this.options.force && await fs.pathExists(logoDir)) {
@@ -261,7 +261,7 @@ class ImageProcessor {
   }
 
   async processPlayerImage(playerId, playerName, teamName) {
-    const playerDir = path.join(PLAYERS_DIR, playerId);
+    const playerDir = path.join(PLAYERS_DIR, `player-${playerId}`);
 
     // Check if player images already exist (unless force)
     if (!this.options.force && await fs.pathExists(playerDir)) {
@@ -407,7 +407,7 @@ class ImageProcessor {
   }
 
   async saveLogoMetadata(teamId, teamName, originalUrl, logoDir) {
-    const metadataPath = path.join(LOGOS_DIR, 'metadata.json');
+    const metadataPath = path.join(TEAMS_DIR, 'metadata.json');
 
     // Load existing metadata or create new
     let metadata = {};

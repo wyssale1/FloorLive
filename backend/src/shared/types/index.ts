@@ -234,35 +234,3 @@ export interface PlayerGamePerformance {
   playerPoints: number;
   matchPenalties: number;
 }
-
-// Entity Master Registry Types
-export interface BaseEntity {
-  id: string;
-  name: string;
-  lastUpdated: string;
-  ttl: string; // ISO date string when refresh is needed
-}
-
-export interface TeamEntity extends BaseEntity {
-  type: 'team';
-  league?: string;
-}
-
-export interface PlayerEntity extends BaseEntity {
-  type: 'player';
-  team?: string;
-  teamId?: string;
-}
-
-export type Entity = TeamEntity | PlayerEntity;
-
-export interface EntityMasterData {
-  _metadata: {
-    description: string;
-    version: string;
-    lastUpdated: string;
-    instructions: string;
-  };
-  teams: Record<string, TeamEntity>;
-  players: Record<string, PlayerEntity>;
-}
