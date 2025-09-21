@@ -1,6 +1,7 @@
 import { Shield } from 'lucide-react'
 import { memo, useMemo } from 'react'
 import OptimizedImage from './OptimizedImage'
+import { getImageUtils } from '../utils/imageConfigLoader'
 
 interface TeamLogoProps {
   team: {
@@ -38,25 +39,28 @@ function TeamLogo({
     enableResponsive: false // Teams logos don't need responsive variants
   }), [team.id, team.logoUrls, size, showSwissUnihockeyFallback, team.logo])
 
-  // Size configurations (memoized constants)
-  const { sizeClasses, iconSizes, containerClasses, logoClasses } = useMemo(() => ({
-    sizeClasses: {
-      large: 'w-16 h-16',
-      small: 'w-5 h-5'
-    },
-    iconSizes: {
-      large: 'w-12 h-12',
-      small: 'w-4 h-4'
-    },
-    containerClasses: {
-      large: 'w-16 h-16 sm:w-20 sm:h-20',
-      small: 'w-8 h-8'
-    },
-    logoClasses: {
-      large: 'w-12 h-12 sm:w-16 sm:h-16',
-      small: 'w-6 h-6'
-    }
-  }), [])
+  // Size configurations from centralized config (memoized constants)
+  const { sizeClasses, iconSizes, containerClasses, logoClasses } = useMemo(() => {
+    const utils = getImageUtils();
+    return {
+      sizeClasses: {
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'main' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'main' })
+      },
+      iconSizes: {
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'iconFallback' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'iconFallback' })
+      },
+      containerClasses: {
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'container' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'container' })
+      },
+      logoClasses: {
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'logo' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'logo' })
+      }
+    };
+  }, [])
 
   // Helper function to wrap content in square container
   const wrapInSquareContainer = (content: React.ReactNode) => {

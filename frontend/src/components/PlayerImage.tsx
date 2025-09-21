@@ -1,6 +1,7 @@
 import { User } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import { convertImageInfo } from '../lib/imageUtils';
+import { getImageUtils } from '../utils/imageConfigLoader';
 
 interface PlayerImageProps {
   player: {
@@ -37,23 +38,24 @@ export default function PlayerImage({
   imageInfo
 }: PlayerImageProps) {
 
-  // Size configurations
+  // Get CSS classes from centralized configuration
+  const utils = getImageUtils();
   const sizeClasses = {
-    large: 'w-20 h-20 sm:w-24 sm:h-24',
-    medium: 'w-16 h-16 sm:w-20 sm:h-20', 
-    small: 'w-8 h-8'
+    large: utils.getCssClasses({ entityType: 'players', size: 'large', type: 'main' }),
+    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type: 'main' }),
+    small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'main' })
   };
 
   const iconSizes = {
-    large: 'w-12 h-12 sm:w-14 sm:h-14',
-    medium: 'w-8 h-8 sm:w-10 sm:h-10',
-    small: 'w-4 h-4'
+    large: utils.getCssClasses({ entityType: 'players', size: 'large', type: 'iconFallback' }),
+    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type: 'iconFallback' }),
+    small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'iconFallback' })
   };
 
   const badgeSizes = {
-    large: 'w-6 h-6 text-[10px]',
-    medium: 'w-5 h-5 text-[9px]',
-    small: 'w-4 h-4 text-[8px]'
+    large: utils.getCssClasses({ entityType: 'players', size: 'large', type: 'badge' }),
+    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type: 'badge' }),
+    small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'badge' })
   };
 
   // Convert imageInfo to the new format

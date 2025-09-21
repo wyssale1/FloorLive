@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { getImageUtils } from '../utils/imageConfigLoader';
+import type { ImageFormatType } from '../../../shared/types/imageConfig';
 
 export interface ResponsiveImageUrls {
   '1x': string;
@@ -9,7 +11,7 @@ export interface ResponsiveImageUrls {
 export interface ResponsiveImageOptions {
   baseUrl: string;
   size: 'small' | 'medium';
-  formats?: ('avif' | 'webp' | 'png')[];
+  formats?: ImageFormatType[];
   playerId?: string;
 }
 
@@ -17,12 +19,15 @@ export interface ResponsiveImageOptions {
  * Hook for managing responsive images based on device pixel ratio
  * Provides srcSet URLs for different pixel densities (1x, 2x, 3x)
  */
-export function useResponsiveImage({ 
-  baseUrl, 
-  size, 
-  formats = ['avif', 'webp', 'png'],
-  playerId 
+export function useResponsiveImage({
+  baseUrl,
+  size,
+  formats,
+  playerId
 }: ResponsiveImageOptions) {
+  // Get formats from centralized config if not provided
+  const utils = getImageUtils();
+  const configFormats = formats || utils.getAvailableFormats();
   const [devicePixelRatio, setDevicePixelRatio] = useState(1);
 
   useEffect(() => {
@@ -50,26 +55,20 @@ export function useResponsiveImage({
   }, []);
 
   /**
-   * Generate URLs for different pixel densities
+   * Generate URLs for different pixel densities using centralized config
    */
   const generateResponsiveUrls = (format: string): ResponsiveImageUrls => {
     if (!playerId) {
       return { '1x': baseUrl };
     }
 
-    const urls: ResponsiveImageUrls = {
-      '1x': `/assets/players/${playerId}/${playerId}_${size}.${format}`
-    };
-
-    // Add 2x variant
-    urls['2x'] = `/assets/players/${playerId}/${playerId}_${size}2x.${format}`;
-
-    // Add 3x variant (only for small images to avoid huge files)
-    if (size === 'small') {
-      urls['3x'] = `/assets/players/${playerId}/${playerId}_${size}3x.${format}`;
+    try {
+      const responsiveUrls = utils.generateResponsiveUrls('players', playerId, size as any, format as ImageFormatType);
+      return responsiveUrls;
+    } catch {
+      // Fallback to legacy format if config-based generation fails
+      return { '1x': baseUrl };
     }
-
-    return urls;
   };
 
   /**
@@ -92,19 +91,19 @@ export function useResponsiveImage({
   const getBestFormat = (): string => {
     // Check format support (simplified - in real app you might want more sophisticated detection)
     const canvas = document.createElement('canvas');
-    
+
     // Check AVIF support
-    if (formats.includes('avif') && canvas.toDataURL('image/avif').indexOf('image/avif') === 5) {
+    if (configFormats.includes('avif') && canvas.toDataURL('image/avif').indexOf('image/avif') === 5) {
       return 'avif';
     }
-    
+
     // Check WebP support
-    if (formats.includes('webp') && canvas.toDataURL('image/webp').indexOf('image/webp') === 5) {
+    if (configFormats.includes('webp') && canvas.toDataURL('image/webp').indexOf('image/webp') === 5) {
       return 'webp';
     }
-    
+
     // Fallback to PNG
-    return formats.includes('png') ? 'png' : formats[0];
+    return configFormats.includes('png') ? 'png' : configFormats[0];
   };
 
   /**
