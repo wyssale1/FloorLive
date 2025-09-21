@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
       name: team.name,
       league: team.league || 'Swiss Unihockey',
       hasLogo: await assetService.hasTeamLogo(team.id),
-      logoUrl: `/assets/logos/team-${team.id}/small.webp`
+      logoUrl: `/assets/teams/team-${team.id}/small.webp`
     })));
 
     const formattedPlayers = await Promise.all(players.map(async player => ({
@@ -47,7 +47,7 @@ router.get('/', async (req, res) => {
       name: player.name,
       team: player.team || null,
       hasImage: await assetService.hasPlayerImage(player.id),
-      imageUrl: `/assets/players/${player.id}/${player.id}_small.webp`
+      imageUrl: `/assets/players/player-${player.id}/${player.id}_small.webp`
     })));
 
     res.json({

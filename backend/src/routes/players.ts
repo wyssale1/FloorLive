@@ -45,10 +45,10 @@ router.get('/search', async (req, res) => {
         teamName: player.team,
         teamId: player.teamId,
         hasImage,
-        imageUrl: `/assets/players/${player.id}/${player.id}_small.webp`,
+        imageUrl: `/assets/players/player-${player.id}/${player.id}_small.webp`,
         imagePaths: {
-          small: `/assets/players/${player.id}/${player.id}_small.webp`,
-          medium: `/assets/players/${player.id}/${player.id}_medium.webp`
+          small: `/assets/players/player-${player.id}/${player.id}_small.webp`,
+          medium: `/assets/players/player-${player.id}/${player.id}_medium.webp`
         },
         source: 'master'
       };

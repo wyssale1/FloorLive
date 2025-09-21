@@ -73,18 +73,18 @@ app.use(assetFallbackMiddleware);
 
 // Static assets serving - use absolute path to ensure it works regardless of working directory
 const playersAssetsPath = path.join(__dirname, '..', 'assets', 'players');
-const logosAssetsPath = path.join(__dirname, '..', 'assets', 'logos');
+const teamsAssetsPath = path.join(__dirname, '..', 'assets', 'teams');
 const assetsOptions = {
   maxAge: '7d', // Cache for 7 days
   etag: true,
   lastModified: true
 };
 
-// Serve player and logo assets
+// Serve player and team assets
 app.use('/assets/players', express.static(playersAssetsPath, assetsOptions));
-app.use('/assets/logos', express.static(logosAssetsPath, assetsOptions));
+app.use('/assets/teams', express.static(teamsAssetsPath, assetsOptions));
 app.use('/api/assets/players', express.static(playersAssetsPath, assetsOptions));
-app.use('/api/assets/logos', express.static(logosAssetsPath, assetsOptions));
+app.use('/api/assets/teams', express.static(teamsAssetsPath, assetsOptions));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -98,12 +98,12 @@ app.get('/health', (req, res) => {
 // Debug endpoint for assets path (remove in production)
 app.get('/debug/assets-path', (req, res) => {
   const playersPath = path.join(__dirname, '..', 'assets', 'players');
-  const logosPath = path.join(__dirname, '..', 'assets', 'logos');
+  const teamsPath = path.join(__dirname, '..', 'assets', 'teams');
   res.json({
     playersAssetsPath: playersPath,
-    logosAssetsPath: logosPath,
+    teamsAssetsPath: teamsPath,
     playersExists: fs.existsSync(playersPath),
-    logosExists: fs.existsSync(logosPath),
+    teamsExists: fs.existsSync(teamsPath),
     workingDirectory: process.cwd(),
     __dirname
   });

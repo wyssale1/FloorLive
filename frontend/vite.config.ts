@@ -16,6 +16,10 @@ export default defineConfig({
       '/assets/players': {
         target: 'http://localhost:3001',
         changeOrigin: true
+      },
+      '/assets/teams': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
       }
     }
   }

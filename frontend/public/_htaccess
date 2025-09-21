@@ -5,8 +5,9 @@
   RewriteCond %{REQUEST_URI} ^/api($|/)
   RewriteRule ^ - [L]
 
-  # 📸 Internal rewrite player assets to backend API
+  # 📸 Internal rewrite player and team assets to backend API
   RewriteRule ^assets/players/(.*)$ /api/assets/players/$1 [L]
+  RewriteRule ^assets/teams/(.*)$ /api/assets/teams/$1 [L]
 
   # 🚫 Never rewrite static assets (optional, safer)
   RewriteCond %{REQUEST_URI} \.(png|jpe?g|gif|svg|css|js|ico|webp|woff2?|ttf|eot)$ [NC]

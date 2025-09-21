@@ -3,6 +3,11 @@ export interface Team {
     name: string;
     short_name: string;
     logo?: string;
+    logoUrls?: {
+        large: Record<string, string>;
+        small: Record<string, string>;
+    };
+    hasLogo?: boolean;
 }
 export interface Game {
     id: string;
@@ -20,6 +25,14 @@ export interface Game {
         name: string;
     };
     location?: string;
+    venue?: {
+        name: string;
+        address?: string;
+    };
+    coordinates?: {
+        lat: number;
+        lng: number;
+    };
     referees?: {
         first?: string;
         second?: string;
@@ -35,6 +48,11 @@ export interface GameEvent {
     assist?: string;
     description?: string;
     team: 'home' | 'away';
+    team_name?: string;
+    team_side?: 'home' | 'away' | 'neutral';
+    event_type?: string;
+    icon?: string;
+    display_as?: string;
 }
 export interface SwissUnihockeyApiResponse<T> {
     context: any;
@@ -65,7 +83,6 @@ export interface ApiResponse<T> {
 }
 export type GameStatus = 'live' | 'upcoming' | 'finished';
 export type LeagueType = 'NLA Men' | 'NLA Women' | 'NLB Men' | 'NLB Women';
-
 export interface RankingsApiResponse {
     type: string;
     subtype: string;
@@ -83,7 +100,6 @@ export interface RankingsApiResponse {
         regions: TeamRanking[][];
     };
 }
-
 export interface TeamRanking {
     position: number;
     teamId: string;
@@ -98,18 +114,6 @@ export interface TeamRanking {
     goalDifference: number;
     points: number;
 }
-
-export interface PlayerInfo {
-    id: string;
-    name: string;
-    number?: string;
-    position?: string;
-    yearOfBirth?: number;
-    goals?: number;
-    assists?: number;
-    points?: number;
-}
-
 export interface TeamStatistics {
     achievements?: Array<{
         competition: string;
@@ -123,27 +127,6 @@ export interface TeamStatistics {
         games?: number;
         wins?: number;
     }>;
-}
-
-export interface GamePlayerStats {
-    number: string;
-    name: string;
-    goals: number;
-    assists: number;
-    penalties: number;
-    playingTime: string;
-}
-
-export interface GameStatisticsData {
-    gameStats: any;
-    playerStats: {
-        home: GamePlayerStats[];
-        away: GamePlayerStats[];
-    };
-    teamStats: {
-        home: Record<string, string>;
-        away: Record<string, string>;
-    };
 }
 export interface FrontendGame {
     id: string;
@@ -168,5 +151,65 @@ export interface FrontendGame {
     startTime: string;
     gameDate: string;
     isLive: boolean;
+}
+export interface Player {
+    id: string;
+    name: string;
+    number?: string;
+    position?: string;
+    yearOfBirth?: number;
+    height?: string;
+    weight?: string;
+    licenseType?: string;
+    profileImage?: string;
+    club?: {
+        id: string;
+        name: string;
+        logo?: string;
+    };
+    nationality?: string;
+    birthPlace?: string;
+    shoots?: 'L' | 'R';
+    careerStats?: {
+        totalGames: number;
+        totalGoals: number;
+        totalAssists: number;
+        totalPoints: number;
+    };
+    currentSeason?: {
+        league: string;
+        team: string;
+        jerseyNumber?: string;
+    };
+}
+export interface PlayerStatistics {
+    season: string;
+    league: string;
+    team: string;
+    teamId?: string;
+    games: number;
+    goals: number;
+    assists: number;
+    points: number;
+    penalties: {
+        twoMinute: number;
+        fiveMinute: number;
+        tenMinute: number;
+        matchPenalty: number;
+    };
+}
+export interface PlayerGamePerformance {
+    gameDate: string;
+    venue: string;
+    gameTime: string;
+    homeTeam: string;
+    homeTeamId?: string;
+    awayTeam: string;
+    awayTeamId?: string;
+    gameScore: string;
+    playerGoals: number;
+    playerAssists: number;
+    playerPoints: number;
+    matchPenalties: number;
 }
 //# sourceMappingURL=index.d.ts.map
