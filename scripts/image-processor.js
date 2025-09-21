@@ -16,27 +16,30 @@ const ROOT_DIR = path.join(__dirname, '..');
 const BACKEND_DIR = path.join(ROOT_DIR, 'backend');
 const ENTITIES_FILE = path.join(BACKEND_DIR, 'data', 'entities-master.json');
 const ASSETS_DIR = path.join(BACKEND_DIR, 'assets');
-const PLAYERS_DIR = path.join(ASSETS_DIR, 'players');
-const TEAMS_DIR = path.join(ASSETS_DIR, 'teams');
 
-// Image processing configuration
-const PLAYER_SIZES = {
-  small: { width: 32, height: 32, suffix: '_small' },
-  medium: { width: 100, height: 100, suffix: '_medium' },
-  large: { width: 200, height: 200, suffix: '_large' }
-};
+// Load centralized image configuration
+const CONFIG_PATH = path.join(ROOT_DIR, 'backend', 'src', 'shared', 'imageConfig.json');
+let IMAGE_CONFIG;
 
-const LOGO_SIZES = {
-  small: { width: 32, height: 32 },
-  large: { width: 200, height: 200 }
-};
+try {
+  IMAGE_CONFIG = await fs.readJson(CONFIG_PATH);
+  console.log(chalk.blue(`📋 Loaded image configuration v${IMAGE_CONFIG.version}`));
+} catch (error) {
+  console.error(chalk.red('❌ Failed to load image configuration:'), error.message);
+  process.exit(1);
+}
 
-const IMAGE_FORMATS = ['avif', 'webp', 'png'];
-const RETINA_SCALES = [1, 2, 3]; // 1x, 2x, 3x for high-DPI displays
+// Extract configuration for easy access
+const PLAYER_SIZES = IMAGE_CONFIG.entities.players.sizes;
+const LOGO_SIZES = IMAGE_CONFIG.entities.teams.sizes;
+const IMAGE_FORMATS = IMAGE_CONFIG.formats.order;
+const RETINA_SCALES = IMAGE_CONFIG.retina.scales;
+const API_BASE_URL = IMAGE_CONFIG.api.baseUrl;
+const REQUEST_DELAY_MS = IMAGE_CONFIG.processing.requestDelayMs;
 
-// API Configuration
-const API_BASE_URL = 'https://api-v2.swissunihockey.ch/api';
-const REQUEST_DELAY_MS = 500; // Delay between API requests to be respectful
+// Generate directory paths from config
+const PLAYERS_DIR = path.join(BACKEND_DIR, IMAGE_CONFIG.entities.players.basePath.replace('/', ''));
+const TEAMS_DIR = path.join(BACKEND_DIR, IMAGE_CONFIG.entities.teams.basePath.replace('/', ''));
 
 class ImageProcessor {
   constructor(options = {}) {
@@ -190,7 +193,7 @@ class ImageProcessor {
   }
 
   async processTeamLogo(teamId, teamName) {
-    const logoDir = path.join(TEAMS_DIR, `team-${teamId}`);
+    const logoDir = path.join(TEAMS_DIR, IMAGE_CONFIG.entities.teams.directoryNaming.replace('{id}', teamId));
 
     // Check if logo already exists (unless force)
     if (!this.options.force && await fs.pathExists(logoDir)) {
@@ -228,9 +231,12 @@ class ImageProcessor {
     // Process logo into different sizes, formats, and retina variants
     for (const [sizeName, sizeConfig] of Object.entries(LOGO_SIZES)) {
       for (const format of IMAGE_FORMATS) {
-        for (const scale of RETINA_SCALES) {
-          const scaleSuffix = scale === 1 ? '' : `${scale}x`;
-          const filename = `${sizeName}${scaleSuffix}.${format}`;
+        for (const scale of sizeConfig.retinaScales) {
+          const scaleSuffix = IMAGE_CONFIG.retina.suffixes[scale.toString()];
+          const filename = IMAGE_CONFIG.entities.teams.fileNaming
+            .replace('{size}', sizeName)
+            .replace('{retina}', scaleSuffix)
+            .replace('{format}', format);
           const outputPath = path.join(logoDir, filename);
 
           // Calculate target dimensions
@@ -261,7 +267,7 @@ class ImageProcessor {
   }
 
   async processPlayerImage(playerId, playerName, teamName) {
-    const playerDir = path.join(PLAYERS_DIR, `player-${playerId}`);
+    const playerDir = path.join(PLAYERS_DIR, IMAGE_CONFIG.entities.players.directoryNaming.replace('{id}', playerId));
 
     // Check if player images already exist (unless force)
     if (!this.options.force && await fs.pathExists(playerDir)) {
@@ -299,9 +305,13 @@ class ImageProcessor {
     // Process player image into different sizes, formats, and retina variants
     for (const [sizeName, sizeConfig] of Object.entries(PLAYER_SIZES)) {
       for (const format of IMAGE_FORMATS) {
-        for (const scale of RETINA_SCALES) {
-          const scaleSuffix = scale === 1 ? '' : `${scale}x`;
-          const filename = `${playerId}${sizeConfig.suffix}${scaleSuffix}.${format}`;
+        for (const scale of sizeConfig.retinaScales) {
+          const scaleSuffix = IMAGE_CONFIG.retina.suffixes[scale.toString()];
+          const filename = IMAGE_CONFIG.entities.players.fileNaming
+            .replace('{id}', playerId)
+            .replace('{size}', sizeConfig.suffix || sizeName)
+            .replace('{retina}', scaleSuffix)
+            .replace('{format}', format);
           const outputPath = path.join(playerDir, filename);
 
           // Calculate target dimensions
@@ -381,20 +391,21 @@ class ImageProcessor {
     try {
       let processor = sharp(inputBuffer)
         .resize(options.width, options.height, {
-          fit: 'cover',
-          position: 'center'
+          fit: IMAGE_CONFIG.processing.fit,
+          position: IMAGE_CONFIG.processing.position
         });
 
-      // Apply format-specific processing
+      // Apply format-specific processing using centralized quality settings
+      const quality = IMAGE_CONFIG.formats.quality[options.format];
       switch (options.format) {
         case 'avif':
-          processor = processor.avif({ quality: 85 });
+          processor = processor.avif({ quality });
           break;
         case 'webp':
-          processor = processor.webp({ quality: 85 });
+          processor = processor.webp({ quality });
           break;
         case 'png':
-          processor = processor.png({ quality: 85 });
+          processor = processor.png({ quality });
           break;
         default:
           throw new Error(`Unsupported format: ${options.format}`);
