@@ -17,6 +17,7 @@ import TeamPlayersLegend from '../components/TeamPlayersLegend'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
 import { useTeamDetail, useTeamPlayers, useTeamStatistics, useTeamUpcomingGames, useRankings } from '../hooks/useQueries'
+import { determineGameClass } from '../shared/types'
 
 function groupPlayersByPosition(players: any[]) {
   const categories = {
@@ -83,6 +84,7 @@ export default function TeamDetail() {
   } = useRankings({
     season: targetSeason,
     league: leagueId || undefined,
+    game_class: determineGameClass(team?.league?.name, players),
     leagueName: team?.league?.name,
     teamNames: team ? [team.name].filter(Boolean) : undefined
   }, !!team) // Enable rankings when team data is available

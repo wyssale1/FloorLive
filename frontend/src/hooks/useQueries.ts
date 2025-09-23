@@ -25,7 +25,7 @@ export const queryKeys = {
   },
   rankings: {
     all: ['rankings'] as const,
-    byLeague: (params: { season?: string; league?: string; leagueName?: string; teamNames?: string[] }) =>
+    byLeague: (params: { season?: string; league?: string; game_class?: string; leagueName?: string; teamNames?: string[] }) =>
       ['rankings', 'byLeague', params] as const,
   },
 } as const
@@ -151,6 +151,7 @@ export function usePlayerStatistics(playerId: string, enabled = true) {
 export function useRankings(params: {
   season?: string
   league?: string
+  game_class?: string
   leagueName?: string
   teamNames?: string[]
 }, enabled = true) {
