@@ -72,7 +72,6 @@ export function determineGameLiveStatus(
     // Outside time range
     status.status = timeStatus.status
     status.isLive = false
-    console.log('Game outside 3-hour window, not live')
   }
 
   return status

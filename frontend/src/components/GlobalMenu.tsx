@@ -142,10 +142,10 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
           initial="hidden"
           animate="visible"
           exit="exit"
-          className={`pt-6 ${className}`}
+          className={`pt-6 flex flex-col h-full ${className}`}
         >
           {/* Search Section */}
-          <motion.div variants={searchSectionVariants} className="mb-8">
+          <motion.div variants={searchSectionVariants} className="mb-8 flex-shrink-0">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-700 z-10" />
               <Input
@@ -170,7 +170,8 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
           </motion.div>
 
           {/* Content Section */}
-          <AnimatePresence mode="wait">
+          <div className="flex-1 flex flex-col min-h-0">
+            <AnimatePresence mode="wait">
             {showSearchResults ? (
               // Search Results
               <motion.div
@@ -179,7 +180,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                className="space-y-4 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
               >
                 {isSearching ? (
                   <div className="text-center py-8">
@@ -222,7 +223,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                 </div>
                                 <div className="flex-1">
                                   <div className="font-medium text-gray-900">{team.name}</div>
-                                  <div className="text-sm text-gray-500">{team.league}</div>
+                                  <div className="text-sm text-gray-500">{typeof team.league === 'string' ? team.league : team.league?.name || 'Swiss Unihockey'}</div>
                                 </div>
                               </div>
                             </motion.div>
@@ -266,7 +267,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                 </div>
                                 <div className="flex-1">
                                   <div className="font-medium text-gray-900">{player.name}</div>
-                                  <div className="text-sm text-gray-500">{player.team}</div>
+                                  <div className="text-sm text-gray-500">{typeof player.team === 'string' ? player.team : player.team?.name || 'Team not available'}</div>
                                 </div>
                               </div>
                             </motion.div>
@@ -287,7 +288,8 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
               // Shortcut Links
               <ShortcutLinks key="shortcuts" />
             )}
-          </AnimatePresence>
+            </AnimatePresence>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

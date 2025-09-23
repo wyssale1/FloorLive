@@ -104,11 +104,21 @@ export default function Home() {
 
   // Update state when URL changes
   useEffect(() => {
-    const newDate = getInitialDate()
-    if (newDate.getTime() !== selectedDate.getTime()) {
-      setSelectedDate(newDate)
+    if (search?.date && typeof search.date === 'string') {
+      try {
+        const newDate = parseISO(search.date)
+        if (newDate.getTime() !== selectedDate.getTime()) {
+          setSelectedDate(newDate)
+        }
+      } catch {
+        // Invalid date, fallback to current date
+        const today = new Date()
+        if (today.getTime() !== selectedDate.getTime()) {
+          setSelectedDate(today)
+        }
+      }
     }
-  }, [search?.date, selectedDate, getInitialDate])
+  }, [search?.date])
 
   if (isError) {
     return (
