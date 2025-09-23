@@ -32,4 +32,4 @@ backend/assets/**/*.temp
 
 # Keep processed images in git:
 # backend/assets/players/ - included
-# backend/assets/logos/ - included
+# backend/assets/teams/ - included

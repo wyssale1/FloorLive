@@ -10,7 +10,12 @@
       "Bash(timeout 10s npm run dev)",
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "WebFetch(domain:api-v2.swissunihockey.ch)",
+      "WebFetch(domain:100.99.89.57)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
