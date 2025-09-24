@@ -293,7 +293,7 @@ export default function TeamDetail() {
                                   showNumberBadge={true}
                                 />
                                 <div className="min-w-0">
-                                  <div className="text-sm font-medium text-gray-800">
+                                  <div className="text-xs font-medium text-gray-800">
                                     <PlayerLink 
                                       playerId={player.id && player.id.trim() ? player.id : ''} 
                                       playerName={player.name}
