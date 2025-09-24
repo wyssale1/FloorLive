@@ -1,9 +1,9 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { Trophy, Target, Clock, Home, ArrowLeft } from 'lucide-react'
+import { Trophy, Home, ArrowLeft } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../lib/apiClient'
-import type { Player, PlayerStatistics, PlayerGamePerformance } from '../shared/types'
+import type { Player, PlayerStatistics } from '../shared/types'
 import { Skeleton } from '../components/ui/skeleton'
 import TabsContainer from '../components/TabsContainer'
 import PlayerImage from '../components/PlayerImage'
@@ -13,15 +13,14 @@ import { useMetaTags, generatePlayerMeta } from '../hooks/useMetaTags'
 import { useEasterEggStore } from '../stores'
 import FloorballRain from '../components/FloorballRain'
 
+
 export default function PlayerDetail() {
   const { playerId } = useParams({ from: '/player/$playerId' })
   const [player, setPlayer] = useState<Player | null>(null)
   const [statistics, setStatistics] = useState<PlayerStatistics[]>([])
-  const [overview, setOverview] = useState<PlayerGamePerformance[]>([])
   const [loading, setLoading] = useState(true)
   const [tabsLoading, setTabsLoading] = useState({
-    statistics: false,
-    overview: false
+    statistics: false
   })
 
   // Easter egg store
@@ -79,10 +78,12 @@ export default function PlayerDetail() {
       try {
         const playerData = await apiClient.getPlayerDetails(playerId)
         setPlayer(playerData)
-        
-        // Load statistics by default
+
+        // Load statistics automatically
         setTabsLoading(prev => ({ ...prev, statistics: true }))
+
         const statsData = await apiClient.getPlayerStatistics(playerId)
+
         setStatistics(statsData)
         setTabsLoading(prev => ({ ...prev, statistics: false }))
       } catch (error) {
@@ -91,7 +92,7 @@ export default function PlayerDetail() {
         setLoading(false)
       }
     }
-    
+
     fetchPlayerData()
   }, [playerId])
 
@@ -111,19 +112,6 @@ export default function PlayerDetail() {
   }
   useMetaTags(metaOptions)
 
-  const loadOverview = async () => {
-    if (overview.length > 0) return // Already loaded
-    
-    setTabsLoading(prev => ({ ...prev, overview: true }))
-    try {
-      const overviewData = await apiClient.getPlayerOverview(playerId)
-      setOverview(overviewData)
-    } catch (error) {
-      console.error('Error fetching player overview:', error)
-    } finally {
-      setTabsLoading(prev => ({ ...prev, overview: false }))
-    }
-  }
 
   if (loading) {
     return (
@@ -422,82 +410,6 @@ export default function PlayerDetail() {
                       <Trophy className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                       <div className="text-gray-400 text-sm mb-1">No statistics available</div>
                       <div className="text-gray-500 text-xs">Player statistics will appear here once available</div>
-                    </div>
-                  )}
-                </div>
-              )
-            },
-            {
-              value: 'overview',
-              label: 'Game History',
-              content: (
-                <div
-                  onFocus={() => loadOverview()}
-                  onClick={() => loadOverview()}
-                  className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6"
-                >
-                  <h2 className="text-lg font-medium text-gray-800 mb-4">Game Performance</h2>
-                  
-                  {tabsLoading.overview ? (
-                    <div className="space-y-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Skeleton key={i} className="h-12 w-full" />
-                      ))}
-                    </div>
-                  ) : overview.length > 0 ? (
-                    <div className="space-y-3">
-                      {overview.map((game, index) => (
-                        <div key={index} className="border border-gray-100 rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2 text-sm">
-                              <Clock className="w-4 h-4 text-gray-400" />
-                              <span className="font-medium">{game.gameDate}</span>
-                              <span className="text-gray-500">{game.venue}</span>
-                            </div>
-                            <div className="text-sm text-gray-600">{game.gameScore}</div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-600">
-                              {game.homeTeamId ? (
-                                <Link 
-                                  to="/team/$teamId" 
-                                  params={{ teamId: game.homeTeamId }}
-                                  className="text-blue-600 hover:text-blue-800 hover:underline"
-                                >
-                                  {game.homeTeam}
-                                </Link>
-                              ) : (
-                                game.homeTeam
-                              )}{' '}
-                              vs{' '}
-                              {game.awayTeamId ? (
-                                <Link 
-                                  to="/team/$teamId" 
-                                  params={{ teamId: game.awayTeamId }}
-                                  className="text-blue-600 hover:text-blue-800 hover:underline"
-                                >
-                                  {game.awayTeam}
-                                </Link>
-                              ) : (
-                                game.awayTeam
-                              )}
-                            </div>
-                            <div className="flex items-center gap-4 text-sm">
-                              <span className="flex items-center gap-1">
-                                <Target className="w-3 h-3 text-gray-400" />
-                                {game.playerGoals}G {game.playerAssists}A
-                              </span>
-                              <span className="font-medium">{game.playerPoints}PTS</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <div className="text-gray-400 text-sm mb-1">No game history available</div>
-                      <div className="text-gray-500 text-xs">Game performance data will appear here once available</div>
                     </div>
                   )}
                 </div>

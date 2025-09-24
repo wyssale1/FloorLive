@@ -8,6 +8,13 @@ import { determineGameLiveStatus, shouldPollGameForUpdates } from '../lib/liveGa
 import { useGameEvents } from '../hooks/useQueries'
 import TeamLogo from './TeamLogo'
 import LiveBadge from './LiveBadge'
+import PlayerStatsIcons from './PlayerStatsIcons'
+
+interface PlayerPerformance {
+  goals: number
+  assists: number
+  points: number
+}
 
 interface GameCardProps {
   game: Game
@@ -15,9 +22,10 @@ interface GameCardProps {
   showDate?: boolean
   noPaddingOnMobile?: boolean
   currentGameId?: string // For highlighting the currently viewed game
+  playerPerformance?: PlayerPerformance // For showing player stats in player history
 }
 
-function GameCard({ game, className, showDate = false, noPaddingOnMobile = false, currentGameId }: GameCardProps) {
+function GameCard({ game, className, showDate = false, noPaddingOnMobile = false, currentGameId, playerPerformance }: GameCardProps) {
   // Check if we should fetch events for live detection
   const shouldFetchEvents = useMemo(() => {
     const initialStatus = determineGameLiveStatus(game, [])
@@ -174,6 +182,17 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
               }`}>
                 {formatDate(game.gameDate)}
               </div>
+              {/* Player performance stats next to date */}
+              {playerPerformance && (
+                <div className="mt-1">
+                  <PlayerStatsIcons
+                    goals={playerPerformance.goals}
+                    assists={playerPerformance.assists}
+                    points={playerPerformance.points}
+                    size="small"
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
