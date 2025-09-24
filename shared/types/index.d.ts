@@ -212,4 +212,44 @@ export interface PlayerGamePerformance {
     playerPoints: number;
     matchPenalties: number;
 }
+/**
+ * Utility function to determine game_class from league name and optional player data
+ * Based on Swiss Unihockey API patterns:
+ * - Men's leagues: game_class = '11'
+ * - Women's leagues: game_class = '21'
+ */
+export declare function determineGameClass(leagueName?: string, players?: any[]): string;
+export interface BaseEntity {
+    id: string;
+    name: string;
+    lastUpdated?: string;
+    ttl?: number;
+}
+export interface TeamEntity extends BaseEntity {
+    type: 'team';
+    shortName?: string;
+    logo?: string;
+    league?: string;
+}
+export interface PlayerEntity extends BaseEntity {
+    type: 'player';
+    teamId?: string;
+    team?: string;
+    position?: string;
+    profileImage?: string;
+}
+export type Entity = TeamEntity | PlayerEntity;
+export interface EntityMasterData {
+    version: string;
+    lastUpdated: string;
+    teams: Record<string, TeamEntity>;
+    players: Record<string, PlayerEntity>;
+    stats: {
+        totalTeams: number;
+        totalPlayers: number;
+    };
+    _metadata?: {
+        schema: string;
+    };
+}
 //# sourceMappingURL=index.d.ts.map

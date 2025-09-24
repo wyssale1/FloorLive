@@ -7,7 +7,7 @@ import {
   PlayerEntity,
   Entity,
   EntityMasterData
-} from '../shared/types/index.js';
+} from 'shared/types';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -131,7 +131,7 @@ export class EntityMasterService {
       const mergedTeams = { ...this.cache.teams };
       for (const [teamId, fileTeam] of Object.entries(fileData.teams)) {
         const cacheTeam = mergedTeams[teamId];
-        if (!cacheTeam || new Date(fileTeam.lastUpdated) >= new Date(cacheTeam.lastUpdated)) {
+        if (!cacheTeam || (fileTeam.lastUpdated && cacheTeam.lastUpdated && new Date(fileTeam.lastUpdated) >= new Date(cacheTeam.lastUpdated))) {
           mergedTeams[teamId] = fileTeam; // File data wins for conflicts
         }
       }
@@ -140,7 +140,7 @@ export class EntityMasterService {
       const mergedPlayers = { ...this.cache.players };
       for (const [playerId, filePlayer] of Object.entries(fileData.players)) {
         const cachePlayer = mergedPlayers[playerId];
-        if (!cachePlayer || new Date(filePlayer.lastUpdated) >= new Date(cachePlayer.lastUpdated)) {
+        if (!cachePlayer || (filePlayer.lastUpdated && cachePlayer.lastUpdated && new Date(filePlayer.lastUpdated) >= new Date(cachePlayer.lastUpdated))) {
           mergedPlayers[playerId] = filePlayer; // File data wins for conflicts
         }
       }
@@ -148,6 +148,9 @@ export class EntityMasterService {
       // Create final merged data
       const mergedData: EntityMasterData = {
         _metadata: {
+          description: "Master entity registry for Swiss Unihockey teams and players",
+          version: "1.0.0",
+          schema: "EntityMasterData",
           ...fileData._metadata,
           lastUpdated: new Date().toISOString()
         },
@@ -174,6 +177,7 @@ export class EntityMasterService {
 
   private isEntityExpired(entity: Entity): boolean {
     try {
+      if (!entity.ttl) return true;
       const ttlDate = new Date(entity.ttl);
       return new Date() > ttlDate;
     } catch (error) {
@@ -329,7 +333,7 @@ export class EntityMasterService {
       totalPlayers: players.length,
       expiredTeams: teams.filter(team => this.isEntityExpired(team)).length,
       expiredPlayers: players.filter(player => this.isEntityExpired(player)).length,
-      lastUpdated: this.cache!._metadata.lastUpdated
+      lastUpdated: this.cache!._metadata?.lastUpdated || new Date().toISOString()
     };
   }
 
