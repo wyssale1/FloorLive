@@ -32,27 +32,21 @@
           "height": 32,
           "css": "w-8 h-8",
           "suffix": "_small",
-          "retinaScales": [1, 2, 3],
-          "iconFallbackCss": "w-4 h-4",
-          "badgeCss": "w-4 h-4"
+          "retinaScales": [1, 2, 3]
         },
         "medium": {
           "width": 100,
           "height": 100,
           "css": "w-16 h-16 sm:w-20 sm:h-20",
           "suffix": "_medium",
-          "retinaScales": [1, 2],
-          "iconFallbackCss": "w-8 h-8 sm:w-10 sm:h-10",
-          "badgeCss": "w-5 h-5"
+          "retinaScales": [1, 2]
         },
         "large": {
           "width": 200,
           "height": 200,
           "css": "w-20 h-20 sm:w-24 sm:h-24",
           "suffix": "_large",
-          "retinaScales": [1, 2],
-          "iconFallbackCss": "w-12 h-12 sm:w-14 sm:h-14",
-          "badgeCss": "w-6 h-6"
+          "retinaScales": [1, 2]
         }
       }
     },
@@ -66,7 +60,6 @@
           "height": 32,
           "css": "w-5 h-5",
           "retinaScales": [1, 2],
-          "iconFallbackCss": "w-4 h-4",
           "containerCss": "w-8 h-8",
           "logoCss": "w-6 h-6"
         },
@@ -75,7 +68,6 @@
           "height": 200,
           "css": "w-16 h-16",
           "retinaScales": [1, 2],
-          "iconFallbackCss": "w-12 h-12",
           "containerCss": "w-16 h-16 sm:w-20 sm:h-20",
           "logoCss": "w-12 h-12 sm:w-16 sm:h-16"
         }
