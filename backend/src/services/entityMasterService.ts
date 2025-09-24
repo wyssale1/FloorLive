@@ -1,13 +1,49 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import {
-  BaseEntity,
-  TeamEntity,
-  PlayerEntity,
-  Entity,
-  EntityMasterData
-} from '../shared/types/index.js';
+
+// Entity management types for backend services
+export interface BaseEntity {
+  id: string;
+  name: string;
+  lastUpdated?: string;
+  ttl?: string;
+}
+
+export interface TeamEntity extends BaseEntity {
+  type: 'team';
+  shortName?: string;
+  logo?: string;
+  league?: string;
+}
+
+export interface PlayerEntity extends BaseEntity {
+  type: 'player';
+  teamId?: string;
+  team?: string;
+  position?: string;
+  profileImage?: string;
+}
+
+export type Entity = TeamEntity | PlayerEntity;
+
+export interface EntityMasterData {
+  version?: string;
+  lastUpdated?: string;
+  teams: Record<string, TeamEntity>;
+  players: Record<string, PlayerEntity>;
+  stats?: {
+    totalTeams: number;
+    totalPlayers: number;
+  };
+  _metadata?: {
+    version?: string;
+    schema?: string;
+    description: string;
+    lastUpdated: string;
+    instructions?: string;
+  };
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -131,7 +167,7 @@ export class EntityMasterService {
       const mergedTeams = { ...this.cache.teams };
       for (const [teamId, fileTeam] of Object.entries(fileData.teams)) {
         const cacheTeam = mergedTeams[teamId];
-        if (!cacheTeam || new Date(fileTeam.lastUpdated) >= new Date(cacheTeam.lastUpdated)) {
+        if (!cacheTeam || (fileTeam.lastUpdated && cacheTeam.lastUpdated && new Date(fileTeam.lastUpdated) >= new Date(cacheTeam.lastUpdated))) {
           mergedTeams[teamId] = fileTeam; // File data wins for conflicts
         }
       }
@@ -140,7 +176,7 @@ export class EntityMasterService {
       const mergedPlayers = { ...this.cache.players };
       for (const [playerId, filePlayer] of Object.entries(fileData.players)) {
         const cachePlayer = mergedPlayers[playerId];
-        if (!cachePlayer || new Date(filePlayer.lastUpdated) >= new Date(cachePlayer.lastUpdated)) {
+        if (!cachePlayer || (filePlayer.lastUpdated && cachePlayer.lastUpdated && new Date(filePlayer.lastUpdated) >= new Date(cachePlayer.lastUpdated))) {
           mergedPlayers[playerId] = filePlayer; // File data wins for conflicts
         }
       }
@@ -148,6 +184,9 @@ export class EntityMasterService {
       // Create final merged data
       const mergedData: EntityMasterData = {
         _metadata: {
+          description: "Master entity registry for Swiss Unihockey teams and players",
+          version: "1.0.0",
+          schema: "EntityMasterData",
           ...fileData._metadata,
           lastUpdated: new Date().toISOString()
         },
@@ -174,6 +213,7 @@ export class EntityMasterService {
 
   private isEntityExpired(entity: Entity): boolean {
     try {
+      if (!entity.ttl) return true;
       const ttlDate = new Date(entity.ttl);
       return new Date() > ttlDate;
     } catch (error) {
@@ -329,7 +369,7 @@ export class EntityMasterService {
       totalPlayers: players.length,
       expiredTeams: teams.filter(team => this.isEntityExpired(team)).length,
       expiredPlayers: players.filter(player => this.isEntityExpired(player)).length,
-      lastUpdated: this.cache!._metadata.lastUpdated
+      lastUpdated: this.cache!._metadata?.lastUpdated || new Date().toISOString()
     };
   }
 

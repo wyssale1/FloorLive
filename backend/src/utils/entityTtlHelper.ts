@@ -1,6 +1,5 @@
-import { entityMasterService } from '../services/entityMasterService.js';
+import { entityMasterService, TeamEntity, PlayerEntity } from '../services/entityMasterService.js';
 import { backgroundEntityService } from '../services/backgroundEntityService.js';
-import { TeamEntity, PlayerEntity } from '../shared/types/index.js';
 
 export interface TtlCheckResult {
   shouldRefresh: boolean;
@@ -114,6 +113,7 @@ export class EntityTtlHelper {
     }
 
     try {
+      if (!entity.ttl) return true;
       const now = new Date();
       const ttlDate = new Date(entity.ttl);
       return now > ttlDate; // Expired entities need refresh
