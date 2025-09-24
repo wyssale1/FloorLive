@@ -104,7 +104,7 @@ export default function PlayerImage({
         />
       </div>
       {showNumberBadge && jerseyNumber && (
-        <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
+        <div className={`text-2xs absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
           {jerseyNumber}
         </div>
       )}

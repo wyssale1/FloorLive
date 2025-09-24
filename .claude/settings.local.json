@@ -15,7 +15,8 @@
       "WebFetch(domain:100.99.89.57)",
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(git revert:*)"
     ],
     "deny": [],
     "ask": []
