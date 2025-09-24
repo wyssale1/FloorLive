@@ -280,15 +280,14 @@ export default function TeamDetail() {
                               className="flex items-center justify-between py-3 first:pt-0"
                             >
                               <div className="flex items-center space-x-3">
-                                <PlayerImage 
+                                <PlayerImage
                                   player={{
                                     id: player.id || '',
                                     name: player.name || '',
-                                    profileImage: player.profileImage // Legacy fallback
+                                    profileImage: player.profileImage
                                   }}
                                   size="small"
                                   className="flex-shrink-0"
-                                  imageInfo={player.imageInfo} // Pass image info from backend
                                   jerseyNumber={player.number}
                                   showNumberBadge={true}
                                 />

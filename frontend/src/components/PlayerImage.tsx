@@ -1,6 +1,5 @@
 import { User } from 'lucide-react';
-import OptimizedImage from './OptimizedImage';
-import { convertImageInfo } from '../lib/imageUtils';
+import ResponsiveCascadingImage from './ResponsiveCascadingImage';
 import { getImageUtils } from '../utils/imageConfigLoader';
 
 interface PlayerImageProps {
@@ -16,14 +15,6 @@ interface PlayerImageProps {
   hideCursor?: boolean;
   jerseyNumber?: string | number;
   showNumberBadge?: boolean;
-  imageInfo?: {
-    hasImage: boolean;
-    smallImageUrls?: {
-      avif: string;
-      webp: string;
-      png: string;
-    };
-  };
 }
 
 export default function PlayerImage({
@@ -34,8 +25,7 @@ export default function PlayerImage({
   onClick,
   hideCursor = false,
   jerseyNumber,
-  showNumberBadge = false,
-  imageInfo
+  showNumberBadge = false
 }: PlayerImageProps) {
 
   // Get CSS classes from centralized configuration
@@ -58,25 +48,6 @@ export default function PlayerImage({
     small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'badge' })
   };
 
-  // Convert imageInfo to the new format
-  const providedUrls = convertImageInfo(imageInfo, size === 'large' ? 'medium' : 'small');
-
-  // Determine image options for OptimizedImage
-  const imageOptions = {
-    // Use processed images if we have a player ID
-    baseId: player.id,
-    basePath: '/assets/players',
-    size: (size === 'large' ? 'medium' : 'small') as 'small' | 'medium',
-
-    // Use provided URLs if available
-    providedUrls,
-
-    // Fallback to legacy profile image
-    legacyUrl: player.profileImage,
-
-    enableResponsive: true
-  };
-  
   // Fallback component for when no image is available
   const FallbackIcon = fallbackIcon || (jerseyNumber ? (
     <span className="text-xs font-medium text-gray-700">
@@ -87,7 +58,7 @@ export default function PlayerImage({
   ));
 
   const fallbackComponent = (
-    <div className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center`}>
+    <div className={`bg-gray-100 rounded-full flex items-center justify-center`}>
       {FallbackIcon}
     </div>
   );
@@ -95,12 +66,16 @@ export default function PlayerImage({
   return (
     <div className={`relative inline-block ${className}`}>
       <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`} onClick={onClick}>
-        <OptimizedImage
-          {...imageOptions}
+        <ResponsiveCascadingImage
+          entityType="player"
+          entityId={player.id}
+          size={(size === 'large' ? 'medium' : 'small') as 'small' | 'medium'}
           alt={`${player.name} portrait`}
           className="w-full h-full object-cover"
           loading="lazy"
-          fallbackComponent={fallbackComponent}
+          onClick={onClick}
+          placeholder={fallbackComponent}
+          externalUrl={player.profileImage}
         />
       </div>
       {showNumberBadge && jerseyNumber && (

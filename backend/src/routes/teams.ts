@@ -186,48 +186,11 @@ router.get('/:teamId/players', async (req, res) => {
       }
     }
 
-    // Enhance players with image information (build-time processed assets)
-    const playersWithImages = await Promise.all((players as any[]).map(async player => {
-      if (!player.id) {
-        return {
-          ...player,
-          imageInfo: {
-            hasImage: false
-          }
-        };
-      }
-
-      // Check if player has processed images (build-time assets)
-      const hasImage = await assetService.hasPlayerImage(player.id);
-      if (hasImage) {
-        // Generate image URLs for team player list (including retina variants)
-        const imageUrls = await assetService.getPlayerImageUrls(player.id);
-
-        return {
-          ...player,
-          imageInfo: {
-            hasImage: true,
-            imageUrl: imageUrls.small?.webp || `/assets/players/player-${player.id}/${player.id}_small.webp`,
-            sizes: {
-              small: imageUrls.small,
-              medium: imageUrls.medium
-            }
-          }
-        };
-      }
-
-      return {
-        ...player,
-        imageInfo: {
-          hasImage: false
-        }
-      };
-    }));
-
+    // Return players as-is - frontend will generate asset URLs and handle cascading fallback
     res.json({
       teamId,
-      players: playersWithImages,
-      count: playersWithImages.length,
+      players: players,
+      count: (players as any[]).length,
       timestamp: new Date().toISOString()
     });
 
