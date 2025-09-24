@@ -34,7 +34,7 @@
           "suffix": "_small",
           "retinaScales": [1, 2, 3],
           "iconFallbackCss": "w-4 h-4",
-          "badgeCss": "w-4 h-4 text-[6px]"
+          "badgeCss": "w-4 h-4"
         },
         "medium": {
           "width": 100,
@@ -43,7 +43,7 @@
           "suffix": "_medium",
           "retinaScales": [1, 2],
           "iconFallbackCss": "w-8 h-8 sm:w-10 sm:h-10",
-          "badgeCss": "w-5 h-5 text-[7px]"
+          "badgeCss": "w-5 h-5"
         },
         "large": {
           "width": 200,
@@ -52,7 +52,7 @@
           "suffix": "_large",
           "retinaScales": [1, 2],
           "iconFallbackCss": "w-12 h-12 sm:w-14 sm:h-14",
-          "badgeCss": "w-6 h-6 text-[8px]"
+          "badgeCss": "w-6 h-6"
         }
       }
     },
