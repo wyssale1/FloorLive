@@ -7,7 +7,7 @@ import {
   PlayerEntity,
   Entity,
   EntityMasterData
-} from '../shared/types/index.js';
+} from '../../../shared/types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
