@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import * as fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getImageUtils } from '../utils/imageConfigLoader.js';
@@ -9,6 +10,8 @@ const __dirname = path.dirname(__filename);
 
 export class AssetService {
   private readonly ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
+  private assetDirectoryCache = new Map<string, { exists: boolean; timestamp: number }>();
+  private readonly CACHE_TTL = 3600000; // 1 hour in milliseconds
 
   /**
    * Check if an entity asset exists
@@ -44,6 +47,38 @@ export class AssetService {
    */
   async hasPlayerImage(playerId: string): Promise<boolean> {
     return this.hasEntityAsset('players', playerId, 'small');
+  }
+
+  /**
+   * Check if a player directory exists (optimized for performance)
+   * Uses simple directory check with caching
+   */
+  hasPlayerDirectory(playerId: string): boolean {
+    const cacheKey = `player-${playerId}`;
+    const cached = this.assetDirectoryCache.get(cacheKey);
+    const now = Date.now();
+
+    // Return cached result if still valid
+    if (cached && (now - cached.timestamp) < this.CACHE_TTL) {
+      return cached.exists;
+    }
+
+    // Check directory existence
+    const playerDir = path.join(this.ASSETS_DIR, 'players', `player-${playerId}`);
+    let exists: boolean;
+
+    try {
+      // Use synchronous check for better performance
+      const stats = fsSync.statSync(playerDir);
+      exists = stats.isDirectory();
+    } catch {
+      exists = false;
+    }
+
+    // Cache the result
+    this.assetDirectoryCache.set(cacheKey, { exists, timestamp: now });
+
+    return exists;
   }
 
   /**

@@ -101,7 +101,7 @@ export class ImageConfigUtils {
       case 'main':
         return sizeConfig.css;
       case 'iconFallback':
-        return sizeConfig.iconFallbackCss;
+        return sizeConfig.iconFallbackCss || '';
       case 'badge':
         return sizeConfig.badgeCss || '';
       case 'container':

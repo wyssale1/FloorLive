@@ -73,7 +73,7 @@ export default function Home() {
   usePageTitle(pageTitles.home(formattedDate))
   useMetaTags({
     title: pageTitles.home(formattedDate),
-    description: `Swiss Unihockey games and live scores for ${format(selectedDate, 'MMMM d, yyyy')}. Track your favorite teams and follow live games.`,
+    description: `Swiss Unihockey games and live scores for ${format(selectedDate, 'd. MMMM yyyy')}. Track your favorite teams and follow live games.`,
     type: 'website',
     url: `https://floorlive.ch${search?.date ? `?date=${search.date}` : ''}`
   })
@@ -126,7 +126,7 @@ export default function Home() {
         <div className="text-center py-12">
           <h2 className="text-xl font-semibold text-gray-800 mb-2">Unable to load games</h2>
           <p className="text-gray-600 mb-4">
-            There was an error loading games for {format(selectedDate, 'MMMM d, yyyy')}.
+            There was an error loading games for {format(selectedDate, 'd. MMMM yyyy')}.
           </p>
           <p className="text-sm text-gray-500">
             Please check your connection and try again.
@@ -167,7 +167,7 @@ export default function Home() {
           <div className="text-center py-12">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">No games scheduled</h2>
             <p className="text-gray-600">
-              There are no games scheduled for {format(selectedDate, 'MMMM d, yyyy')}.
+              There are no games scheduled for {format(selectedDate, 'd. MMMM yyyy')}.
             </p>
           </div>
         ) : (

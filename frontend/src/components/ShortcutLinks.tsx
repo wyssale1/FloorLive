@@ -26,12 +26,6 @@ const shortcuts: Shortcut[] = [
     external: false,
   },
   {
-    label: 'Teams',
-    to: '/', // For now, navigate to home - can be changed to /teams later
-    search: { date: undefined },
-    external: false,
-  },
-  {
     label: 'Official Page',
     href: 'https://www.swissunihockey.ch',
     external: true,

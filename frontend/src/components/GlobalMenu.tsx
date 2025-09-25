@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X } from 'lucide-react'
 import { Input } from './ui/input'
 import ShortcutLinks from './ShortcutLinks'
+import PlayerImage from './PlayerImage'
 import { useMenu } from '../contexts/MenuContext'
 import { apiClient } from '../lib/apiClient'
 
@@ -72,7 +73,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
     setLocalSearchQuery(query)
     setSearchQuery(query)
 
-    if (query.trim()) {
+    if (query.trim().length >= 2) {
       setIsSearching(true)
       // Debounce API calls (300ms)
       setTimeout(async () => {
@@ -80,7 +81,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
           const results = await apiClient.search(query.trim(), 20)
           setSearchResults(results)
         } catch (error) {
-          console.error('Search failed:', error)
+          console.error('Error performing search:', error)
           setSearchResults({ teams: [], players: [] })
         } finally {
           setIsSearching(false)
@@ -248,23 +249,18 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                               }}
                             >
                               <div className="flex items-center space-x-3">
-                                {player.hasImage ? (
-                                  <img
-                                    src={player.imageUrl}
-                                    alt={`${player.name} photo`}
-                                    className="w-8 h-8 rounded-full object-cover bg-gray-100"
-                                    loading="lazy"
-                                    onError={(e) => {
-                                      // Fallback to initials if image fails
-                                      const target = e.target as HTMLImageElement;
-                                      target.style.display = 'none';
-                                      target.nextElementSibling?.classList.remove('hidden');
-                                    }}
-                                  />
-                                ) : null}
-                                <div className={`w-8 h-8 rounded-full bg-green-500 text-white text-xs font-medium flex items-center justify-center ${player.hasImage ? 'hidden' : ''}`}>
-                                  {player.name.split(' ').map((word: string) => word[0]).join('').substring(0, 2).toUpperCase()}
-                                </div>
+                                <PlayerImage
+                                  player={{
+                                    id: player.id,
+                                    name: player.name,
+                                    hasProcessedImages: player.hasProcessedImages,
+                                    profileImage: player.hasImage ? player.imageUrl : undefined
+                                  }}
+                                  size="small"
+                                  className="flex-shrink-0"
+                                  jerseyNumber={player.jerseyNumber}
+                                  showNumberBadge={true}
+                                />
                                 <div className="flex-1">
                                   <div className="font-medium text-gray-900">{player.name}</div>
                                   <div className="text-sm text-gray-500">{typeof player.team === 'string' ? player.team : player.team?.name || 'Team not available'}</div>

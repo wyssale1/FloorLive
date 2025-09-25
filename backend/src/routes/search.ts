@@ -42,13 +42,15 @@ router.get('/', async (req, res) => {
       logoUrl: `/assets/teams/team-${team.id}/small.webp`
     })));
 
-    const formattedPlayers = await Promise.all(players.map(async player => ({
+    const formattedPlayers = players.map(player => ({
       id: player.id,
       name: player.name,
       team: player.team || null,
-      hasImage: await assetService.hasPlayerImage(player.id),
-      imageUrl: `/assets/players/player-${player.id}/${player.id}_small.webp`
-    })));
+      hasImage: assetService.hasPlayerDirectory(player.id),
+      hasProcessedImages: assetService.hasPlayerDirectory(player.id),
+      imageUrl: `/assets/players/player-${player.id}/${player.id}_small.webp`,
+      jerseyNumber: player.jerseyNumber || null
+    }));
 
     res.json({
       query: q.trim(),

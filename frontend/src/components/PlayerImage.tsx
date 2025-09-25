@@ -1,12 +1,11 @@
 import { User } from 'lucide-react';
-import OptimizedImage from './OptimizedImage';
-import { convertImageInfo } from '../lib/imageUtils';
 import { getImageUtils } from '../utils/imageConfigLoader';
 
 interface PlayerImageProps {
   player: {
     id: string;
     name: string;
+    hasProcessedImages?: boolean;
     profileImage?: string;
   };
   size?: 'large' | 'medium' | 'small';
@@ -16,15 +15,18 @@ interface PlayerImageProps {
   hideCursor?: boolean;
   jerseyNumber?: string | number;
   showNumberBadge?: boolean;
-  imageInfo?: {
-    hasImage: boolean;
-    smallImageUrls?: {
-      avif: string;
-      webp: string;
-      png: string;
-    };
-  };
 }
+
+// Sub-component: Jersey Number Badge
+const JerseyBadge = ({ jerseyNumber, showNumberBadge }: { jerseyNumber?: string | number; showNumberBadge?: boolean }) => {
+  if (!showNumberBadge || !jerseyNumber) return null;
+
+  return (
+    <div className="absolute -bottom-1.5 -right-1.5 w-4.5 h-4.5 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-2xs font-medium border border-white">
+      {jerseyNumber}
+    </div>
+  );
+};
 
 export default function PlayerImage({
   player,
@@ -34,81 +36,107 @@ export default function PlayerImage({
   onClick,
   hideCursor = false,
   jerseyNumber,
-  showNumberBadge = false,
-  imageInfo
+  showNumberBadge = false
 }: PlayerImageProps) {
 
-  // Get CSS classes from centralized configuration
+  // Shared constants and utilities
   const utils = getImageUtils();
-  const sizeClasses = {
-    large: utils.getCssClasses({ entityType: 'players', size: 'large', type: 'main' }),
-    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type: 'main' }),
-    small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'main' })
+  const COMMON_IMAGE_PROPS = {
+    alt: `${player.name} portrait`,
+    loading: 'lazy' as const,
+    className: "w-full h-full object-cover"
   };
 
-  const iconSizes = {
-    large: utils.getCssClasses({ entityType: 'players', size: 'large', type: 'iconFallback' }),
-    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type: 'iconFallback' }),
-    small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'iconFallback' })
+  // CSS class generators - centralized
+  const getCssClasses = (type: 'main' | 'iconFallback') => ({
+    large: utils.getCssClasses({ entityType: 'players', size: 'large', type }),
+    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type }),
+    small: utils.getCssClasses({ entityType: 'players', size: 'small', type })
+  });
+
+  const sizeClasses = getCssClasses('main');
+  const iconSizes = getCssClasses('iconFallback');
+
+  // Helper functions - extracted for reusability
+  const getSizesAttribute = (): string => {
+    const sizeMap = { small: '64px', large: '128px', medium: '96px' };
+    return sizeMap[size];
   };
 
-  const badgeSizes = {
-    large: utils.getCssClasses({ entityType: 'players', size: 'large', type: 'badge' }),
-    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type: 'badge' }),
-    small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'badge' })
+  const generateSrcSet = (format: string): string => {
+    const baseUrl = `/assets/players/player-${player.id}/${player.id}`;
+    const variants = [
+      `${baseUrl}_small.${format} 64w`,
+      `${baseUrl}_small2x.${format} 128w`,
+      `${baseUrl}_small3x.${format} 192w`,
+      `${baseUrl}_medium.${format} 96w`,
+      `${baseUrl}_medium2x.${format} 192w`,
+      `${baseUrl}_medium3x.${format} 288w`,
+      `${baseUrl}_large.${format} 128w`,
+      `${baseUrl}_large2x.${format} 256w`,
+      `${baseUrl}_large3x.${format} 384w`
+    ];
+    return variants.join(', ');
   };
 
-  // Convert imageInfo to the new format
-  const providedUrls = convertImageInfo(imageInfo, size === 'large' ? 'medium' : 'small');
+  // Shared container classes
+  const containerClasses = `${sizeClasses[size]} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`;
 
-  // Determine image options for OptimizedImage
-  const imageOptions = {
-    // Use processed images if we have a player ID
-    baseId: player.id,
-    basePath: '/assets/players',
-    size: (size === 'large' ? 'medium' : 'small') as 'small' | 'medium',
+  // Content generators - DRY principle
+  const renderProcessedImage = () => {
+    const sizesAttr = getSizesAttribute();
+    const fallbackSrc = `/assets/players/player-${player.id}/${player.id}_${size}.png`;
 
-    // Use provided URLs if available
-    providedUrls,
-
-    // Fallback to legacy profile image
-    legacyUrl: player.profileImage,
-
-    enableResponsive: true
+    return (
+      <picture className="w-full h-full">
+        <source srcSet={generateSrcSet('avif')} sizes={sizesAttr} type="image/avif" />
+        <source srcSet={generateSrcSet('webp')} sizes={sizesAttr} type="image/webp" />
+        <img src={fallbackSrc} srcSet={generateSrcSet('png')} sizes={sizesAttr} {...COMMON_IMAGE_PROPS} />
+      </picture>
+    );
   };
-  
-  // Fallback component for when no image is available
-  const FallbackIcon = fallbackIcon || (jerseyNumber ? (
-    <span className="text-xs font-medium text-gray-700">
-      {jerseyNumber}
-    </span>
-  ) : (
-    <User className={`${iconSizes[size]} text-gray-400`} />
-  ));
 
-  const fallbackComponent = (
-    <div className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center`}>
-      {FallbackIcon}
-    </div>
+  const renderApiImage = () => (
+    <img src={player.profileImage} {...COMMON_IMAGE_PROPS} />
   );
+
+  const renderFallbackContent = () => {
+    if (fallbackIcon) return fallbackIcon;
+
+    if (jerseyNumber) {
+      return (
+        <span className="text-xs font-medium text-gray-500">
+          {jerseyNumber}
+        </span>
+      );
+    }
+
+    return <User className={`${iconSizes[size]} text-gray-400`} />;
+  };
+
+  // Determine content type and render accordingly
+  const getImageContent = () => {
+    if (player.hasProcessedImages) {
+      return { content: renderProcessedImage(), needsCentering: false, showBadge: true };
+    }
+
+    if (player.profileImage) {
+      return { content: renderApiImage(), needsCentering: false, showBadge: true };
+    }
+
+    return { content: renderFallbackContent(), needsCentering: true, showBadge: !jerseyNumber };
+  };
+
+  // Single return - DRY principle applied
+  const { content, needsCentering, showBadge } = getImageContent();
+  const centeringClasses = needsCentering ? 'flex items-center justify-center' : '';
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`} onClick={onClick}>
-        <OptimizedImage
-          {...imageOptions}
-          alt={`${player.name} portrait`}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          fallbackComponent={fallbackComponent}
-        />
+      <div className={`${containerClasses} ${centeringClasses}`} onClick={onClick}>
+        {content}
       </div>
-      {showNumberBadge && jerseyNumber && (
-        <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
-          {jerseyNumber}
-        </div>
-      )}
+      <JerseyBadge jerseyNumber={jerseyNumber} showNumberBadge={showNumberBadge && showBadge} />
     </div>
   );
-
 }

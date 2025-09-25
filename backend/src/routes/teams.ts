@@ -36,15 +36,12 @@ router.get('/search', async (req, res) => {
     // Search using the master registry
     const teams = await entityMasterService.searchTeams(q.trim(), limitClamped);
 
-    // Format results for frontend with actual availability checks
-    // URLs are guaranteed to work via fallback middleware, but we check actual availability for UI
-    const results = await Promise.all(teams.map(async team => ({
+    // Format results for frontend
+    const results = teams.map(team => ({
       id: team.id,
       name: team.name,
-      league: team.league || 'Swiss Unihockey',
-      hasLogo: await assetService.hasTeamLogo(team.id),
-      logoUrl: `/assets/teams/team-${team.id}/small.webp`
-    })));
+      league: team.league || 'Swiss Unihockey'
+    }));
 
     res.json({
       query: q.trim(),
@@ -186,48 +183,16 @@ router.get('/:teamId/players', async (req, res) => {
       }
     }
 
-    // Enhance players with image information (build-time processed assets)
-    const playersWithImages = await Promise.all((players as any[]).map(async player => {
-      if (!player.id) {
-        return {
-          ...player,
-          imageInfo: {
-            hasImage: false
-          }
-        };
-      }
-
-      // Check if player has processed images (build-time assets)
-      const hasImage = await assetService.hasPlayerImage(player.id);
-      if (hasImage) {
-        // Generate image URLs for team player list (including retina variants)
-        const imageUrls = await assetService.getPlayerImageUrls(player.id);
-
-        return {
-          ...player,
-          imageInfo: {
-            hasImage: true,
-            imageUrl: imageUrls.small?.webp || `/assets/players/player-${player.id}/${player.id}_small.webp`,
-            sizes: {
-              small: imageUrls.small,
-              medium: imageUrls.medium
-            }
-          }
-        };
-      }
-
-      return {
-        ...player,
-        imageInfo: {
-          hasImage: false
-        }
-      };
+    // Add hasProcessedImages property to each player for frontend optimization
+    const enhancedPlayers = (players as any[]).map(player => ({
+      ...player,
+      hasProcessedImages: assetService.hasPlayerDirectory(player.id)
     }));
 
     res.json({
       teamId,
-      players: playersWithImages,
-      count: playersWithImages.length,
+      players: enhancedPlayers,
+      count: enhancedPlayers.length,
       timestamp: new Date().toISOString()
     });
 

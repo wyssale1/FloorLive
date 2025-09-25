@@ -2,7 +2,8 @@
   "_metadata": {
     "description": "Master entity registry for Swiss Unihockey teams and players",
     "version": "1.0.0",
-    "lastUpdated": "2025-09-20T12:28:25.980Z",
+    "schema": "EntityMasterData",
+    "lastUpdated": "2025-09-24T09:16:32.890Z",
     "instructions": "This file manages core entity data with TTL-based refresh. Feature services consume and extend this data."
   },
   "teams": {
@@ -525,6 +526,13 @@
       ],
       "lastUpdated": "2025-09-20T12:28:21.360Z",
       "ttl": "2025-09-27T12:28:21.360Z"
+    },
+    "429620": {
+      "type": "team",
+      "id": "429620",
+      "name": "HC Rychenberg Winterthur",
+      "lastUpdated": "2025-09-24T09:16:32.886Z",
+      "ttl": "2025-10-01T09:16:32.886Z"
     },
     "430010": {
       "type": "team",

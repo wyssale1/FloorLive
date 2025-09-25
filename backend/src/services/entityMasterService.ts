@@ -312,7 +312,11 @@ export class EntityMasterService {
       .filter(player =>
         player.name.toLowerCase().includes(normalizedQuery)
       )
-      .slice(0, limit);
+      .slice(0, limit)
+      .map(player => ({
+        ...player,
+        jerseyNumber: (player as any).number || player.jerseyNumber
+      }));
   }
 
   // Statistics and Health
