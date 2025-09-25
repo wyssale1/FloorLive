@@ -4,12 +4,10 @@
   "description": "Shared types and utilities for FloorLive",
   "main": "index.js",
   "types": "types/index.ts",
+  "type": "module",
   "exports": {
-    "./types": {
-      "types": "./types/index.ts",
-      "import": "./types/index.js",
-      "require": "./types/index.js"
-    }
+    "./types/*": "./types/*",
+    "./utils/*": "./utils/*"
   },
   "scripts": {
     "build": "tsc",
