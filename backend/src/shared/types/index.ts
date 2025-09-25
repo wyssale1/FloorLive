@@ -234,3 +234,47 @@ export interface PlayerGamePerformance {
   playerPoints: number;
   matchPenalties: number;
 }
+
+// Entity management types for backend services
+export interface BaseEntity {
+  id: string;
+  name: string;
+  lastUpdated?: string;
+  ttl?: string;
+}
+
+export interface TeamEntity extends BaseEntity {
+  type: 'team';
+  shortName?: string;
+  logo?: string;
+  league?: string;
+}
+
+export interface PlayerEntity extends BaseEntity {
+  type: 'player';
+  teamId?: string;
+  team?: string;
+  position?: string;
+  profileImage?: string;
+  jerseyNumber?: string;
+}
+
+export type Entity = TeamEntity | PlayerEntity;
+
+export interface EntityMasterData {
+  version?: string;
+  lastUpdated?: string;
+  teams: Record<string, TeamEntity>;
+  players: Record<string, PlayerEntity>;
+  stats?: {
+    totalTeams: number;
+    totalPlayers: number;
+  };
+  _metadata?: {
+    version?: string;
+    schema?: string;
+    description: string;
+    lastUpdated: string;
+    instructions?: string;
+  };
+}

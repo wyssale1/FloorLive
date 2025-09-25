@@ -1,6 +1,6 @@
 import { entityMasterService } from '../services/entityMasterService.js';
 import { backgroundEntityService } from '../services/backgroundEntityService.js';
-import { TeamEntity, PlayerEntity } from 'shared/types';
+import { TeamEntity, PlayerEntity } from '../shared/types/index.js';
 
 export interface TtlCheckResult {
   shouldRefresh: boolean;

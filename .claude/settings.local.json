@@ -21,7 +21,8 @@
       "Bash(curl:*)",
       "Bash(rm:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(timeout 5s npm start)"
     ],
     "deny": [],
     "ask": []
