@@ -1,4 +1,5 @@
 {
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(node:*)",
@@ -24,10 +25,11 @@
       "Bash(git diff:*)",
       "Bash(timeout 5s npm start)",
       "Bash(git show:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Read(//private/tmp/**)",
+      "Bash(PORT=3002 node index.js)"
     ],
     "deny": [],
     "ask": []
-  },
-  "includeCoAuthoredBy": false
+  }
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --exec tsx src/index.ts",
     "dev:host": "HOST=0.0.0.0 nodemon --exec tsx src/index.ts",
-    "build": "tsc && cp -r data dist/ && cp -r src/shared dist/ && cp package.json dist/",
+    "build": "tsc && cp -r data dist/ && cp package.json dist/",
     "start": "cd dist && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup-image-processor": "cd ../scripts && npm install",
