@@ -23,7 +23,8 @@
       "mcp__ide__getDiagnostics",
       "Bash(git diff:*)",
       "Bash(timeout 5s npm start)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []
