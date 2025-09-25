@@ -284,7 +284,8 @@ export default function TeamDetail() {
                                   player={{
                                     id: player.id || '',
                                     name: player.name || '',
-                                    profileImage: player.profileImage
+                                    profileImage: player.profileImage,
+                                    hasProcessedImages: player.hasProcessedImages
                                   }}
                                   size="small"
                                   className="flex-shrink-0"

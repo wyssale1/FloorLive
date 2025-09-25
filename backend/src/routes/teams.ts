@@ -36,15 +36,12 @@ router.get('/search', async (req, res) => {
     // Search using the master registry
     const teams = await entityMasterService.searchTeams(q.trim(), limitClamped);
 
-    // Format results for frontend with actual availability checks
-    // URLs are guaranteed to work via fallback middleware, but we check actual availability for UI
-    const results = await Promise.all(teams.map(async team => ({
+    // Format results for frontend
+    const results = teams.map(team => ({
       id: team.id,
       name: team.name,
-      league: team.league || 'Swiss Unihockey',
-      hasLogo: await assetService.hasTeamLogo(team.id),
-      logoUrl: `/assets/teams/team-${team.id}/small.webp`
-    })));
+      league: team.league || 'Swiss Unihockey'
+    }));
 
     res.json({
       query: q.trim(),
@@ -186,11 +183,16 @@ router.get('/:teamId/players', async (req, res) => {
       }
     }
 
-    // Return players as-is - frontend will generate asset URLs and handle cascading fallback
+    // Add hasProcessedImages property to each player for frontend optimization
+    const enhancedPlayers = (players as any[]).map(player => ({
+      ...player,
+      hasProcessedImages: assetService.hasPlayerDirectory(player.id)
+    }));
+
     res.json({
       teamId,
-      players: players,
-      count: (players as any[]).length,
+      players: enhancedPlayers,
+      count: enhancedPlayers.length,
       timestamp: new Date().toISOString()
     });
 
