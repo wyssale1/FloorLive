@@ -223,7 +223,7 @@ export interface BaseEntity {
     id: string;
     name: string;
     lastUpdated?: string;
-    ttl?: number;
+    ttl?: string;
 }
 export interface TeamEntity extends BaseEntity {
     type: 'team';
@@ -237,19 +237,24 @@ export interface PlayerEntity extends BaseEntity {
     team?: string;
     position?: string;
     profileImage?: string;
+    jerseyNumber?: string;
 }
 export type Entity = TeamEntity | PlayerEntity;
 export interface EntityMasterData {
-    version: string;
-    lastUpdated: string;
+    version?: string;
+    lastUpdated?: string;
     teams: Record<string, TeamEntity>;
     players: Record<string, PlayerEntity>;
-    stats: {
+    stats?: {
         totalTeams: number;
         totalPlayers: number;
     };
     _metadata?: {
-        schema: string;
+        version?: string;
+        schema?: string;
+        description: string;
+        lastUpdated: string;
+        instructions?: string;
     };
 }
 //# sourceMappingURL=index.d.ts.map

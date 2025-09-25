@@ -20,7 +20,8 @@
       "Bash(time ls:*)",
       "Bash(curl:*)",
       "Bash(rm:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(git diff:*)"
     ],
     "deny": [],
     "ask": []

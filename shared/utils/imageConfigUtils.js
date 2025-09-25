@@ -72,7 +72,7 @@ export class ImageConfigUtils {
             case 'main':
                 return sizeConfig.css;
             case 'iconFallback':
-                return sizeConfig.iconFallbackCss;
+                return sizeConfig.iconFallbackCss || '';
             case 'badge':
                 return sizeConfig.badgeCss || '';
             case 'container':
@@ -175,7 +175,7 @@ export class ImageConfigUtils {
                 return false;
             }
             // Check entities
-            for (const [entityType, entityConfig] of Object.entries(this.config.entities)) {
+            for (const [, entityConfig] of Object.entries(this.config.entities)) {
                 if (!entityConfig.basePath || !entityConfig.directoryNaming || !entityConfig.fileNaming) {
                     return false;
                 }
@@ -183,7 +183,7 @@ export class ImageConfigUtils {
                     return false;
                 }
                 // Check each size configuration
-                for (const [sizeName, sizeConfig] of Object.entries(entityConfig.sizes)) {
+                for (const [, sizeConfig] of Object.entries(entityConfig.sizes)) {
                     if (!sizeConfig.width || !sizeConfig.height || !sizeConfig.css) {
                         return false;
                     }

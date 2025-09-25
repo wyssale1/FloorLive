@@ -17,7 +17,7 @@ export interface SizeConfig {
     css: string;
     suffix?: string;
     retinaScales: number[];
-    iconFallbackCss: string;
+    iconFallbackCss?: string;
     badgeCss?: string;
     containerCss?: string;
     logoCss?: string;
