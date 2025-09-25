@@ -73,7 +73,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
     setLocalSearchQuery(query)
     setSearchQuery(query)
 
-    if (query.trim()) {
+    if (query.trim().length >= 2) {
       setIsSearching(true)
       // Debounce API calls (300ms)
       setTimeout(async () => {
@@ -81,7 +81,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
           const results = await apiClient.search(query.trim(), 20)
           setSearchResults(results)
         } catch (error) {
-          console.error('Search failed:', error)
+          console.error('Error performing search:', error)
           setSearchResults({ teams: [], players: [] })
         } finally {
           setIsSearching(false)
