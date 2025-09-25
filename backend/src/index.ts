@@ -136,9 +136,6 @@ app.get('/api', (req, res) => {
       game_statistics: '/api/games/:gameId/statistics',
       league_table: '/api/leagues/:leagueId/table',
       rankings: '/api/leagues/rankings',
-      logos: '/api/logos/team-:teamId/:size.:format',
-      logo_info: '/api/logos/team-:teamId/info',
-      logo_cache_stats: '/api/logos/cache/stats',
       health: '/health'
     },
     websocket: {
