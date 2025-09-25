@@ -300,6 +300,7 @@ export interface PlayerEntity extends BaseEntity {
   team?: string;
   position?: string;
   profileImage?: string;
+  jerseyNumber?: string;
 }
 
 export type Entity = TeamEntity | PlayerEntity;

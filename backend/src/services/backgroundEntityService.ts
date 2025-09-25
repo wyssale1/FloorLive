@@ -1,5 +1,6 @@
 import { SwissUnihockeyApiClient } from './swissUnihockeyApi.js';
-import { entityMasterService, TeamEntity, PlayerEntity } from './entityMasterService.js';
+import { entityMasterService } from './entityMasterService.js';
+import { TeamEntity, PlayerEntity } from 'shared/types';
 
 interface UpdateJob {
   id: string;
