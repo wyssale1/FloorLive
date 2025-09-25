@@ -2,8 +2,6 @@ import { promises as fs } from 'fs';
 import * as fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getImageUtils } from '../utils/imageConfigLoader.js';
-import type { EntityType, ImageSize } from '../shared/types/imageConfig.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,22 +10,16 @@ export class AssetService {
   private readonly ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
   private assetDirectoryCache = new Map<string, { exists: boolean; timestamp: number }>();
   private readonly CACHE_TTL = 3600000; // 1 hour in milliseconds
+  private readonly FORMATS = ['avif', 'webp', 'png'] as const;
+  private readonly SIZES = ['large', 'small'] as const;
 
   /**
-   * Check if an entity asset exists
+   * Check if an entity asset exists (simplified version)
    */
-  private async hasEntityAsset(entityType: EntityType, entityId: string, size: ImageSize = 'small'): Promise<boolean> {
+  private async hasEntityAsset(entityType: string, entityId: string, size: string = 'small'): Promise<boolean> {
     try {
-      const utils = await getImageUtils();
-      const url = utils.generateImageUrl({
-        entityType,
-        entityId,
-        size,
-        format: 'webp' // Check for webp as default
-      });
-
-      // Convert URL to file system path
-      const assetPath = path.join(this.ASSETS_DIR, url.replace('/assets/', ''));
+      // Simple path construction like old working version
+      const assetPath = path.join(this.ASSETS_DIR, entityType, `${entityType.slice(0, -1)}-${entityId}`, `${size}.webp`);
       await fs.access(assetPath);
       return true;
     } catch {
@@ -82,27 +74,20 @@ export class AssetService {
   }
 
   /**
-   * Generate URLs for an entity using centralized configuration
+   * Generate URLs for an entity (simplified version)
    */
-  private async generateEntityUrls(entityType: EntityType, entityId: string): Promise<Record<string, Record<string, string>>> {
-    const utils = await getImageUtils();
-    const sizes = utils.getAvailableSizes(entityType);
-    const formats = utils.getAvailableFormats();
+  private generateEntityUrls(entityType: string, entityId: string): Record<string, Record<string, string>> {
     const result: Record<string, Record<string, string>> = {};
 
     // Add development prefix if needed
     const isDevelopment = process.env.NODE_ENV !== 'production';
     const urlPrefix = isDevelopment ? 'http://localhost:3001' : '';
 
-    for (const size of sizes) {
+    for (const size of this.SIZES) {
       result[size] = {};
-      for (const format of formats) {
-        const url = utils.generateImageUrl({
-          entityType,
-          entityId,
-          size,
-          format
-        });
+      for (const format of this.FORMATS) {
+        // Simple URL generation like old working version
+        const url = `/assets/${entityType}/${entityType.slice(0, -1)}-${entityId}/${size}.${format}`;
         result[size][format] = `${urlPrefix}${url}`;
       }
     }
@@ -113,11 +98,11 @@ export class AssetService {
   /**
    * Get team logo URLs (build-time processed assets)
    */
-  async getTeamLogoUrls(teamId: string): Promise<{
+  getTeamLogoUrls(teamId: string): {
     large: Record<string, string>;
     small: Record<string, string>;
-  }> {
-    const urls = await this.generateEntityUrls('teams', teamId);
+  } {
+    const urls = this.generateEntityUrls('teams', teamId);
     return {
       large: urls.large || {},
       small: urls.small || {}
@@ -127,17 +112,28 @@ export class AssetService {
   /**
    * Get player image URLs (build-time processed assets)
    */
-  async getPlayerImageUrls(playerId: string): Promise<Record<string, Record<string, string>>> {
+  getPlayerImageUrls(playerId: string): Record<string, Record<string, string>> {
     return this.generateEntityUrls('players', playerId);
   }
 
   /**
-   * Create image metadata for API responses
+   * Create image metadata for API responses (simplified)
    */
-  async createImageMetadata(entityType: EntityType, entityId: string): Promise<any> {
-    const utils = await getImageUtils();
+  async createImageMetadata(entityType: string, entityId: string): Promise<any> {
     const hasImage = await this.hasEntityAsset(entityType, entityId);
-    return utils.createImageMetadata(entityType, entityId, hasImage);
+
+    // Simple metadata creation like old working version
+    if (!hasImage) {
+      return {
+        hasImage: false,
+        urls: null
+      };
+    }
+
+    return {
+      hasImage: true,
+      urls: this.generateEntityUrls(entityType, entityId)
+    };
   }
 }
 
