@@ -8,4 +8,4 @@ export {
   Player,
   PlayerStatistics,
   PlayerGamePerformance
-} from '../shared/types/index.js';
+} from '../../shared/types/index.js';

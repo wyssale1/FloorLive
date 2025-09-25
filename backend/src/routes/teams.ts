@@ -2,8 +2,6 @@ import { Router } from 'express';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
-import { backgroundEntityService } from '../services/backgroundEntityService.js';
-import { EntityTtlHelper } from '../utils/entityTtlHelper.js';
 import { assetService } from '../services/assetService.js';
 
 const router = Router();
@@ -83,18 +81,6 @@ router.get('/:teamId', async (req, res) => {
       cache.set(cacheKey, team, 3600000);
     }
 
-    // Check TTL and schedule refresh if needed (unified logic)
-    const teamName = (team as any).name || `Team ${teamId}`;
-    const ttlResult = await EntityTtlHelper.checkAndScheduleTeamRefresh(teamId, teamName);
-
-    // Only log when refresh is actually needed (optional - for debugging)
-    if (ttlResult.shouldRefresh) {
-      if (ttlResult.isNewEntity) {
-        console.log(`🆕 New team discovered: ${teamName} (${teamId})`);
-      } else {
-        console.log(`🔄 Team ${teamName} (${teamId}) TTL expired - scheduled refresh`);
-      }
-    }
 
     res.json(team);
 
@@ -146,23 +132,9 @@ router.get('/:teamId/players', async (req, res) => {
         console.warn('Could not get team name, using default');
       }
 
-      // Process players for TTL checking (entity registry updates)
-      for (const player of (players as any[])) {
-        if (player.id) {
-          const playerName = player.name || `Player ${player.id}`;
-
-          // Check TTL and schedule refresh if needed (unified logic)
-          await EntityTtlHelper.checkAndSchedulePlayerRefresh(
-            player.id,
-            playerName,
-            teamName,
-            teamId
-          );
-        }
-      }
     } catch (error) {
-      // Don't fail the request if TTL processing fails
-      console.error('Error processing players TTL for team:', teamId, error);
+      // Continue without additional processing if team data fails
+      console.error('Error processing team players:', teamId, error);
     }
 
     // Check for duplicate jersey numbers (debug logging)

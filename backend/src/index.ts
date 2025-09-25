@@ -17,7 +17,6 @@ import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
 import { SEOService } from './services/seoService.js';
-import { assetFallbackMiddleware } from './middleware/assetFallbackMiddleware.js';
 
 // Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -83,8 +82,7 @@ app.use('/assets/teams', express.static(teamsAssetsPath, assetsOptions));
 app.use('/api/assets/players', express.static(playersAssetsPath, assetsOptions));
 app.use('/api/assets/teams', express.static(teamsAssetsPath, assetsOptions));
 
-// Asset fallback middleware - handles format fallbacks AFTER static middleware
-app.use(assetFallbackMiddleware);
+// Simplified asset serving - let frontend handle missing images gracefully
 
 // Asset-specific 404 handler - prevents downloads of non-existent assets
 app.use('/assets/', (req, res, next) => {

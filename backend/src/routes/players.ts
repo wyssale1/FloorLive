@@ -3,8 +3,6 @@ import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
 import { assetService } from '../services/assetService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
-import { backgroundEntityService } from '../services/backgroundEntityService.js';
-import { EntityTtlHelper } from '../utils/entityTtlHelper.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -110,16 +108,6 @@ router.get('/:playerId', async (req, res) => {
       teamName = (player as any).currentSeason.team;
     }
 
-    const ttlResult = await EntityTtlHelper.checkAndSchedulePlayerRefresh(playerId, playerName, teamName, teamId);
-
-    // Only log when refresh is actually needed (optional - for debugging)
-    if (ttlResult.shouldRefresh) {
-      if (ttlResult.isNewEntity) {
-        console.log(`🆕 New player discovered: ${playerName} (${playerId})`);
-      } else {
-        console.log(`🔄 Player ${playerName} (${playerId}) TTL expired - scheduled refresh`);
-      }
-    }
 
     res.json({ player });
 
