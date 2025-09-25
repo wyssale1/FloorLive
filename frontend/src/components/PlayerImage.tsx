@@ -28,9 +28,6 @@ export default function PlayerImage({
   showNumberBadge = false
 }: PlayerImageProps) {
 
-  // TEMPORARY DEBUG LOG - Remove after testing
-  console.log(`PlayerImage Debug - ID: ${player.id}, Name: ${player.name}, hasProcessedImages: ${player.hasProcessedImages}, profileImage: ${player.profileImage ? 'HAS_URL' : 'NO_URL'}`);
-
   // Get CSS classes from centralized configuration
   const utils = getImageUtils();
   const sizeClasses = {
