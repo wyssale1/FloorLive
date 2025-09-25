@@ -3,7 +3,7 @@ import * as fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getImageUtils } from '../utils/imageConfigLoader.js';
-import type { EntityType, ImageSize } from '../../shared/types/imageConfig.js';
+import type { EntityType, ImageSize } from '../shared/types/imageConfig.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

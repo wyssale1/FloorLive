@@ -6,8 +6,8 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import type { ImageConfig } from '../../shared/types/imageConfig.js';
-import { ImageConfigUtils } from '../../shared/utils/imageConfigUtils.js';
+import type { ImageConfig } from '../shared/types/imageConfig.js';
+import { ImageConfigUtils } from '../shared/utils/imageConfigUtils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +19,7 @@ class ImageConfigLoader {
 
   constructor() {
     // Path to shared config file
-    this.configPath = path.join(__dirname, '..', '..', 'shared/imageConfig.json');
+    this.configPath = path.join(__dirname, '..', 'shared/imageConfig.json');
   }
 
   /**
