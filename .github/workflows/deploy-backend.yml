@@ -1,50 +1,18 @@
-name: Deploy Frontend
+name: Deploy Backend
 
 on:
   push:
     branches:
-      - main   # deploy when pushing to main
+      - main
+    paths:
+      - 'backend/**'
+      - 'shared/**'
+      - '!backend/assets/**'  # Exclude assets - they have their own workflow
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
-  frontend:
-    name: Deploy Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: './frontend/package-lock.json'
-
-      - name: Install & Build Frontend
-        run: |
-          cd frontend
-          rm -rf node_modules package-lock.json
-          npm install
-          # Ensure rollup native binary is properly installed
-          npm install @rollup/rollup-linux-x64-gnu --save-optional || true
-          # Debug: Check if rollup binary exists
-          ls -la node_modules/@rollup/ || echo "No @rollup directory found"
-          npm run build
-
-      - name: Rename _htaccess to .htaccess
-        run: mv frontend/dist/_htaccess frontend/dist/.htaccess
-
-      - name: Deploy Frontend via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./frontend/dist/
-          server-dir: /public_html/floorlive_frontend/
-
   backend:
-    name: Deploy Backend
+    name: Deploy Backend Code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -67,17 +35,19 @@ jobs:
       - name: Prepare Backend Files for Deployment
         run: |
           mkdir -p backend-deploy
+          # Copy compiled JavaScript code
           cp -r backend/dist backend-deploy/
+          # Copy package files for production dependencies
           cp backend/package*.json backend-deploy/
-          # Copy processed images/assets (processed locally via npm run process-images)
-          if [ -d "backend/assets" ]; then
-            cp -r backend/assets backend-deploy/
-            echo "Copied $(find backend/assets -type f | wc -l) asset files"
-          fi
-          # Create a simple restart file for cPanel
+          # Create deployment metadata
           echo "Backend deployed at $(date)" > backend-deploy/restart.txt
+          echo "Git commit: $(git rev-parse --short HEAD)" >> backend-deploy/restart.txt
+          # Show what we're deploying
+          echo "Backend deployment contents:"
+          find backend-deploy -type f | head -20
+          echo "Total backend files: $(find backend-deploy -type f | wc -l)"
 
-      - name: Deploy Backend via FTP (Incremental)
+      - name: Deploy Backend via FTP (Code Only - Fast!)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -96,6 +66,7 @@ jobs:
             **/*.tmp
             **/*.temp
             **/node_modules/
+            **/assets/  # Assets handled by separate workflow
           # Log changed files for debugging
           log-level: verbose
 
@@ -109,3 +80,11 @@ jobs:
             # Navigate to app directory and restart using CloudLinux Node.js Selector
             cd ~/app/floorlive_backend
             cloudlinux-selector restart --json --interpreter nodejs --app-root ~/app/floorlive_backend
+
+      - name: Backend Deployment Summary
+        run: |
+          echo "🚀 Backend deployment completed!"
+          echo "📦 Deployed: $(find backend-deploy -type f | wc -l) files"
+          echo "💻 Commit: $(git rev-parse --short HEAD)"
+          echo "🕒 Timestamp: $(date)"
+          echo "⚡ Fast deployment - no assets uploaded!"

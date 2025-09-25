@@ -1,0 +1,74 @@
+name: Deploy Assets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/assets/**'  # Only trigger when assets change
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      force_full_upload:
+        description: 'Force full asset re-upload'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  assets:
+    name: Deploy Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check assets size
+        run: |
+          echo "Assets folder size:"
+          du -sh backend/assets
+          echo "Number of asset files:"
+          find backend/assets -type f | wc -l
+
+      - name: Prepare Assets for Deployment
+        run: |
+          mkdir -p assets-deploy
+          # Copy processed images/assets
+          if [ -d "backend/assets" ]; then
+            cp -r backend/assets assets-deploy/
+            echo "Copied $(find backend/assets -type f | wc -l) asset files"
+            echo "Total size: $(du -sh backend/assets | cut -f1)"
+          else
+            echo "No assets directory found"
+            exit 1
+          fi
+          # Create deployment timestamp
+          echo "Assets deployed at $(date)" > assets-deploy/assets-deploy.txt
+
+      - name: Deploy Assets via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./assets-deploy/assets/
+          server-dir: /app/floorlive_backend/assets/
+          # Use git-based comparison for incremental uploads (unless force)
+          state-name: assets-deploy-state
+          dry-run: false
+          # Exclude temporary files
+          exclude: |
+            **/.DS_Store
+            **/Thumbs.db
+            **/*.tmp
+            **/*.temp
+          # Force full upload if requested
+          force: ${{ github.event.inputs.force_full_upload == 'true' }}
+          # Log details for debugging
+          log-level: verbose
+
+      - name: Assets Deployment Summary
+        run: |
+          echo "✅ Assets deployment completed!"
+          echo "📁 Deployed: $(find backend/assets -type f | wc -l) files"
+          echo "📊 Size: $(du -sh backend/assets | cut -f1)"
+          echo "🕒 Timestamp: $(date)"
