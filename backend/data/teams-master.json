@@ -1,9 +1,0 @@
-{
-  "_metadata": {
-    "description": "Master team mapping for Swiss Unihockey teams",
-    "lastUpdated": "2025-09-19T16:00:00.000Z",
-    "version": "1.0.0",
-    "instructions": "This file can be manually edited to add aliases and displayNames. The system will only add new teams or update logo cache info, never overwrite manual changes."
-  },
-  "teams": {}
-}

@@ -23,6 +23,7 @@ export interface PlayerEntity extends BaseEntity {
   team?: string;
   position?: string;
   profileImage?: string;
+  jerseyNumber?: string;
 }
 
 export type Entity = TeamEntity | PlayerEntity;
@@ -348,7 +349,11 @@ export class EntityMasterService {
       .filter(player =>
         player.name.toLowerCase().includes(normalizedQuery)
       )
-      .slice(0, limit);
+      .slice(0, limit)
+      .map(player => ({
+        ...player,
+        jerseyNumber: (player as any).number || player.jerseyNumber
+      }));
   }
 
   // Statistics and Health
