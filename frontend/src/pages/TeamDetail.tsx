@@ -1,6 +1,6 @@
 import { useParams } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { Users, Trophy, Target, Globe, User, Hash, Calendar } from 'lucide-react'
+import { Users, Target, Globe, User, Hash, Calendar } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { extractLeagueId } from '../lib/utils'

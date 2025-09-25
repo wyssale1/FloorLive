@@ -37,9 +37,7 @@ export default function ResponsiveCascadingImage({
 
   const {
     srcSets,
-    cascadingUrls,
-    devicePixelRatio,
-    isHighDPI
+    cascadingUrls
   } = useResponsiveAssetUrlsWithDPR(entityType, entityId, size, externalUrl);
 
   const formats = ['avif', 'webp', 'png'] as const;

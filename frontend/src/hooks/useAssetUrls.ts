@@ -214,5 +214,5 @@ export function useAssetUrlArray(
   ];
 
   // Filter out undefined/empty URLs
-  return urls.filter(url => url && url.length > 0);
+  return urls.filter((url): url is string => url != null && url.length > 0);
 }
