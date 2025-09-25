@@ -68,9 +68,6 @@ app.use('/api/debug', debugRouter);
 // SEO routes (no /api prefix for sitemap.xml)
 app.use('/', sitemapRouter);
 
-// Asset fallback middleware - handles missing asset files with intelligent fallbacks
-app.use(assetFallbackMiddleware);
-
 // Static assets serving - use absolute path to ensure it works regardless of working directory
 const playersAssetsPath = path.join(__dirname, '..', 'assets', 'players');
 const teamsAssetsPath = path.join(__dirname, '..', 'assets', 'teams');
@@ -80,11 +77,21 @@ const assetsOptions = {
   lastModified: true
 };
 
-// Serve player and team assets
+// Serve player and team assets FIRST - this allows natural 404s for missing files
 app.use('/assets/players', express.static(playersAssetsPath, assetsOptions));
 app.use('/assets/teams', express.static(teamsAssetsPath, assetsOptions));
 app.use('/api/assets/players', express.static(playersAssetsPath, assetsOptions));
 app.use('/api/assets/teams', express.static(teamsAssetsPath, assetsOptions));
+
+// Asset fallback middleware - handles format fallbacks AFTER static middleware
+app.use(assetFallbackMiddleware);
+
+// Asset-specific 404 handler - prevents downloads of non-existent assets
+app.use('/assets/', (req, res, next) => {
+  // If we reach this point, the asset doesn't exist
+  // Close the connection without sending any response
+  res.destroy();
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -167,6 +174,12 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 // 404 handler
 app.use((req, res) => {
+  // For asset paths, return empty 404 to trigger reliable img.onError events
+  if (req.path.startsWith('/assets/')) {
+    return res.status(404).end();
+  }
+
+  // For API routes, return structured JSON error
   res.status(404).json({
     error: 'Not found',
     message: `Route ${req.method} ${req.path} not found`,

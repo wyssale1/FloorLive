@@ -42,11 +42,6 @@ export default function PlayerImage({
     small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'iconFallback' })
   };
 
-  const badgeSizes = {
-    large: utils.getCssClasses({ entityType: 'players', size: 'large', type: 'badge' }),
-    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type: 'badge' }),
-    small: utils.getCssClasses({ entityType: 'players', size: 'small', type: 'badge' })
-  };
 
   // Generate responsive sizes based on component size
   const getSizesAttribute = () => {
@@ -103,7 +98,7 @@ export default function PlayerImage({
           </picture>
         </div>
         {showNumberBadge && jerseyNumber && (
-          <div className={`text-2xs absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
+          <div className="absolute -bottom-1.5 -right-1.5 w-4.5 h-4.5 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-2xs font-medium border border-white">
             {jerseyNumber}
           </div>
         )}
@@ -124,7 +119,7 @@ export default function PlayerImage({
           />
         </div>
         {showNumberBadge && jerseyNumber && (
-          <div className={`text-2xs absolute -bottom-1 -right-1 ${badgeSizes[size]} bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-medium border border-white`}>
+          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-2xs font-medium border border-white">
             {jerseyNumber}
           </div>
         )}

@@ -16,7 +16,10 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(mkdir:*)",
-      "Bash(git revert:*)"
+      "Bash(git revert:*)",
+      "Bash(time ls:*)",
+      "Bash(curl:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

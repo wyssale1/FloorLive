@@ -16,7 +16,7 @@ import PlayerImage from '../components/PlayerImage'
 import TeamPlayersLegend from '../components/TeamPlayersLegend'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
-import { useTeamDetail, useTeamPlayers, useTeamStatistics, useTeamUpcomingGames, useRankings } from '../hooks/useQueries'
+import { useTeamDetail, useTeamPlayers, useTeamUpcomingGames, useRankings } from '../hooks/useQueries'
 import { determineGameClass } from '../shared/types'
 
 function groupPlayersByPosition(players: any[]) {
@@ -53,7 +53,6 @@ export default function TeamDetail() {
   // Use React Query hooks for all data fetching
   const { data: team, isLoading: teamLoading } = useTeamDetail(teamId)
   const { data: players = [], isLoading: playersLoading } = useTeamPlayers(teamId)
-  const { data: statistics } = useTeamStatistics(teamId)
   const { data: upcomingGames = [], isLoading: gamesLoading } = useTeamUpcomingGames(teamId, false) // Lazy load
   
 
@@ -428,86 +427,20 @@ export default function TeamDetail() {
         ]}
       />
 
-      {/* Team Statistics and Portrait below tabs */}
-      {(statistics || team.portrait) && (
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Team Statistics */}
-          {statistics && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6"
-            >
-              <div className="flex items-center space-x-2 mb-4">
-                <Trophy className="w-4 h-4 text-gray-600" />
-                <h2 className="text-lg font-medium text-gray-800">Team History</h2>
-              </div>
-
-              {/* Achievements */}
-              {statistics.achievements && statistics.achievements.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Achievements</h3>
-                  <div className="space-y-2">
-                    {statistics.achievements.slice(0, 5).map((achievement: any, index: number) => (
-                      <div key={index} className="p-3 bg-white/40 rounded-lg border border-gray-100">
-                        <div className="text-sm font-medium text-gray-800">
-                          {achievement.competition}
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">
-                          {achievement.season} - {achievement.result}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Season Statistics */}
-              {statistics.seasons && statistics.seasons.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Recent Seasons</h3>
-                  <div className="space-y-2">
-                    {statistics.seasons.slice(0, 3).map((season: any, index: number) => (
-                      <div key={index} className="p-3 bg-white/40 rounded-lg border border-gray-100">
-                        <div className="text-sm font-medium text-gray-800">
-                          {season.season}
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">
-                          {season.league}
-                        </div>
-                        {season.position && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            Position: {season.position}
-                          </div>
-                        )}
-                        {(season.games > 0 || season.wins > 0) && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            {season.games} games • {season.wins} wins
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {/* Team Portrait */}
-          {team.portrait && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6"
-            >
-              <h2 className="text-lg font-medium text-gray-800 mb-4">About the Team</h2>
-              <div className="text-sm text-gray-600 leading-relaxed">
-                {team.portrait}
-              </div>
-            </motion.div>
-          )}
+      {/* Team Portrait below tabs */}
+      {team.portrait && (
+        <div className="mt-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6"
+          >
+            <h2 className="text-lg font-medium text-gray-800 mb-4">About the Team</h2>
+            <div className="text-sm text-gray-600 leading-relaxed">
+              {team.portrait}
+            </div>
+          </motion.div>
         </div>
       )}
     </div>
