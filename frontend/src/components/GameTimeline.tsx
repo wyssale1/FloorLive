@@ -35,7 +35,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     const bestPlayerEvents: GameEvent[] = []
 
     events.forEach(event => {
-      if (event.event_type === 'best_player') {
+      if (event.eventType === 'best_player') {
         bestPlayerEvents.push(event)
       } else {
         processedEvents.push(event)
@@ -46,16 +46,16 @@ export default function GameTimeline({ events }: GameTimelineProps) {
     if (bestPlayerEvents.length > 0) {
       // Create a combined best player event
       const combinedEvent: ExtendedGameEvent = {
-        id: `combined-best-players-${bestPlayerEvents[0].game_id}`,
-        game_id: bestPlayerEvents[0].game_id,
+        id: `combined-best-players-${bestPlayerEvents[0].gameId}`,
+        gameId: bestPlayerEvents[0].gameId,
         time: bestPlayerEvents[0].time,
         type: 'other',
         player: '',
         team: 'home',
-        team_side: 'neutral',
-        event_type: 'best_player_combined',
+        teamSide: 'neutral',
+        eventType: 'best_player_combined',
         icon: 'star',
-        display_as: 'neutral',
+        displayAs: 'neutral',
         description: 'Beste Spieler',
         // Store the individual events for rendering
         bestPlayerEvents: bestPlayerEvents
@@ -63,7 +63,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
 
       // Find "Spielende" event and insert best players just after it (so they appear before it visually)
       const spielendeIndex = processedEvents.findIndex(e => 
-        e.description === 'Spielende' || e.event_type === 'game_end'
+        e.description === 'Spielende' || e.eventType === 'game_end'
       )
       
       if (spielendeIndex !== -1) {
@@ -83,7 +83,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
   const parseGoalInfo = (event: GameEvent) => {
     // Handle both regular goals and eigentor (own goals)
     const isEigentor = event.description?.includes('Eigentor')
-    if (event.event_type !== 'goal' && !isEigentor) return null
+    if (event.eventType !== 'goal' && !isEigentor) return null
 
     // Extract score from description like "Torschütze 4:4" or "Eigentor 5:7"
     const scoreMatch = event.description?.match(/(\d+):(\d+)/)
@@ -100,8 +100,8 @@ export default function GameTimeline({ events }: GameTimelineProps) {
       // But the goal goes to the opposing team
       scoringTeam = event.team === 'home' ? 'away' : 'home'
     } else {
-      // Regular goals use team_side
-      scoringTeam = event.team_side === 'home' ? 'home' : 'away'
+      // Regular goals use teamSide
+      scoringTeam = event.teamSide === 'home' ? 'home' : 'away'
     }
 
     return {
@@ -146,13 +146,13 @@ export default function GameTimeline({ events }: GameTimelineProps) {
   }
 
   const is2MinPenalty = (event: GameEvent) => {
-    return event.event_type === 'penalty' && 
+    return event.eventType === 'penalty' && 
            (event.description?.includes('2min') || event.description?.includes("2'"))
   }
 
 
   const renderPlayerInfo = (event: GameEvent) => {
-    if (event.event_type === 'timeout') {
+    if (event.eventType === 'timeout') {
       return "Timeout"
     }
     const goalInfo = parseGoalInfo(event)
@@ -184,8 +184,8 @@ export default function GameTimeline({ events }: GameTimelineProps) {
       
       <div className="space-y-4 py-4">
         {sortedEvents.map((event, index) => {
-          // Use backend's display_as field to determine layout
-          if (event.display_as === 'badge') {
+          // Use backend's displayAs field to determine layout
+          if (event.displayAs === 'badge') {
             return (
               <motion.div
                 key={event.id}
@@ -203,9 +203,9 @@ export default function GameTimeline({ events }: GameTimelineProps) {
             )
           }
 
-          // Inline events - use team_side, but for timeouts use team field since they have neutral team_side
+          // Inline events - use teamSide, but for timeouts use team field since they have neutral teamSide
           // For eigentor events, treat them as goal events and use the team that actually scored
-          const isTimeoutEvent = event.event_type === 'timeout'
+          const isTimeoutEvent = event.eventType === 'timeout'
           const isEigentor = event.description?.includes('Eigentor')
 
           let isHomeTeam: boolean
@@ -216,18 +216,18 @@ export default function GameTimeline({ events }: GameTimelineProps) {
             const goalInfo = parseGoalInfo(event)
             isHomeTeam = goalInfo?.scoringTeam === 'home' || false
           } else {
-            isHomeTeam = event.team_side === 'home'
+            isHomeTeam = event.teamSide === 'home'
           }
 
-          const isNeutralEvent = !isTimeoutEvent && !isEigentor && event.team_side === 'neutral'
+          const isNeutralEvent = !isTimeoutEvent && !isEigentor && event.teamSide === 'neutral'
           
           // Handle neutral events (like best player) in center
           if (isNeutralEvent) {
             // Special handling for combined best player events
-            if (event.event_type === 'best_player_combined' && (event as ExtendedGameEvent).bestPlayerEvents) {
+            if (event.eventType === 'best_player_combined' && (event as ExtendedGameEvent).bestPlayerEvents) {
               const extendedEvent = event as ExtendedGameEvent;
-              const homeBestPlayer = extendedEvent.bestPlayerEvents?.find((e: GameEvent) => e.team_side === 'home')?.player || '';
-              const awayBestPlayer = extendedEvent.bestPlayerEvents?.find((e: GameEvent) => e.team_side === 'away')?.player || '';
+              const homeBestPlayer = extendedEvent.bestPlayerEvents?.find((e: GameEvent) => e.teamSide === 'home')?.player || '';
+              const awayBestPlayer = extendedEvent.bestPlayerEvents?.find((e: GameEvent) => e.teamSide === 'away')?.player || '';
               
               return (
                 <motion.div
@@ -353,7 +353,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                         </div>
                       )}
                       {/* Show full penalty description */}
-                      {event.event_type === 'penalty' && event.description && (
+                      {event.eventType === 'penalty' && event.description && (
                         <div className="text-xs text-gray-500 mt-0.5">
                           {event.description}
                         </div>
@@ -415,7 +415,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                         </div>
                       )}
                       {/* Show full penalty description */}
-                      {event.event_type === 'penalty' && event.description && (
+                      {event.eventType === 'penalty' && event.description && (
                         <div className="text-xs text-gray-500 mt-0.5">
                           {event.description}
                         </div>

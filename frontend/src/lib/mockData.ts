@@ -40,7 +40,7 @@ const today = new Date().toISOString().split('T')[0]
 const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
-export const games: FrontendGame[] = [
+export const games: Game[] = [
   // Live games - Today
   {
     id: '1',
@@ -51,7 +51,7 @@ export const games: FrontendGame[] = [
     status: 'live',
     period: '2nd Period',
     time: '12:34',
-    league: 'NLA Men',
+    league: { id: '1', name: 'NLA Men' },
     startTime: '19:30',
     gameDate: today,
     isLive: true
@@ -65,7 +65,7 @@ export const games: FrontendGame[] = [
     status: 'live',
     period: '3rd Period', 
     time: '05:22',
-    league: 'NLB Men',
+    league: { id: '2', name: 'NLB Men' },
     startTime: '20:15',
     gameDate: today,
     isLive: true
@@ -80,7 +80,7 @@ export const games: FrontendGame[] = [
     awayScore: null,
     status: 'upcoming',
     startTime: '19:30',
-    league: 'NLA Women',
+    league: { id: '3', name: 'NLA Women' },
     gameDate: today,
     isLive: false
   },
@@ -92,7 +92,7 @@ export const games: FrontendGame[] = [
     awayScore: null,
     status: 'upcoming',
     startTime: '20:00',
-    league: 'NLB Women',
+    league: { id: '4', name: 'NLB Women' },
     gameDate: today,
     isLive: false
   },
@@ -106,7 +106,7 @@ export const games: FrontendGame[] = [
     awayScore: 2,
     status: 'finished',
     startTime: '19:00',
-    league: 'NLA Men',
+    league: { id: '1', name: 'NLA Men' },
     gameDate: yesterday,
     isLive: false
   },
@@ -120,7 +120,7 @@ export const games: FrontendGame[] = [
     awayScore: null,
     status: 'upcoming',
     startTime: '18:00',
-    league: 'NLA Men',
+    league: { id: '1', name: 'NLA Men' },
     gameDate: tomorrow,
     isLive: false
   }
@@ -175,18 +175,18 @@ export const gameEvents: GameEvent[] = [
   }
 ]
 
-export function getGamesByDate(date: Date): FrontendGame[] {
+export function getGamesByDate(date: Date): Game[] {
   const dateString = date.toISOString().split('T')[0]
   return games.filter(game => 
     game.gameDate === dateString
   )
 }
 
-export function getGamesByLeague(games: FrontendGame[], league: LeagueType): FrontendGame[] {
-  return games.filter(game => game.league === league)
+export function getGamesByLeague(games: Game[], league: LeagueType): Game[] {
+  return games.filter(game => game.league.name === league)
 }
 
-export function getGameById(id: string): FrontendGame | undefined {
+export function getGameById(id: string): Game | undefined {
   return games.find(game => game.id === id)
 }
 
@@ -197,8 +197,8 @@ export function getGameEvents(gameId: string): GameEvent[] {
 // Helper to get all leagues that have games on a specific date
 export function getLeaguesForDate(date: Date): LeagueType[] {
   const gamesForDate = getGamesByDate(date)
-  const leagues = [...new Set(gamesForDate.map(game => game.league))]
-  return leagues.filter(league => 
+  const leagues = [...new Set(gamesForDate.map(game => game.league.name))]
+  return leagues.filter(league =>
     ['NLA Men', 'NLA Women', 'NLB Men', 'NLB Women'].includes(league)
-  ).sort() as LeagueType[] // Filter and cast to LeagueType
+  ).sort() as LeagueType[]
 }

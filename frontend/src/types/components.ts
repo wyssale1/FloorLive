@@ -7,7 +7,7 @@
 
 import type {
   Game, Team, Player, GameEvent, TeamRanking, PlayerStatistics,
-  PlayerGamePerformance, GameStatus, LeagueType
+  PlayerGamePerformance, GameStatus
 } from './domain';
 
 // Common Component Props

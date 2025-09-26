@@ -57,7 +57,7 @@ export function useGameDetail(gameId: string, enabled = true) {
     queryKey: queryKeys.games.detail(gameId),
     queryFn: async () => {
       const game = await apiClient.getGameDetails(gameId)
-      return game ? apiClient.adaptGameForFrontend(game) : null
+      return game ? game : null
     },
     enabled: !!gameId && enabled,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -173,7 +173,7 @@ export function useLiveGamePolling(gameId: string, enabled = true) {
     queryKey: queryKeys.games.detail(gameId),
     queryFn: async () => {
       const game = await apiClient.getGameDetails(gameId)
-      return game ? apiClient.adaptGameForFrontend(game) : null
+      return game ? game : null
     },
     enabled: !!gameId && enabled,
     staleTime: 30 * 1000, // 30 seconds
@@ -181,7 +181,7 @@ export function useLiveGamePolling(gameId: string, enabled = true) {
     refetchInterval: (query) => {
       // Only poll if game is potentially live
       const data = query.state.data
-      const isLive = data?.status === 'live' || data?.status === 'running'
+      const isLive = data?.status === 'live'
       return isLive ? 30 * 1000 : false // 30 seconds if live, no polling otherwise
     },
   })

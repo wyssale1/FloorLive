@@ -7,11 +7,10 @@
 
 import type {
   ImageConfig, ImageFormatType, ImageSize, ResponsiveImageUrls,
-  EntityType, ImageUrlOptions, CssClassOptions, FormatSupport
+  EntityType, CssClassOptions, FormatSupport
 } from '../types/images';
 import {
-  DEFAULT_IMAGE_CONFIG, DEFAULT_SIZE_CONFIGS, DEFAULT_FALLBACK_CONFIG,
-  DEFAULT_PERFORMANCE_OPTIONS
+  DEFAULT_IMAGE_CONFIG, DEFAULT_SIZE_CONFIGS
 } from '../types/images';
 
 class ImageUtils {
@@ -83,12 +82,11 @@ class ImageUtils {
 
     const baseUrl = `/assets/images/${entityType}/${entityId}`;
     const extension = this.config.formats?.extensions[format] || '.png';
-    const urls: ResponsiveImageUrls = {};
+    const urls: ResponsiveImageUrls = { '1x': '' };
 
     // Generate URLs for each retina scale
     sizeConfig.retinaScales.forEach(scale => {
       const suffix = this.config.retina?.suffixes[scale.toString()] || '';
-      const scaleSuffix = sizeConfig.suffix || size;
       urls[`${scale}x` as keyof ResponsiveImageUrls] =
         `${baseUrl}/${size}${suffix}${extension}`;
     });
@@ -244,7 +242,7 @@ class ImageUtils {
    * Get available formats
    */
   getAvailableFormats(): ImageFormatType[] {
-    return this.config.formats?.order || ['avif', 'webp', 'png'];
+    return (this.config.formats?.order || ['avif', 'webp', 'png']) as ImageFormatType[];
   }
 
   /**

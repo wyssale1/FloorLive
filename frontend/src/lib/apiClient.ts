@@ -3,12 +3,12 @@ import type {
   TeamStatistics, TeamRanking, GameResponse
 } from '../types/domain';
 import type {
-  ApiGame, ApiTeam, ApiGameEvent, ApiPlayer, ApiPlayerStatistics,
-  ApiPlayerGamePerformance, ApiTeamRanking, ApiResponse, RankingsApiResponse
+  ApiGame, ApiGameEvent, ApiPlayer, ApiPlayerStatistics,
+  ApiPlayerGamePerformance, ApiResponse
 } from '../types/api';
 import {
   transformGame, transformGameEvent, transformPlayer, transformPlayerStatistics,
-  transformPlayerGamePerformance, transformTeamRanking, transformGameResponse
+  transformPlayerGamePerformance
 } from '../types/api';
 import { getCurrentSeasonYear } from './seasonUtils';
 

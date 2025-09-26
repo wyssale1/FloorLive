@@ -90,7 +90,7 @@ export function parseLatestScoreFromEvents(events: GameEvent[]): { home: number,
   
   // Look for goal events with score information
   const goalEvents = events.filter(event => 
-    event.event_type === 'goal' && 
+    event.eventType === 'goal' && 
     event.description?.includes(':')
   )
   
@@ -135,25 +135,25 @@ export function analyzeGameEvents(events: GameEvent[]) {
 
   // Look for game flow events
   const flowEvents = events.filter(event => 
-    ['period_start', 'period_end', 'game_start', 'game_end'].includes(event.event_type || '')
+    ['period_start', 'period_end', 'game_start', 'game_end'].includes(event.eventType || '')
   )
 
   // Check for game start
   analysis.hasGameStarted = flowEvents.some(event => 
-    event.event_type === 'game_start' || 
+    event.eventType === 'game_start' || 
     event.description?.includes('Spielbeginn') ||
     event.description?.includes('Beginn')
   )
 
   // Check for game end  
   analysis.hasGameEnded = flowEvents.some(event => 
-    event.event_type === 'game_end' || 
+    event.eventType === 'game_end' || 
     event.description?.includes('Spielende')
   )
 
   // Determine current period from most recent period start
   const periodStarts = flowEvents.filter(event => 
-    event.event_type === 'period_start' || 
+    event.eventType === 'period_start' || 
     event.description?.includes('Beginn')
   )
 
@@ -172,7 +172,7 @@ export function analyzeGameEvents(events: GameEvent[]) {
 
   // Check if in intermission (period ended but game not ended)
   const recentPeriodEnd = flowEvents.find(event => 
-    event.event_type === 'period_end' || 
+    event.eventType === 'period_end' || 
     event.description?.includes('Ende')
   )
   analysis.isInIntermission = !!recentPeriodEnd && !analysis.hasGameEnded

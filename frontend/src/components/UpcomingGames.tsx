@@ -22,7 +22,7 @@ interface UpcomingGamesProps {
     status: 'upcoming' | 'live' | 'finished'
     period?: string
     time?: string
-    league: string
+    league: { id: string; name: string }
     startTime: string
     gameDate: string
     isLive?: boolean

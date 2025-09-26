@@ -7,8 +7,7 @@
 
 import type {
   Game, Team, GameEvent, Player, PlayerStatistics,
-  PlayerGamePerformance, TeamRanking, TeamStatistics,
-  GameResponse, LogoUrls, League, Venue, Coordinates, Referees
+  PlayerGamePerformance, TeamRanking, GameResponse
 } from './domain';
 
 // Raw API Response Types (snake_case from backend)

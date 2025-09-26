@@ -57,7 +57,7 @@ export function useLiveGame({
       ])
 
       return {
-        game: gameData ? apiClient.adaptGameForFrontend(gameData) : gameRef.current,
+        game: gameData || gameRef.current,
         events: eventsData || []
       }
     } catch (err) {

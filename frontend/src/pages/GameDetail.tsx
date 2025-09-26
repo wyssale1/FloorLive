@@ -37,7 +37,7 @@ export default function GameDetail() {
     return determineGameLiveStatus(game, events)
   }, [game, events])
 
-  const isPolling = game?.status === 'live' || game?.status === 'running'
+  const isPolling = game?.status === 'live'
   
 
   // Calculate season for league table
@@ -45,7 +45,7 @@ export default function GameDetail() {
     if (!game) return getCurrentSeasonYear().toString()
 
     try {
-      const dateToUse = game.date || game.game_date
+      const dateToUse = game.gameDate
       if (dateToUse && typeof dateToUse === 'string' && !dateToUse.match(/^(heute|gestern|morgen|today|yesterday|tomorrow)$/i)) {
         return calculateSeasonYear(dateToUse).toString()
       }
@@ -97,7 +97,7 @@ export default function GameDetail() {
     let gameSeason: number
 
     try {
-      const dateToUse = game.date || game.game_date
+      const dateToUse = game.gameDate
       if (dateToUse && typeof dateToUse === 'string' && !dateToUse.match(/^(heute|gestern|morgen|today|yesterday|tomorrow)$/i)) {
         gameSeason = calculateSeasonYear(dateToUse)
       } else {
