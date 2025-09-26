@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { User, Hash } from 'lucide-react'
 import { cn } from '../lib/utils'
-import type { Player } from '../shared/types'
+import type { Player } from '../types/domain'
 
 interface PlayerCardProps {
   player: Player

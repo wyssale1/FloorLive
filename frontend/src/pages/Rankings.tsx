@@ -8,7 +8,7 @@ import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { apiClient } from '../lib/apiClient'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags } from '../hooks/useMetaTags'
-import type { TeamRanking } from '../shared/types'
+import type { TeamRanking } from '../types/domain'
 
 // League configuration based on API research
 const LEAGUES = [

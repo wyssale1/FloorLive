@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Game, GameEvent } from '../shared/types';
+import type { Game, GameEvent } from '../types/domain';
 
 interface WebSocketMessage {
   type: 'live_games_update' | 'game_update' | 'pong' | 'error';

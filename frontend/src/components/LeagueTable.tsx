@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { Trophy, RotateCcw } from 'lucide-react'
 import TeamLogo from './TeamLogo'
 import { formatSeasonDisplay, getCurrentSeasonYear } from '../lib/seasonUtils'
-import type { TeamRanking } from '../shared/types'
+import type { TeamRanking } from '../types/domain'
 
 interface League {
   id: string

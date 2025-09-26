@@ -1,4 +1,4 @@
-import type { GameEvent } from '../shared/types'
+import type { GameEvent } from '../types/domain'
 
 export interface LiveGameStatus {
   isLive: boolean

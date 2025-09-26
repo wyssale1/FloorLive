@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getImageUtils } from '../utils/imageConfigLoader';
-import type { ImageFormatType } from '../../../shared/types/imageConfig';
+import type { ImageFormatType } from '../types/images';
 
 export interface ResponsiveImageUrls {
   '1x': string;

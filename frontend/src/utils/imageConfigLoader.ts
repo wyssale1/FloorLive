@@ -1,31 +1,18 @@
 /**
  * Frontend image configuration loader
- * Loads and provides access to the centralized image configuration
+ * Self-contained image configuration system for the frontend
  */
 
-import type { ImageConfig } from '../../../shared/types/imageConfig';
-import { ImageConfigUtils } from '../../../shared/utils/imageConfigUtils';
-
-// Import the configuration directly (bundled at build time)
-import imageConfigData from '../../../shared/imageConfig.json';
+import type { ImageConfig } from '../types/images';
+import { imageUtils } from './imageUtils';
 
 class ImageConfigLoader {
-  private config: ImageConfig;
-  private utils: ImageConfigUtils;
-
   constructor() {
-    // Type assertion since we know the structure is correct
-    this.config = imageConfigData as ImageConfig;
-    this.utils = new ImageConfigUtils(this.config);
-
     // Validate configuration in development
-    if (import.meta.env.DEV && !this.utils.validateConfig()) {
+    if (import.meta.env.DEV && !imageUtils.validateConfig()) {
       console.error('❌ Invalid image configuration detected');
-      throw new Error('Invalid image configuration');
-    }
-
-    if (import.meta.env.DEV) {
-      console.log(`✅ Loaded image configuration v${this.config.version}`);
+    } else if (import.meta.env.DEV) {
+      console.log(`✅ Loaded image configuration v${imageUtils.getConfig().version}`);
     }
   }
 
@@ -33,21 +20,21 @@ class ImageConfigLoader {
    * Get configuration
    */
   getConfig(): ImageConfig {
-    return this.config;
+    return imageUtils.getConfig();
   }
 
   /**
    * Get utils instance
    */
-  getUtils(): ImageConfigUtils {
-    return this.utils;
+  getUtils() {
+    return imageUtils;
   }
 
   /**
    * Check if configuration is valid
    */
   isValid(): boolean {
-    return this.utils.validateConfig();
+    return imageUtils.validateConfig();
   }
 }
 

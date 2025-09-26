@@ -17,7 +17,7 @@ import TeamPlayersLegend from '../components/TeamPlayersLegend'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
 import { useTeamDetail, useTeamPlayers, useTeamUpcomingGames, useRankings } from '../hooks/useQueries'
-import { determineGameClass } from '../shared/types'
+import { determineGameClass } from '../types/api'
 
 function groupPlayersByPosition(players: any[]) {
   const categories = {

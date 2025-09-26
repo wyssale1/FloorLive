@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { determineGameLiveStatus, shouldPollGameForUpdates, type LiveGameStatus } from '../lib/liveGameUtils'
 import { apiClient } from '../lib/apiClient'
-import type { GameEvent } from '../shared/types'
+import type { GameEvent } from '../types/domain'
 
 interface UseLiveGameOptions {
   gameId: string

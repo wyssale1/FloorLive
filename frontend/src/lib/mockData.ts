@@ -1,7 +1,7 @@
-import type { FrontendGame, GameStatus, LeagueType } from '../shared/types/index.js';
+import type { Game, GameStatus, LeagueType } from '../types/domain';
 
-// Re-export types for convenience  
-export type { FrontendGame as Game, GameStatus, LeagueType };
+// Re-export types for convenience
+export type { Game, GameStatus, LeagueType };
 
 export type Team = {
   id: string

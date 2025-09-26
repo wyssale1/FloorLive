@@ -1,8 +1,22 @@
-import type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, Player, PlayerStatistics, PlayerGamePerformance, TeamStatistics } from '../shared/types';
+import type {
+  Game, Team, GameEvent, Player, PlayerStatistics, PlayerGamePerformance,
+  TeamStatistics, TeamRanking, GameResponse
+} from '../types/domain';
+import type {
+  ApiGame, ApiTeam, ApiGameEvent, ApiPlayer, ApiPlayerStatistics,
+  ApiPlayerGamePerformance, ApiTeamRanking, ApiResponse, RankingsApiResponse
+} from '../types/api';
+import {
+  transformGame, transformGameEvent, transformPlayer, transformPlayerStatistics,
+  transformPlayerGamePerformance, transformTeamRanking, transformGameResponse
+} from '../types/api';
 import { getCurrentSeasonYear } from './seasonUtils';
 
-// Re-export types for external usage
-export type { Game, Team, GameEvent, ApiResponse, RankingsApiResponse, TeamRanking, Player, PlayerStatistics, PlayerGamePerformance, TeamStatistics };
+// Re-export clean domain types for external usage
+export type {
+  Game, Team, GameEvent, Player, PlayerStatistics, PlayerGamePerformance,
+  TeamStatistics, TeamRanking, GameResponse
+};
 
 // Dynamic API URL detection for Tailscale development
 const getApiBaseUrl = () => {
@@ -41,14 +55,14 @@ class ApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      const data: ApiResponse<Game> = await response.json();
-      
-      // Flatten all games from all leagues and transform them
-      const allGames: any[] = [];
+
+      const data: ApiResponse<ApiGame> = await response.json();
+
+      // Flatten all games from all leagues and transform them using our type-safe transformers
+      const allGames: Game[] = [];
       Object.values(data.gamesByLeague).forEach(games => {
-        games.forEach(game => {
-          allGames.push(this.adaptGameForFrontend(game));
+        games.forEach(apiGame => {
+          allGames.push(transformGame(apiGame));
         });
       });
 
@@ -65,9 +79,10 @@ class ApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      return data.games || [];
+      const apiGames: ApiGame[] = data.games || [];
+      return apiGames.map(transformGame);
     } catch (error) {
       console.error('Error fetching live games:', error);
       return [];
@@ -81,8 +96,9 @@ class ApiClient {
         if (response.status === 404) return null;
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      return await response.json();
+
+      const apiGame: ApiGame = await response.json();
+      return transformGame(apiGame);
     } catch (error) {
       console.error('Error fetching game details:', error);
       return null;
@@ -95,9 +111,10 @@ class ApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      return data.events || [];
+      const apiEvents: ApiGameEvent[] = data.events || [];
+      return apiEvents.map(transformGameEvent);
     } catch (error) {
       console.error('Error fetching game events:', error);
       return [];
@@ -165,7 +182,7 @@ class ApiClient {
     }
   }
 
-  async getTeamUpcomingGames(teamId: string): Promise<any[]> {
+  async getTeamUpcomingGames(teamId: string): Promise<Game[]> {
     try {
       const currentSeason = getCurrentSeasonYear();
       const response = await fetch(`https://api-v2.swissunihockey.ch/api/games?mode=team&season=${currentSeason}&team_id=${teamId}&games_per_page=30`);
@@ -272,13 +289,14 @@ class ApiClient {
     }
   }
 
-  async getHeadToHeadGames(gameId: string): Promise<any[]> {
+  async getHeadToHeadGames(gameId: string): Promise<Game[]> {
     try {
       const response = await fetch(`${this.baseURL}/games/${gameId}/head-to-head`);
       if (!response.ok) return [];
-      
+
       const data = await response.json();
-      return (data.games || []).map((game: any) => this.adaptGameForFrontend(game));
+      const apiGames: ApiGame[] = data.games || [];
+      return apiGames.map(transformGame);
     } catch (error) {
       console.error('Error fetching head-to-head games:', error);
       return [];
@@ -327,38 +345,6 @@ class ApiClient {
   }
 
 
-  // Convert API game format to frontend format for compatibility
-  adaptGameForFrontend(apiGame: Game): any {
-    return {
-      id: apiGame.id,
-      homeTeam: {
-        id: apiGame.home_team.id,
-        name: apiGame.home_team.name,
-        shortName: apiGame.home_team.short_name,
-        logo: apiGame.home_team.logo
-      },
-      awayTeam: {
-        id: apiGame.away_team.id,
-        name: apiGame.away_team.name,
-        shortName: apiGame.away_team.short_name,
-        logo: apiGame.away_team.logo
-      },
-      homeScore: apiGame.home_score,
-      awayScore: apiGame.away_score,
-      status: apiGame.status,
-      period: apiGame.period,
-      time: apiGame.time,
-      league: apiGame.league,
-      startTime: apiGame.start_time,
-      gameDate: apiGame.game_date,
-      location: apiGame.location,
-      venue: apiGame.venue,
-      coordinates: apiGame.coordinates,
-      referees: apiGame.referees,
-      spectators: apiGame.spectators,
-      isLive: apiGame.status === 'live'
-    };
-  }
 
   // Player-related methods
   async getPlayerDetails(playerId: string): Promise<Player | null> {
@@ -368,9 +354,10 @@ class ApiClient {
         if (response.status === 404) return null;
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      return data.player || null;
+      const apiPlayer: ApiPlayer = data.player;
+      return apiPlayer ? transformPlayer(apiPlayer) : null;
     } catch (error) {
       console.error('Error fetching player details:', error);
       return null;
@@ -383,9 +370,10 @@ class ApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      return data.statistics || [];
+      const apiStats: ApiPlayerStatistics[] = data.statistics || [];
+      return apiStats.map(transformPlayerStatistics);
     } catch (error) {
       console.error('Error fetching player statistics:', error);
       return [];
@@ -400,7 +388,8 @@ class ApiClient {
       }
 
       const data = await response.json();
-      return data.overview || [];
+      const apiPerformances: ApiPlayerGamePerformance[] = data.overview || [];
+      return apiPerformances.map(transformPlayerGamePerformance);
     } catch (error) {
       console.error('Error fetching player overview:', error);
       return [];
