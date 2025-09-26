@@ -1615,10 +1615,10 @@ export class SwissUnihockeyApiClient {
           assists: parseInt(row.cells[5]?.text?.[0] || '0') || 0,
           points: parseInt(row.cells[6]?.text?.[0] || '0') || 0,
           penalties: {
-            twoMinute: parseInt(row.cells[7]?.text?.[0] || '0') || 0,
-            fiveMinute: parseInt(row.cells[8]?.text?.[0] || '0') || 0,
-            tenMinute: parseInt(row.cells[9]?.text?.[0] || '0') || 0,
-            matchPenalty: parseInt(row.cells[10]?.text?.[0] || '0') || 0
+            two_minute: parseInt(row.cells[7]?.text?.[0] || '0') || 0,
+            five_minute: parseInt(row.cells[8]?.text?.[0] || '0') || 0,
+            ten_minute: parseInt(row.cells[9]?.text?.[0] || '0') || 0,
+            match_penalty: parseInt(row.cells[10]?.text?.[0] || '0') || 0
           }
         };
 
