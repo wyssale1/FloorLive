@@ -3,7 +3,7 @@
     "description": "Master entity registry for Swiss Unihockey teams and players",
     "version": "1.0.0",
     "schema": "EntityMasterData",
-    "lastUpdated": "2025-09-26T10:48:32.616Z",
+    "lastUpdated": "2025-09-26T13:14:39.003Z",
     "instructions": "This file manages core entity data with TTL-based refresh. Feature services consume and extend this data."
   },
   "teams": {

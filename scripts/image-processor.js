@@ -8,6 +8,8 @@ import sharp from 'sharp';
 import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+// Import configuration from local JavaScript file (mirrors frontend TypeScript config)
+import { DEFAULT_IMAGE_CONFIG, DEFAULT_SIZE_CONFIGS } from './imageConfig.js';
 
 // Setup paths
 const __filename = fileURLToPath(import.meta.url);
@@ -15,19 +17,47 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
 const BACKEND_DIR = path.join(ROOT_DIR, 'backend');
 const ENTITIES_FILE = path.join(BACKEND_DIR, 'data', 'entities-master.json');
-const ASSETS_DIR = path.join(BACKEND_DIR, 'assets');
 
-// Load centralized image configuration
-const CONFIG_PATH = path.join(ROOT_DIR, 'backend', 'src', 'shared', 'imageConfig.json');
-let IMAGE_CONFIG;
+// Build image configuration from TypeScript definitions
+const IMAGE_CONFIG = {
+  version: '2.0.0',
+  formats: DEFAULT_IMAGE_CONFIG.formats,
+  retina: DEFAULT_IMAGE_CONFIG.retina,
+  entities: {
+    players: {
+      basePath: '/assets/players',
+      directoryNaming: 'player-{id}',
+      fileNaming: '{id}_{size}{retina}.{format}',
+      sizes: {
+        small: DEFAULT_SIZE_CONFIGS.small,
+        medium: DEFAULT_SIZE_CONFIGS.medium,
+        large: DEFAULT_SIZE_CONFIGS.large
+      }
+    },
+    teams: {
+      basePath: '/assets/teams',
+      directoryNaming: 'team-{id}',
+      fileNaming: '{size}{retina}.{format}',
+      sizes: {
+        small: DEFAULT_SIZE_CONFIGS.small,
+        medium: DEFAULT_SIZE_CONFIGS.medium,
+        large: DEFAULT_SIZE_CONFIGS.large
+      }
+    }
+  },
+  processing: {
+    fit: 'cover',
+    position: 'center',
+    preventUpscaling: true,
+    requestDelayMs: 500
+  },
+  api: {
+    baseUrl: 'https://api-v2.swissunihockey.ch/api',
+    timeout: 10000
+  }
+};
 
-try {
-  IMAGE_CONFIG = await fs.readJson(CONFIG_PATH);
-  console.log(chalk.blue(`📋 Loaded image configuration v${IMAGE_CONFIG.version}`));
-} catch (error) {
-  console.error(chalk.red('❌ Failed to load image configuration:'), error.message);
-  process.exit(1);
-}
+console.log(chalk.blue(`📋 Loaded image configuration v${IMAGE_CONFIG.version} from TypeScript`));
 
 // Extract configuration for easy access
 const PLAYER_SIZES = IMAGE_CONFIG.entities.players.sizes;
@@ -258,8 +288,7 @@ class ImageProcessor {
       }
     }
 
-    // Save metadata
-    await this.saveLogoMetadata(teamId, teamName, logoUrl, logoDir);
+    // Metadata saved per team directory (consistent with players) - removed central metadata.json
 
     if (this.options.verbose) {
       console.log(chalk.green(`  ↳ Logo processed: ${teamName}`));
@@ -415,34 +444,6 @@ class ImageProcessor {
     } catch (error) {
       throw new Error(`Failed to process image: ${error.message}`);
     }
-  }
-
-  async saveLogoMetadata(teamId, teamName, originalUrl, logoDir) {
-    const metadataPath = path.join(TEAMS_DIR, 'metadata.json');
-
-    // Load existing metadata or create new
-    let metadata = {};
-    if (await fs.pathExists(metadataPath)) {
-      metadata = await fs.readJson(metadataPath);
-    }
-
-    if (!metadata.teams) {
-      metadata.teams = {};
-    }
-
-    metadata.teams[teamId] = {
-      teamId,
-      teamName,
-      originalUrl,
-      processedAt: new Date().toISOString(),
-      sizes: LOGO_SIZES,
-      formats: IMAGE_FORMATS
-    };
-
-    metadata.lastUpdated = new Date().toISOString();
-    metadata.version = '1.0.0';
-
-    await fs.writeJson(metadataPath, metadata, { spaces: 2 });
   }
 
   async savePlayerMetadata(playerId, playerName, teamName, originalUrl, playerDir) {
