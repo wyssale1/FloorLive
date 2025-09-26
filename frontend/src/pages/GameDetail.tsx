@@ -51,7 +51,6 @@ export default function GameDetail() {
     return determineGameLiveStatus(game, events)
   }, [game, events])
 
-  const isPolling = game?.status === 'live'
   
 
   // Calculate season for league table
