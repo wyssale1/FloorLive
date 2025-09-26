@@ -77,6 +77,57 @@ router.get('/', async (req, res) => {
     const leagueNames = Object.keys(gamesByLeague);
     const orderedLeagues = sortLeagues(leagueNames);
 
+    // Enrich live games with real-time scores from individual game details
+    const liveGames = validGames.filter(game => game.status === 'live');
+
+    if (liveGames.length > 0) {
+      console.log(`Found ${liveGames.length} live games, fetching detailed scores...`);
+
+      try {
+        // Fetch detailed game data for all live games in parallel
+        const liveGameDetailsPromises = liveGames.map(async (game) => {
+          try {
+            const gameDetails = await apiClient.getGameDetails(game.id);
+            return { gameId: game.id, details: gameDetails };
+          } catch (error) {
+            console.warn(`Failed to fetch details for live game ${game.id}:`, error);
+            return { gameId: game.id, details: null };
+          }
+        });
+
+        // Wait for all requests to complete (with a reasonable timeout)
+        const liveGameDetails = await Promise.allSettled(liveGameDetailsPromises);
+
+        // Update live games with real scores
+        liveGameDetails.forEach((result) => {
+          if (result.status === 'fulfilled' && result.value.details) {
+            const { gameId, details } = result.value;
+
+            // Find the game in our validGames array and update scores
+            const gameIndex = validGames.findIndex(g => g.id === gameId);
+            if (gameIndex !== -1 && details.home_score !== null && details.away_score !== null) {
+              console.log(`Updating live scores for game ${gameId}: ${details.home_score}:${details.away_score}`);
+              validGames[gameIndex].home_score = details.home_score;
+              validGames[gameIndex].away_score = details.away_score;
+
+              // Also update in gamesByLeague structure
+              Object.keys(gamesByLeague).forEach(league => {
+                const leagueGameIndex = gamesByLeague[league].findIndex(g => g.id === gameId);
+                if (leagueGameIndex !== -1) {
+                  gamesByLeague[league][leagueGameIndex].home_score = details.home_score;
+                  gamesByLeague[league][leagueGameIndex].away_score = details.away_score;
+                }
+              });
+            }
+          }
+        });
+
+        console.log(`Live score enrichment completed for ${liveGames.length} games`);
+      } catch (error) {
+        console.warn('Live score enrichment failed, continuing with original scores:', error);
+      }
+    }
+
     // Add optimistic logo URLs to all valid games (async operation) - but don't block response
     addOptimisticLogosToGames(validGames).catch(err =>
       console.warn('Non-critical logo processing failed:', err)

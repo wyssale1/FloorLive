@@ -545,17 +545,26 @@ export class SwissUnihockeyApiClient {
     let status: 'upcoming' | 'live' | 'finished' = 'upcoming';
 
     if (scoreCell && scoreCell.trim()) {
-      const scoreMatch = scoreCell.match(/(\d+)\s*[-:]\s*(\d+)/);
-      if (scoreMatch) {
-        homeScore = parseInt(scoreMatch[1]);
-        awayScore = parseInt(scoreMatch[2]);
-        status = 'finished';
+      // Check for live score pattern with asterisk (e.g., "2:1*")
+      const liveScoreMatch = scoreCell.match(/(\d+)\s*[-:]\s*(\d+)\*/);
+      if (liveScoreMatch) {
+        homeScore = parseInt(liveScoreMatch[1]);
+        awayScore = parseInt(liveScoreMatch[2]);
+        status = 'live';
+      } else {
+        // Regular score pattern without asterisk (e.g., "2:1")
+        const scoreMatch = scoreCell.match(/(\d+)\s*[-:]\s*(\d+)/);
+        if (scoreMatch) {
+          homeScore = parseInt(scoreMatch[1]);
+          awayScore = parseInt(scoreMatch[2]);
+          status = 'finished';
+        }
       }
     }
 
-    // Check if game is live - detect both English "live" and German "Spiel läuft"
-    if (timeCell.toLowerCase().includes('live') || 
-        timeCell.includes('Spiel läuft') || 
+    // Additional live detection fallbacks
+    if (timeCell.toLowerCase().includes('live') ||
+        timeCell.includes('Spiel läuft') ||
         scoreCell.toLowerCase().includes('live')) {
       status = 'live';
     }
@@ -796,7 +805,6 @@ export class SwissUnihockeyApiClient {
       let homeScore = null;
       let awayScore = null;
       let status: 'upcoming' | 'live' | 'finished' = 'upcoming';
-
 
       if (result && result.includes(':')) {
         const scores = result.split(':').map((s: string) => s.trim());

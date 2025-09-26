@@ -276,18 +276,6 @@ export default function GameDetail() {
               
               {/* Additional information below */}
               <div className="space-y-1">
-                {/* Polling indicator for live games */}
-                {isPolling && (
-                  <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="w-3 h-3 border border-gray-400 border-t-blue-500 rounded-full"
-                    />
-                    <span>Live updates</span>
-                  </div>
-                )}
-                
                 {game.startTime && !liveStatus.isLive && (
                   <div className="text-xs text-gray-600">
                     <Clock className="w-3 h-3 inline mr-1" />
@@ -341,21 +329,6 @@ export default function GameDetail() {
           </div>
         </div>
       </motion.div>
-
-      {/* Game Status Banner */}
-      {game.status === 'live' && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-          className="bg-red-500 text-white text-center py-2"
-        >
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            <span className="font-medium">Live Game</span>
-          </div>
-        </motion.div>
-      )}
 
       {/* Game Content Tabs */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
