@@ -37,6 +37,8 @@ jobs:
           mkdir -p backend-deploy
           # Copy compiled JavaScript code
           cp -r backend/dist backend-deploy/
+          # Copy data directory for search functionality
+          cp -r backend/data backend-deploy/
           # Copy package files for production dependencies
           cp backend/package*.json backend-deploy/
           # Create deployment metadata
