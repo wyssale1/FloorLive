@@ -2,7 +2,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { Server } from 'http';
 import { SwissUnihockeyApiClient } from './swissUnihockeyApi.js';
 import { CacheService } from './cacheService.js';
-import { Game } from '../types/api.js';
+import { Game } from '../types/domain.js';
 
 export class WebSocketService {
   private wss: WebSocketServer;

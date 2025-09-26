@@ -1,10 +1,5 @@
-import { Game } from '../types/api.js';
-
-interface CacheEntry<T> {
-  data: T;
-  timestamp: number;
-  ttl: number; // Time to live in milliseconds
-}
+import { Game } from '../types/domain.js';
+import { CacheEntry, CacheStats } from '../types/services.js';
 
 export class CacheService {
   private cache = new Map<string, CacheEntry<any>>();

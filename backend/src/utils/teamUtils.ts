@@ -1,19 +1,18 @@
 /**
- * Simple team mapping utilities
- * Simplified version for better maintainability
+ * Team utilities for backend operations
  */
 
 export async function getTeamDisplayName(name: string): Promise<string> {
-  // Return the name as-is for now - simplifying the complex mapping
+  // Return the name as-is for now - can add mapping logic later if needed
   return name;
 }
 
 export async function getTeamId(name: string): Promise<string | null> {
-  // Return null for now - simplifying the complex ID mapping
+  // Return null for now - can add ID mapping logic later if needed
   return null;
 }
 
 export function sortLeagues(leagueNames: string[]): string[] {
-  // Simple alphabetical sort - removing complex league priority logic
+  // Simple alphabetical sort
   return leagueNames.sort();
 }

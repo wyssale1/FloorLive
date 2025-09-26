@@ -3,7 +3,7 @@ import { format, parseISO, isValid } from 'date-fns';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
 import { requestBatcher } from '../services/requestBatcher.js';
-import { sortLeagues } from '../shared/utils/teamMapping.js';
+import { sortLeagues } from '../utils/teamUtils.js';
 import { addOptimisticLogosToGames, triggerBackgroundLogoProcessing } from '../utils/logoEnrichment.js';
 
 const router = Router();

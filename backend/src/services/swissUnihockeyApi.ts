@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
-import { Game, GameEvent, SwissUnihockeyApiResponse, GameListParams, Team } from '../types/api.js';
+import { SwissUnihockeyApiResponse, GameListParams } from '../types/api.js';
+import { Game, GameEvent, Team } from '../types/domain.js';
 import { getCurrentSeasonYear } from '../utils/seasonUtils.js';
 
 export class SwissUnihockeyApiClient {

@@ -1,4 +1,4 @@
-import { getTeamDisplayName, getTeamId } from '../shared/utils/teamMapping.js';
+import { getTeamDisplayName, getTeamId } from './teamUtils.js';
 import { assetService } from '../services/assetService.js';
 
 /**
