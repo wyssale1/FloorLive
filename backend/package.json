@@ -8,7 +8,6 @@
     "dev:host": "HOST=0.0.0.0 nodemon --exec tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "setup-image-processor": "cd ../scripts && npm install",
     "process-images": "cd ../scripts && npm run process",
     "process-images:teams": "cd ../scripts && npm run process-teams",
