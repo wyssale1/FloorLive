@@ -4,7 +4,7 @@ import { useResponsiveAssetUrlsWithDPR } from '../hooks/useAssetUrls';
 export interface ResponsiveCascadingImageProps {
   entityType: 'player' | 'team';
   entityId: string;
-  size: 'small' | 'medium' | 'large';
+  size: 'small' | 'medium';
   alt: string;
   className?: string;
   loading?: 'lazy' | 'eager';

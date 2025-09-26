@@ -189,7 +189,7 @@ export default function TeamDetail() {
           <div className="flex-shrink-0">
             <TeamLogo 
               team={team} 
-              size="large" 
+              size="medium" 
               variant="square"
               showSwissUnihockeyFallback={true}
             />

@@ -195,7 +195,7 @@ export default function GameDetail() {
                 <div className="mb-3 flex-shrink-0">
                   <TeamLogo 
                     team={game.homeTeam} 
-                    size="large" 
+                    size="medium" 
                     variant="square"
                     showSwissUnihockeyFallback={true}
                   />
@@ -324,7 +324,7 @@ export default function GameDetail() {
                 <div className="mb-3 flex-shrink-0">
                   <TeamLogo 
                     team={game.awayTeam} 
-                    size="large" 
+                    size="medium" 
                     variant="square"
                     showSwissUnihockeyFallback={true}
                   />

@@ -7,7 +7,7 @@
 
 // Image Format Types
 export type ImageFormatType = 'avif' | 'webp' | 'png';
-export type ImageSize = 'tiny' | 'small' | 'medium' | 'large';
+export type ImageSize = 'tiny' | 'small' | 'medium';
 export type RetinaScale = 1 | 2 | 3;
 export type EntityType = 'players' | 'teams';
 
@@ -37,10 +37,6 @@ export interface SizeConfig {
   css: string;
   suffix?: string;
   retinaScales: number[];
-  iconFallbackCss?: string;
-  badgeCss?: string;
-  containerCss?: string;
-  logoCss?: string;
 }
 
 // Format Configuration
@@ -195,33 +191,19 @@ export const DEFAULT_SIZE_CONFIGS: Record<ImageSize, SizeConfig> = {
     width: 16,
     height: 16,
     css: 'w-4 h-4',
-    retinaScales: [1, 2],
-    iconFallbackCss: 'w-4 h-4',
-    containerCss: 'w-4 h-4'
+    retinaScales: [1, 2]
   },
   small: {
     width: 32,
     height: 32,
     css: 'w-8 h-8',
-    retinaScales: [1, 2, 3],
-    iconFallbackCss: 'w-8 h-8',
-    containerCss: 'w-8 h-8'
+    retinaScales: [1, 2, 3]
   },
   medium: {
     width: 64,
     height: 64,
     css: 'w-16 h-16',
-    retinaScales: [1, 2, 3],
-    iconFallbackCss: 'w-16 h-16',
-    containerCss: 'w-16 h-16'
-  },
-  large: {
-    width: 128,
-    height: 128,
-    css: 'w-32 h-32',
-    retinaScales: [1, 2, 3],
-    iconFallbackCss: 'w-32 h-32',
-    containerCss: 'w-32 h-32'
+    retinaScales: [1, 2, 3]
   }
 };
 

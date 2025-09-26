@@ -1,7 +1,7 @@
 import { Shield } from 'lucide-react'
 import { memo, useMemo } from 'react'
 import OptimizedImage from './OptimizedImage'
-import { getImageUtils } from '../utils/imageConfigLoader'
+import { DEFAULT_SIZE_CONFIGS } from '../types/images'
 import type { LogoUrls } from '../types/domain'
 
 interface TeamLogoProps {
@@ -12,7 +12,7 @@ interface TeamLogoProps {
     logoUrls?: LogoUrls;
     hasLogo?: boolean;
   };
-  size?: 'tiny' | 'small' | 'large';
+  size?: 'tiny' | 'small' | 'medium';
   className?: string;
   fallbackIcon?: React.ReactNode;
   showSwissUnihockeyFallback?: boolean; // New prop to control fallback behavior
@@ -31,38 +31,14 @@ function TeamLogo({
   const imageOptions = useMemo(() => ({
     baseId: `team-${team.id}`,
     basePath: '/assets/teams',
-    size: size as 'tiny' | 'small' | 'large',
+    size: size as 'tiny' | 'small' | 'medium',
     providedUrls: team.logoUrls?.[size as keyof LogoUrls],
     fallbackUrl: showSwissUnihockeyFallback ? team.logo : undefined,
     enableResponsive: false // Teams logos don't need responsive variants
   }), [team.id, team.logoUrls, size, showSwissUnihockeyFallback, team.logo])
 
-  // Size configurations from centralized config (memoized constants)
-  const { sizeClasses, iconSizes, containerClasses, logoClasses } = useMemo(() => {
-    const utils = getImageUtils();
-    return {
-      sizeClasses: {
-        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'main' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'main' }),
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'main' })
-      },
-      iconSizes: {
-        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'iconFallback' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'iconFallback' }),
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'iconFallback' })
-      },
-      containerClasses: {
-        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'container' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'container' }),
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'container' })
-      },
-      logoClasses: {
-        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'logo' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'logo' }),
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'logo' })
-      }
-    };
-  }, [])
+  // Simple size class from centralized config
+  const sizeClass = DEFAULT_SIZE_CONFIGS[size].css; // e.g. 'w-16 h-16'
 
   // Helper function to wrap content in square container
   const wrapInSquareContainer = (content: React.ReactNode) => {
@@ -72,7 +48,7 @@ function TeamLogo({
     }
     
     return (
-      <div className={`${containerClasses[size]} bg-white border border-gray-100 rounded-lg shadow-sm flex items-center justify-center p-2 ${className}`}>
+      <div className={`${sizeClass} bg-white border border-gray-100 rounded-lg shadow-sm flex items-center justify-center p-2 ${className}`}>
         {content}
       </div>
     );
@@ -80,25 +56,25 @@ function TeamLogo({
 
   // Memoize fallback components
   const FallbackIcon = useMemo(() =>
-    fallbackIcon || <Shield className={`${iconSizes[size]} text-gray-400`} />,
-    [fallbackIcon, iconSizes, size]
+    fallbackIcon || <Shield className={`${sizeClass} text-gray-400`} />,
+    [fallbackIcon, sizeClass]
   )
 
   const fallbackComponent = useMemo(() => (
-    <div className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} flex items-center justify-center`}>
+    <div className={`${sizeClass} flex items-center justify-center`}>
       {FallbackIcon}
     </div>
-  ), [variant, logoClasses, sizeClasses, size, FallbackIcon])
+  ), [sizeClass, FallbackIcon])
 
   const logoElement = useMemo(() => (
     <OptimizedImage
       {...imageOptions}
       alt={`${team.name} logo`}
-      className={`${variant === 'square' ? logoClasses[size] : sizeClasses[size]} object-contain ${variant !== 'square' ? className : ''}`}
+      className={`${sizeClass} object-contain ${variant !== 'square' ? className : ''}`}
       loading="lazy"
       fallbackComponent={fallbackComponent}
     />
-  ), [imageOptions, team.name, variant, logoClasses, sizeClasses, size, className, fallbackComponent])
+  ), [imageOptions, team.name, sizeClass, className, fallbackComponent])
 
   return wrapInSquareContainer(logoElement)
 }

@@ -1,5 +1,5 @@
 import { User } from 'lucide-react';
-import { getImageUtils } from '../utils/imageConfigLoader';
+import { DEFAULT_SIZE_CONFIGS } from '../types/images';
 
 interface PlayerImageProps {
   player: {
@@ -8,7 +8,7 @@ interface PlayerImageProps {
     hasProcessedImages?: boolean;
     profileImage?: string;
   };
-  size?: 'large' | 'medium' | 'small';
+  size?: 'medium' | 'small';
   className?: string;
   fallbackIcon?: React.ReactNode;
   onClick?: () => void;
@@ -39,27 +39,18 @@ export default function PlayerImage({
   showNumberBadge = false
 }: PlayerImageProps) {
 
-  // Shared constants and utilities
-  const utils = getImageUtils();
+  // Simple size class from centralized config
+  const sizeClass = DEFAULT_SIZE_CONFIGS[size].css; // e.g. 'w-16 h-16' or 'w-8 h-8'
+
   const COMMON_IMAGE_PROPS = {
     alt: `${player.name} portrait`,
     loading: 'lazy' as const,
     className: "w-full h-full object-cover"
   };
 
-  // CSS class generators - centralized
-  const getCssClasses = (type: 'main' | 'iconFallback') => ({
-    large: utils.getCssClasses({ entityType: 'players', size: 'large', type }),
-    medium: utils.getCssClasses({ entityType: 'players', size: 'medium', type }),
-    small: utils.getCssClasses({ entityType: 'players', size: 'small', type })
-  });
-
-  const sizeClasses = getCssClasses('main');
-  const iconSizes = getCssClasses('iconFallback');
-
   // Helper functions - extracted for reusability
   const getSizesAttribute = (): string => {
-    const sizeMap = { small: '64px', large: '128px', medium: '96px' };
+    const sizeMap = { small: '64px', medium: '96px' };
     return sizeMap[size];
   };
 
@@ -80,7 +71,7 @@ export default function PlayerImage({
   };
 
   // Shared container classes
-  const containerClasses = `${sizeClasses[size]} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`;
+  const containerClasses = `${sizeClass} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`;
 
   // Content generators - DRY principle
   const renderProcessedImage = () => {
@@ -111,7 +102,7 @@ export default function PlayerImage({
       );
     }
 
-    return <User className={`${iconSizes[size]} text-gray-400`} />;
+    return <User className={`${sizeClass} text-gray-400`} />;
   };
 
   // Determine content type and render accordingly
