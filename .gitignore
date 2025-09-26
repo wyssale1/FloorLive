@@ -33,3 +33,6 @@ backend/assets/**/*.temp
 # Keep processed images in git:
 # backend/assets/players/ - included
 # backend/assets/teams/ - included
+
+# Old working repository backup
+docs/old-working-repo/
