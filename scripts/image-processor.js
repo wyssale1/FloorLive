@@ -30,8 +30,7 @@ const IMAGE_CONFIG = {
       fileNaming: '{id}_{size}{retina}.{format}',
       sizes: {
         small: DEFAULT_SIZE_CONFIGS.small,
-        medium: DEFAULT_SIZE_CONFIGS.medium,
-        large: DEFAULT_SIZE_CONFIGS.large
+        medium: DEFAULT_SIZE_CONFIGS.medium
       }
     },
     teams: {
@@ -40,8 +39,7 @@ const IMAGE_CONFIG = {
       fileNaming: '{size}{retina}.{format}',
       sizes: {
         small: DEFAULT_SIZE_CONFIGS.small,
-        medium: DEFAULT_SIZE_CONFIGS.medium,
-        large: DEFAULT_SIZE_CONFIGS.large
+        medium: DEFAULT_SIZE_CONFIGS.medium
       }
     }
   },
