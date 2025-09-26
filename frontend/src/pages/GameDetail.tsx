@@ -360,7 +360,7 @@ export default function GameDetail() {
       {/* Game Content Tabs */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
         <TabsContainer
-          defaultValue="overview"
+          defaultValue={game.status === 'live' ? 'events' : 'overview'}
           tabs={[
             {
               value: 'overview',
