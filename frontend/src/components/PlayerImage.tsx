@@ -62,10 +62,7 @@ export default function PlayerImage({
       `${baseUrl}_small3x.${format} 192w`,
       `${baseUrl}_medium.${format} 96w`,
       `${baseUrl}_medium2x.${format} 192w`,
-      `${baseUrl}_medium3x.${format} 288w`,
-      `${baseUrl}_large.${format} 128w`,
-      `${baseUrl}_large2x.${format} 256w`,
-      `${baseUrl}_large3x.${format} 384w`
+      `${baseUrl}_medium3x.${format} 288w`
     ];
     return variants.join(', ');
   };
