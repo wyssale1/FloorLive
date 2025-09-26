@@ -175,19 +175,7 @@ class ImageUtils {
    */
   getCssClasses(options: CssClassOptions): string {
     const sizeConfig = DEFAULT_SIZE_CONFIGS[options.size];
-
-    switch (options.type) {
-      case 'main':
-        return sizeConfig.css;
-      case 'iconFallback':
-        return sizeConfig.iconFallbackCss || sizeConfig.css;
-      case 'container':
-        return sizeConfig.containerCss || sizeConfig.css;
-      case 'logo':
-        return sizeConfig.logoCss || sizeConfig.css;
-      default:
-        return sizeConfig.css;
-    }
+    return sizeConfig.css;
   }
 
   /**
