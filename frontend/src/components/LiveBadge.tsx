@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { Clock } from 'lucide-react'
 import type { LiveGameStatus } from '../lib/liveGameUtils'
 
 interface LiveBadgeProps {
