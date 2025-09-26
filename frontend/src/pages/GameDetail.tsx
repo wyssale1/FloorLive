@@ -1,7 +1,7 @@
 import { useParams, Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Clock } from 'lucide-react'
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { calculateSeasonYear, getCurrentSeasonYear } from '../lib/seasonUtils'
 import GameTimeline from '../components/GameTimeline'
 import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
@@ -14,8 +14,9 @@ import { PeriodBadge } from '../components/LiveBadge'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
 import { extractLeagueId } from '../lib/utils'
-import { useLiveGamePolling, useRankings } from '../hooks/useQueries'
+import { useLiveGamePolling, useRankings, useInvalidateQueries } from '../hooks/useQueries'
 import { determineGameLiveStatus } from '../lib/liveGameUtils'
+import { useGameWebSocket } from '../hooks/useWebSocket'
 
 export default function GameDetail() {
   const { gameId } = useParams({ from: '/game/$gameId' })
@@ -23,6 +24,19 @@ export default function GameDetail() {
 
   // Use React Query for game data and live polling
   const { game, events, isLoading: gameLoading } = useLiveGamePolling(gameId)
+
+  // Use WebSocket for real-time updates (only for live games)
+  const { invalidateGame } = useInvalidateQueries()
+  const isLiveGame = game?.status === 'live'
+  const { isConnected: wsConnected, gameUpdate } = useGameWebSocket(isLiveGame ? gameId : '')
+
+  // Invalidate React Query cache when WebSocket provides updates
+  useEffect(() => {
+    if (gameUpdate && game?.status === 'live') {
+      console.log('🔄 WebSocket update received, invalidating cache for game:', gameId)
+      invalidateGame(gameId)
+    }
+  }, [gameUpdate, game?.status, gameId, invalidateGame])
 
   // Calculate live status from fetched data
   const liveStatus = useMemo(() => {
@@ -294,6 +308,7 @@ export default function GameDetail() {
                     Last event: {liveStatus.lastEventTime}
                   </div>
                 )}
+
               </div>
             </motion.div>
 
@@ -355,8 +370,17 @@ export default function GameDetail() {
                     <h2 className="text-lg font-medium text-gray-800">Game Timeline</h2>
                     {game.status === 'live' && (
                       <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">Live updates</span>
+                        {wsConnected ? (
+                          <>
+                            <div className="w-2 h-2 bg-green-500 rounded-full" />
+                            <span className="text-sm text-green-600">Live connected</span>
+                          </>
+                        ) : (
+                          <>
+                            <Clock className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm text-gray-600">Live updates...</span>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
