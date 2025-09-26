@@ -25,7 +25,7 @@ export interface PlayerEntity extends BaseEntity {
   teamId?: string;
   team?: string;
   position?: string;
-  profileImage?: string;
+  profile_image?: string;
   jerseyNumber?: string;
 }
 

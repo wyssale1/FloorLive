@@ -1489,7 +1489,7 @@ export class SwissUnihockeyApiClient {
       const playerInfo: any = {
         id: data.context?.player_id || '',
         name: playerName,
-        profileImage
+        profile_image: profileImage
       };
 
       // Map cells based on the API structure we observed:
