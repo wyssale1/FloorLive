@@ -12,7 +12,7 @@ export interface OptimizedImageOptions {
   // For processed images with multiple formats/sizes
   baseId?: string; // player ID or team ID
   basePath?: string; // e.g., '/assets/players' or '/assets/teams'
-  size?: 'small' | 'medium' | 'large';
+  size?: 'tiny' | 'small' | 'medium' | 'large';
 
   // For provided URLs (from API)
   providedUrls?: ImageUrls;

@@ -136,7 +136,7 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
       <div className="flex items-center space-x-3 min-w-0 flex-1">
         <TeamLogo
           team={team}
-          size="small"
+          size="tiny"
           className="shrink-0"
           fallbackIcon={<Shield className="w-4 h-4 text-gray-400" />}
         />

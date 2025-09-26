@@ -2,19 +2,17 @@ import { Shield } from 'lucide-react'
 import { memo, useMemo } from 'react'
 import OptimizedImage from './OptimizedImage'
 import { getImageUtils } from '../utils/imageConfigLoader'
+import type { LogoUrls } from '../types/domain'
 
 interface TeamLogoProps {
   team: {
     id: string;
     name: string;
     logo?: string; // Swiss Unihockey logo URL
-    logoUrls?: {
-      large: Record<string, string>;
-      small: Record<string, string>;
-    };
+    logoUrls?: LogoUrls;
     hasLogo?: boolean;
   };
-  size?: 'large' | 'small';
+  size?: 'tiny' | 'small' | 'large';
   className?: string;
   fallbackIcon?: React.ReactNode;
   showSwissUnihockeyFallback?: boolean; // New prop to control fallback behavior
@@ -33,8 +31,8 @@ function TeamLogo({
   const imageOptions = useMemo(() => ({
     baseId: `team-${team.id}`,
     basePath: '/assets/teams',
-    size: size as 'small' | 'large',
-    providedUrls: team.logoUrls?.[size],
+    size: size as 'tiny' | 'small' | 'large',
+    providedUrls: team.logoUrls?.[size as keyof LogoUrls],
     fallbackUrl: showSwissUnihockeyFallback ? team.logo : undefined,
     enableResponsive: false // Teams logos don't need responsive variants
   }), [team.id, team.logoUrls, size, showSwissUnihockeyFallback, team.logo])
@@ -44,20 +42,24 @@ function TeamLogo({
     const utils = getImageUtils();
     return {
       sizeClasses: {
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'main' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'main' })
+        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'main' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'main' }),
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'main' })
       },
       iconSizes: {
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'iconFallback' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'iconFallback' })
+        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'iconFallback' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'iconFallback' }),
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'iconFallback' })
       },
       containerClasses: {
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'container' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'container' })
+        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'container' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'container' }),
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'container' })
       },
       logoClasses: {
-        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'logo' }),
-        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'logo' })
+        tiny: utils.getCssClasses({ entityType: 'teams', size: 'tiny', type: 'logo' }),
+        small: utils.getCssClasses({ entityType: 'teams', size: 'small', type: 'logo' }),
+        large: utils.getCssClasses({ entityType: 'teams', size: 'large', type: 'logo' })
       }
     };
   }, [])

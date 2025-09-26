@@ -7,7 +7,7 @@
 
 // Image Format Types
 export type ImageFormatType = 'avif' | 'webp' | 'png';
-export type ImageSize = 'small' | 'medium' | 'large';
+export type ImageSize = 'tiny' | 'small' | 'medium' | 'large';
 export type RetinaScale = 1 | 2 | 3;
 export type EntityType = 'players' | 'teams';
 
@@ -191,6 +191,14 @@ export const DEFAULT_IMAGE_CONFIG: Partial<ImageConfig> = {
 };
 
 export const DEFAULT_SIZE_CONFIGS: Record<ImageSize, SizeConfig> = {
+  tiny: {
+    width: 16,
+    height: 16,
+    css: 'w-4 h-4',
+    retinaScales: [1, 2],
+    iconFallbackCss: 'w-4 h-4',
+    containerCss: 'w-4 h-4'
+  },
   small: {
     width: 32,
     height: 32,

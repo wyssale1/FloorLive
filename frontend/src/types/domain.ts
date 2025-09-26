@@ -11,6 +11,7 @@ export type LeagueType = 'NLA Men' | 'NLA Women' | 'NLB Men' | 'NLB Women';
 export interface LogoUrls {
   large: Record<string, string>; // { avif: url, webp: url, png: url }
   small: Record<string, string>;
+  tiny?: Record<string, string>; // Optional since existing data might not have tiny sizes
 }
 
 export interface League {
