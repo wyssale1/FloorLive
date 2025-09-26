@@ -2,23 +2,28 @@
   "playerId": "431352",
   "playerName": "Mike Jäger",
   "teamName": "UHC Alligator Malans",
-  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/vbxw9x8q05xe8dqp5bkl.jpg",
-  "processedAt": "2025-09-20T12:31:03.574Z",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/pkkbervjjblwny7by16n.jpg",
+  "processedAt": "2025-09-26T13:53:07.191Z",
   "sizes": {
     "small": {
       "width": 32,
       "height": 32,
-      "suffix": "_small"
+      "css": "w-8 h-8",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     },
     "medium": {
-      "width": 100,
-      "height": 100,
-      "suffix": "_medium"
-    },
-    "large": {
-      "width": 200,
-      "height": 200,
-      "suffix": "_large"
+      "width": 64,
+      "height": 64,
+      "css": "w-16 h-16",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     }
   },
   "formats": [

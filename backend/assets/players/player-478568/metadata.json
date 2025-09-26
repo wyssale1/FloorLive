@@ -1,0 +1,40 @@
+{
+  "playerId": "478568",
+  "playerName": "Andrin Jäggi",
+  "teamName": "Unihockey Basel Regio",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/az9ijwz7rayryd7ktv33.jpg",
+  "processedAt": "2025-09-26T14:22:35.279Z",
+  "sizes": {
+    "small": {
+      "width": 32,
+      "height": 32,
+      "css": "w-8 h-8",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
+    },
+    "medium": {
+      "width": 64,
+      "height": 64,
+      "css": "w-16 h-16",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "formats": [
+    "avif",
+    "webp",
+    "png"
+  ],
+  "retinaScales": [
+    1,
+    2,
+    3
+  ],
+  "hasImage": true
+}

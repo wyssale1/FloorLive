@@ -2,23 +2,28 @@
   "playerId": "427234",
   "playerName": "Claudio Mutter",
   "teamName": "HC Rychenberg Winterthur",
-  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/dammt4e6j2dgqqbazijm.jpg",
-  "processedAt": "2025-09-20T12:30:33.505Z",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/da5wlrrs3muxhbziu5ax.jpg",
+  "processedAt": "2025-09-26T13:52:51.799Z",
   "sizes": {
     "small": {
       "width": 32,
       "height": 32,
-      "suffix": "_small"
+      "css": "w-8 h-8",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     },
     "medium": {
-      "width": 100,
-      "height": 100,
-      "suffix": "_medium"
-    },
-    "large": {
-      "width": 200,
-      "height": 200,
-      "suffix": "_large"
+      "width": 64,
+      "height": 64,
+      "css": "w-16 h-16",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     }
   },
   "formats": [

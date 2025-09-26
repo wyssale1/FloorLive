@@ -1,0 +1,40 @@
+{
+  "playerId": "484511",
+  "playerName": "Alyssa Grichting",
+  "teamName": "Visper Lions",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/ut4tphdl4ryycdjoorzk.jpg",
+  "processedAt": "2025-09-26T14:24:27.404Z",
+  "sizes": {
+    "small": {
+      "width": 32,
+      "height": 32,
+      "css": "w-8 h-8",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
+    },
+    "medium": {
+      "width": 64,
+      "height": 64,
+      "css": "w-16 h-16",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "formats": [
+    "avif",
+    "webp",
+    "png"
+  ],
+  "retinaScales": [
+    1,
+    2,
+    3
+  ],
+  "hasImage": true
+}

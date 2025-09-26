@@ -3,22 +3,27 @@
   "playerName": "Louis Pfau",
   "teamName": "Unihockey Limmattal",
   "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/fxp9fqzgssh0fpw5zksx.jpg",
-  "processedAt": "2025-09-20T12:31:34.904Z",
+  "processedAt": "2025-09-26T13:53:24.891Z",
   "sizes": {
     "small": {
       "width": 32,
       "height": 32,
-      "suffix": "_small"
+      "css": "w-8 h-8",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     },
     "medium": {
-      "width": 100,
-      "height": 100,
-      "suffix": "_medium"
-    },
-    "large": {
-      "width": 200,
-      "height": 200,
-      "suffix": "_large"
+      "width": 64,
+      "height": 64,
+      "css": "w-16 h-16",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     }
   },
   "formats": [

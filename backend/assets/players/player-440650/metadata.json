@@ -1,0 +1,40 @@
+{
+  "playerId": "440650",
+  "playerName": "Stefanie Häberlin",
+  "teamName": "Red Lions Frauenfeld",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/gb9q4tw8xlo9a1rdauoo.jpg",
+  "processedAt": "2025-09-26T13:54:19.831Z",
+  "sizes": {
+    "small": {
+      "width": 32,
+      "height": 32,
+      "css": "w-8 h-8",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
+    },
+    "medium": {
+      "width": 64,
+      "height": 64,
+      "css": "w-16 h-16",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "formats": [
+    "avif",
+    "webp",
+    "png"
+  ],
+  "retinaScales": [
+    1,
+    2,
+    3
+  ],
+  "hasImage": true
+}

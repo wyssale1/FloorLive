@@ -2,23 +2,28 @@
   "playerId": "420512",
   "playerName": "Manuel Staub",
   "teamName": "Zug United",
-  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/qt6wwy4jzzj6zl7d7baf.jpg",
-  "processedAt": "2025-09-20T12:29:52.362Z",
+  "originalUrl": "https://res.cloudinary.com/swiss-unihockey/image/upload/t_player_portrait_01/ox1tt0bk69an9svhznjp.jpg",
+  "processedAt": "2025-09-26T13:52:30.861Z",
   "sizes": {
     "small": {
       "width": 32,
       "height": 32,
-      "suffix": "_small"
+      "css": "w-8 h-8",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     },
     "medium": {
-      "width": 100,
-      "height": 100,
-      "suffix": "_medium"
-    },
-    "large": {
-      "width": 200,
-      "height": 200,
-      "suffix": "_large"
+      "width": 64,
+      "height": 64,
+      "css": "w-16 h-16",
+      "retinaScales": [
+        1,
+        2,
+        3
+      ]
     }
   },
   "formats": [
