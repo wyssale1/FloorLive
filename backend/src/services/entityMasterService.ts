@@ -50,15 +50,11 @@ export class EntityMasterService {
   async ensureCacheLoaded(): Promise<void> {
     // If cache is already loaded, return immediately
     if (this.cacheInitialized && this.cache) {
-      console.log(`[ENTITY_CACHE] Cache already loaded - Teams: ${Object.keys(this.cache.teams).length}, Players: ${Object.keys(this.cache.players).length}`);
       return;
     }
 
-    console.log(`[ENTITY_CACHE] Cache not loaded, initializing...`);
-
     // If there's already a loading operation in progress, wait for it
     if (this.loadingPromise) {
-      console.log(`[ENTITY_CACHE] Loading already in progress, waiting...`);
       await this.loadingPromise;
       return;
     }
@@ -68,7 +64,6 @@ export class EntityMasterService {
 
     try {
       await this.loadingPromise;
-      console.log(`[ENTITY_CACHE] Cache loading completed`);
     } finally {
       // Clear the loading promise when done (success or failure)
       this.loadingPromise = null;
@@ -76,49 +71,27 @@ export class EntityMasterService {
   }
 
   private async performCacheLoad(): Promise<void> {
-    const loadStartTime = Date.now();
-    console.log(`[ENTITY_CACHE] Starting cache load from: ${this.MASTER_FILE}`);
-
     try {
       await fs.mkdir(this.DATA_DIR, { recursive: true });
-      console.log(`[ENTITY_CACHE] Data directory ensured: ${this.DATA_DIR}`);
 
       try {
-        console.log(`[ENTITY_CACHE] Reading master file...`);
         const data = await fs.readFile(this.MASTER_FILE, 'utf-8');
-        console.log(`[ENTITY_CACHE] File read successfully, size: ${data.length} chars`);
-
         const parsedData = JSON.parse(data);
-        console.log(`[ENTITY_CACHE] JSON parsed successfully`);
 
         // Validate the parsed data structure
         if (!parsedData || typeof parsedData !== 'object') {
           throw new Error('Invalid data structure in master file');
         }
 
-        if (!parsedData.teams || !parsedData.players) {
-          console.log(`[ENTITY_CACHE] Warning: Missing teams or players object in data`);
-        }
-
         this.cache = parsedData;
-
-        const teamCount = Object.keys(parsedData.teams || {}).length;
-        const playerCount = Object.keys(parsedData.players || {}).length;
-        console.log(`[ENTITY_CACHE] Cache loaded successfully - Teams: ${teamCount}, Players: ${playerCount}`);
-
       } catch (fileError) {
-        console.log(`[ENTITY_CACHE] File read error, initializing empty cache:`, (fileError as Error).message);
         this.initializeEmptyCache();
         await this.saveMasterData();
       }
 
       this.cacheInitialized = true;
-      const loadDuration = Date.now() - loadStartTime;
-      console.log(`[ENTITY_CACHE] Cache initialization completed in ${loadDuration}ms`);
-
     } catch (error) {
-      const loadDuration = Date.now() - loadStartTime;
-      console.error(`[ENTITY_CACHE] Failed to initialize entity master cache after ${loadDuration}ms:`, error);
+      console.error('Failed to initialize entity master cache:', error);
       this.initializeEmptyCache();
       this.cacheInitialized = true; // Set to true even on failure to prevent infinite retries
     }
@@ -321,77 +294,29 @@ export class EntityMasterService {
 
   // Search Methods
   async searchTeams(query: string, limit: number = 20): Promise<TeamEntity[]> {
-    console.log(`[ENTITY_SEARCH] searchTeams called - query: "${query}", limit: ${limit}`);
     await this.ensureCacheLoaded();
-
-    const totalTeams = Object.keys(this.cache!.teams).length;
-    console.log(`[ENTITY_SEARCH] Total teams in cache: ${totalTeams}`);
-
-    if (totalTeams === 0) {
-      console.log(`[ENTITY_SEARCH] No teams in cache to search`);
-      return [];
-    }
-
     const normalizedQuery = query.toLowerCase();
-    console.log(`[ENTITY_SEARCH] Normalized query: "${normalizedQuery}"`);
 
-    const allTeams = Object.values(this.cache!.teams);
-    console.log(`[ENTITY_SEARCH] Sample team names: ${allTeams.slice(0, 3).map(t => `"${t.name}"`).join(', ')}${allTeams.length > 3 ? '...' : ''}`);
-
-    const matchedTeams = allTeams.filter(team =>
-      team.name.toLowerCase().includes(normalizedQuery)
-    );
-
-    console.log(`[ENTITY_SEARCH] Teams matched: ${matchedTeams.length}`);
-
-    const limitedResults = matchedTeams.slice(0, limit);
-    console.log(`[ENTITY_SEARCH] Teams returned after limit: ${limitedResults.length}`);
-
-    if (limitedResults.length > 0) {
-      console.log(`[ENTITY_SEARCH] Sample results: ${limitedResults.slice(0, 2).map(t => `"${t.name}"`).join(', ')}`);
-    }
-
-    return limitedResults;
+    return Object.values(this.cache!.teams)
+      .filter(team =>
+        team.name.toLowerCase().includes(normalizedQuery)
+      )
+      .slice(0, limit);
   }
 
   async searchPlayers(query: string, limit: number = 20): Promise<PlayerEntity[]> {
-    console.log(`[ENTITY_SEARCH] searchPlayers called - query: "${query}", limit: ${limit}`);
     await this.ensureCacheLoaded();
-
-    const totalPlayers = Object.keys(this.cache!.players).length;
-    console.log(`[ENTITY_SEARCH] Total players in cache: ${totalPlayers}`);
-
-    if (totalPlayers === 0) {
-      console.log(`[ENTITY_SEARCH] No players in cache to search`);
-      return [];
-    }
-
     const normalizedQuery = query.toLowerCase();
-    console.log(`[ENTITY_SEARCH] Normalized query: "${normalizedQuery}"`);
 
-    const allPlayers = Object.values(this.cache!.players);
-    console.log(`[ENTITY_SEARCH] Sample player names: ${allPlayers.slice(0, 3).map(p => `"${p.name}"`).join(', ')}${allPlayers.length > 3 ? '...' : ''}`);
-
-    const matchedPlayers = allPlayers.filter(player =>
-      player.name.toLowerCase().includes(normalizedQuery)
-    );
-
-    console.log(`[ENTITY_SEARCH] Players matched: ${matchedPlayers.length}`);
-
-    const limitedResults = matchedPlayers
+    return Object.values(this.cache!.players)
+      .filter(player =>
+        player.name.toLowerCase().includes(normalizedQuery)
+      )
       .slice(0, limit)
       .map(player => ({
         ...player,
         jerseyNumber: (player as any).number || player.jerseyNumber
       }));
-
-    console.log(`[ENTITY_SEARCH] Players returned after limit: ${limitedResults.length}`);
-
-    if (limitedResults.length > 0) {
-      console.log(`[ENTITY_SEARCH] Sample results: ${limitedResults.slice(0, 2).map(p => `"${p.name}"`).join(', ')}`);
-    }
-
-    return limitedResults;
   }
 
   // Statistics and Health
