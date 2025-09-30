@@ -17,6 +17,7 @@ import { WebSocketService } from './services/websocketService.js';
 import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
 import { SEOService } from './services/seoService.js';
+import { logger } from './utils/logger.js';
 
 // Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -49,7 +50,16 @@ app.use(cors({
   origin: corsOrigin(),
   credentials: true
 }));
-app.use(morgan('combined'));
+
+// Morgan logging: environment-based verbosity
+if (process.env.NODE_ENV === 'production') {
+  // Production: minimal logging (or disable completely)
+  app.use(morgan('tiny'));
+} else {
+  // Development: more verbose
+  app.use(morgan('dev'));
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -148,7 +158,7 @@ app.get('/api', (req, res) => {
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unhandled error:', err);
+  logger.error('Unhandled error:', err);
   
   // Enhanced error response
   const status = (err as any).status || 500;
@@ -203,11 +213,12 @@ setupGracefulShutdown(server, {
 // Start server
 const host = process.env.HOST || 'localhost';
 server.listen(port, host, () => {
-  console.log(`🚀 FloorLive Backend running on ${host}:${port}`);
-  console.log(`📡 WebSocket server ready`);
-  console.log(`🔗 API available at http://${host}:${port}/api`);
-  console.log(`💖 Health check at http://localhost:${port}/health`);
-  
+  logger.info(`🚀 FloorLive Backend running on ${host}:${port}`);
+  logger.info(`📡 WebSocket server ready`);
+  logger.info(`🔗 API available at http://${host}:${port}/api`);
+  logger.info(`💖 Health check at http://localhost:${port}/health`);
+  logger.info(`📊 Log level: ${process.env.LOG_LEVEL || 'INFO'}`);
+
   // Start scheduler after server is up
   schedulerService.start();
 });

@@ -807,11 +807,22 @@ export class SwissUnihockeyApiClient {
       let status: 'upcoming' | 'live' | 'finished' = 'upcoming';
 
       if (result && result.includes(':')) {
-        const scores = result.split(':').map((s: string) => s.trim());
-        if (scores.length === 2) {
-          homeScore = parseInt(scores[0]) || null;
-          awayScore = parseInt(scores[1]) || null;
-          status = 'finished';
+        if (result.includes('*')) {
+          // Live game: "0:0*" or "2:1*"
+          status = 'live';
+          const scoreMatch = result.match(/(\d+):(\d+)/);
+          if (scoreMatch) {
+            homeScore = parseInt(scoreMatch[1]) || 0;
+            awayScore = parseInt(scoreMatch[2]) || 0;
+          }
+        } else {
+          // Finished game: "2:1"
+          const scores = result.split(':').map((s: string) => s.trim());
+          if (scores.length === 2) {
+            homeScore = parseInt(scores[0]) || null;
+            awayScore = parseInt(scores[1]) || null;
+            status = 'finished';
+          }
         }
       } else if (result === '') {
         status = 'upcoming';

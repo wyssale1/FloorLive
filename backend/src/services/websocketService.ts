@@ -3,6 +3,7 @@ import { Server } from 'http';
 import { SwissUnihockeyApiClient } from './swissUnihockeyApi.js';
 import { CacheService } from './cacheService.js';
 import { Game } from '../types/domain.js';
+import { logger } from '../utils/logger.js';
 
 export class WebSocketService {
   private wss: WebSocketServer;
@@ -22,7 +23,7 @@ export class WebSocketService {
 
   private setupWebSocketServer(): void {
     this.wss.on('connection', (ws: WebSocket) => {
-      console.log('New WebSocket connection established');
+      logger.debug('New WebSocket connection established');
       this.clients.add(ws);
 
       // Send initial live games data
@@ -34,7 +35,7 @@ export class WebSocketService {
           const message = JSON.parse(data.toString());
           await this.handleClientMessage(ws, message);
         } catch (error) {
-          console.error('Error handling WebSocket message:', error);
+          logger.error('Error handling WebSocket message:', error);
           ws.send(JSON.stringify({
             type: 'error',
             message: 'Invalid message format'
@@ -44,18 +45,18 @@ export class WebSocketService {
 
       // Handle client disconnect
       ws.on('close', () => {
-        console.log('WebSocket connection closed');
+        logger.debug('WebSocket connection closed');
         this.clients.delete(ws);
       });
 
       // Handle errors
       ws.on('error', (error) => {
-        console.error('WebSocket error:', error);
+        logger.error('WebSocket error:', error);
         this.clients.delete(ws);
       });
     });
 
-    console.log('WebSocket server initialized');
+    logger.info('WebSocket server initialized');
   }
 
   private async handleClientMessage(ws: WebSocket, message: any): Promise<void> {
@@ -111,7 +112,7 @@ export class WebSocketService {
       }
 
     } catch (error) {
-      console.error('Error sending live games update:', error);
+      logger.error('Error sending live games update:', error);
     }
   }
 
@@ -135,7 +136,7 @@ export class WebSocketService {
         }
       }
     } catch (error) {
-      console.error(`Error sending game update for ${gameId}:`, error);
+      logger.error(`Error sending game update for ${gameId}:`, error);
     }
   }
 
@@ -156,12 +157,12 @@ export class WebSocketService {
     // Update live games every 30 seconds
     this.liveGameUpdateInterval = setInterval(async () => {
       if (this.clients.size > 0) {
-        console.log('Broadcasting live games update to', this.clients.size, 'clients');
+        logger.debug(`Broadcasting live games update to ${this.clients.size} clients`);
         await this.sendLiveGamesUpdate();
       }
     }, 30000); // 30 seconds
 
-    console.log('Live game updates started (30s interval)');
+    logger.info('Live game updates started (30s interval)');
   }
 
   public async broadcastGameUpdate(gameId: string): Promise<void> {
@@ -185,7 +186,7 @@ export class WebSocketService {
         this.broadcast(message);
       }
     } catch (error) {
-      console.error(`Error broadcasting game update for ${gameId}:`, error);
+      logger.error(`Error broadcasting game update for ${gameId}:`, error);
     }
   }
 
@@ -205,6 +206,6 @@ export class WebSocketService {
     this.clients.clear();
 
     this.wss.close();
-    console.log('WebSocket service cleaned up');
+    logger.info('WebSocket service cleaned up');
   }
 }
