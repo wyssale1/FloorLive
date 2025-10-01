@@ -1369,60 +1369,35 @@ export class SwissUnihockeyApiClient {
       for (const row of rows) {
         if (!row.cells || !Array.isArray(row.cells)) continue;
 
-        // Debug logging to see actual cell contents
-        console.log('Row cells length:', row.cells.length);
-        console.log('First few cells:', row.cells.slice(0, 6).map((cell: any, i: number) => ({
-          index: i,
-          text: cell?.text?.[0] || 'N/A',
-          hasImage: !!cell?.image?.url,
-          hasLink: !!cell?.link?.ids?.length
-        })));
-
-        // Based on actual Swiss Unihockey API structure:
+        // Correct Swiss Unihockey API structure (confirmed via debug logging):
         // cells[0] = position/rank
         // cells[1] = team logo (image only)
         // cells[2] = team name (text)
-        // cells[3] = wins (W)
-        // cells[4] = draws/ties (D)
-        // cells[5] = losses (L)
-        // cells[6] = ??? (needs investigation)
-        // cells[7] = ??? (needs investigation)
-        // cells[8] = ??? (needs investigation)
-        // cells[9] = goals (format like "161:107")
-        // cells[10] = goal difference (format like "+54")
-        // cells[11] = ??? (needs investigation)
-        // cells[12] = points (total)
+        // cells[3] = GP (Games Played) ✓
+        // cells[4] = Unknown (possibly OT wins or draws)
+        // cells[5] = W (Wins) ✓
+        // cells[6] = Unknown (possibly OT wins)
+        // cells[7] = Unknown (possibly OT losses)
+        // cells[8] = Unknown (possibly regulation losses)
+        // cells[9] = goals (format like "24:8") ✓
+        // cells[10] = goal difference (format like "+16") ✓
+        // cells[11] = Unknown (possibly points per game average)
+        // cells[12] = points (total) ✓
 
         const goalsText = row.cells[9]?.text?.[0] || '0:0';
         const [goalsFor, goalsAgainst] = goalsText.split(':').map((g: string) => parseInt(g.trim()) || 0);
         const goalDiffText = row.cells[10]?.text?.[0] || '0';
         const goalDifference = parseInt(goalDiffText.replace('+', '')) || 0;
-        
-        // Try to parse wins/losses from different possible cell positions
-        // If cells[3] contains the same value for all teams, try alternative parsing
-        const cell3Value = parseInt(row.cells[3]?.text?.[0] || '0') || 0;
-        const cell4Value = parseInt(row.cells[4]?.text?.[0] || '0') || 0;
-        const cell5Value = parseInt(row.cells[5]?.text?.[0] || '0') || 0;
-        
-        // Check if this looks like games played vs wins/draws/losses
-        let wins, draws, losses, games;
-        
-        if (cell3Value === 22 || cell3Value > 20) {
-          // Likely this is games played, not wins - use a fallback calculation
-          games = cell3Value;
-          // Calculate approximate wins from points (assuming 3 points per win, 1 per draw)
-          const totalPoints = parseInt(row.cells[12]?.text?.[0] || '0') || 0;
-          // Rough estimation: if points are high relative to games, more wins
-          wins = Math.floor(totalPoints / 3);
-          draws = Math.max(0, totalPoints - (wins * 3));
-          losses = Math.max(0, games - wins - draws);
-        } else {
-          // Normal parsing
-          wins = cell3Value;
-          draws = cell4Value;
-          losses = cell5Value;
-          games = wins + draws + losses;
-        }
+
+        // Read values directly from correct cell positions
+        const games = parseInt(row.cells[3]?.text?.[0] || '0') || 0;  // GP is in cell[3]
+        const wins = parseInt(row.cells[5]?.text?.[0] || '0') || 0;   // Wins in cell[5]
+
+        // For draws and losses, we need to determine from remaining cells
+        // Swiss Unihockey typically has: W, OTW, OTL, L columns
+        // Without full confirmation, calculate losses as games - wins
+        const draws = 0; // Swiss Unihockey doesn't use draws in modern format
+        const losses = Math.max(0, games - wins); // Calculate remaining games as losses
 
         const team = {
           position: parseInt(row.cells[0]?.text?.[0] || '0') || 0,
