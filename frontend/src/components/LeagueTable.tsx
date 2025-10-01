@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from '@tanstack/react-router'
 import { Trophy, RotateCcw } from 'lucide-react'
 import TeamLogo from './TeamLogo'
+import LeagueTableLegend from './LeagueTableLegend'
 import { formatSeasonDisplay, getCurrentSeasonYear } from '../lib/seasonUtils'
 import type { TeamRanking } from '../types/domain'
 
@@ -83,18 +84,21 @@ export default function LeagueTable({
             </span>
           )}
         </div>
-        {table.season && availableSeasons && onSeasonChange &&
-         table.season !== getCurrentSeasonYear().toString() && (
-          <button
-            onClick={() => onSeasonChange(getCurrentSeasonYear().toString())}
-            disabled={seasonSelectorDisabled}
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Back to current season"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Current</span>
-          </button>
-        )}
+        <div className="flex items-center space-x-3">
+          {table.season && availableSeasons && onSeasonChange &&
+           table.season !== getCurrentSeasonYear().toString() && (
+            <button
+              onClick={() => onSeasonChange(getCurrentSeasonYear().toString())}
+              disabled={seasonSelectorDisabled}
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Back to current season"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Current</span>
+            </button>
+          )}
+          <LeagueTableLegend />
+        </div>
       </div>
 
       {/* Header Row */}
@@ -157,13 +161,13 @@ export default function LeagueTable({
                 </div>
                 
                 {/* Team Logo */}
-                <TeamLogo 
-                  team={{ 
-                    id: team.teamId, 
-                    name: team.teamName, 
-                    logo: team.teamLogo || undefined 
-                  }} 
-                  size="small" 
+                <TeamLogo
+                  team={{
+                    id: team.teamId,
+                    name: team.teamName,
+                    logo: team.teamLogo || undefined
+                  }}
+                  size="small"
                   className="shrink-0"
                   showSwissUnihockeyFallback={true}
                 />
@@ -198,7 +202,7 @@ export default function LeagueTable({
                     )}
                   </div>
                   <div className="text-xs text-gray-600">
-                    {team.wins}W-{team.losses}L • {team.goalsFor}:{team.goalsAgainst}
+                    {team.goalsFor}:{team.goalsAgainst}
                     {/* Show goal difference on mobile */}
                     <span className="sm:hidden ml-2">
                       <span className={diffColor}>
