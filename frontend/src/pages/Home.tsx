@@ -35,11 +35,18 @@ export default function Home() {
   const { data: games = [], isLoading, isError } = useGamesByDate(formattedDate)
 
   // League ordering preferences (same as backend)
+  // Ordered from highest to lowest league level
   const LEAGUE_ORDER_PREFERENCES = [
-    'Herren L-UPL',    // NLA Men
-    'Damen L-UPL',     // NLA Women
-    'Herren NLB',      // NLB Men
-    'Damen NLB'        // NLB Women
+    'Herren L-UPL',     // NLA Men (league 1)
+    'Damen L-UPL',      // NLA Women (league 1)
+    'Herren NLB',       // NLB Men (league 2)
+    'Damen NLB',        // NLB Women (league 2)
+    'Herren 1. Liga',   // 1. Liga Men (league 3)
+    'Damen 1. Liga',    // 1. Liga Women (league 3)
+    'Herren 2. Liga',   // 2. Liga Men (league 4)
+    'Damen 2. Liga',    // 2. Liga Women (league 4)
+    'Herren 3. Liga',   // 3. Liga Men (league 5)
+    'Damen 3. Liga'     // 3. Liga Women (league 5)
   ]
 
   // Group games by league (memoized)
