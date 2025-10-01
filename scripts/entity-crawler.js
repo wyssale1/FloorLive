@@ -176,9 +176,10 @@ class EntityCrawler {
         name: team.teamName,
         logo: team.teamLogo,
         league: {
-          name: league.leagueName,
           id: league.leagueId,
-          gameClass: league.gameClass
+          name: league.leagueName,
+          gameClass: parseInt(league.gameClass),
+          group: null
         }
       }));
 
@@ -301,7 +302,7 @@ class EntityCrawler {
       logo: teamDetails.logo || team.logo,
       website: teamDetails.website,
       portrait: teamDetails.portrait,
-      league: teamDetails.league || team.league,
+      league: team.league || teamDetails.league,
       address: teamDetails.address,
       lastUpdated: new Date().toISOString(),
       ttl: this.createTTL()

@@ -196,15 +196,34 @@ export class EntityMasterService {
     return Object.values(this.cache!.teams);
   }
 
-  async addOrUpdateTeam(teamId: string, name: string, league?: string): Promise<TeamEntity> {
+  async addOrUpdateTeam(
+    teamId: string,
+    teamData: {
+      name: string;
+      logo?: string;
+      website?: string;
+      portrait?: string;
+      address?: string[];
+      league?: {
+        id: string;
+        name: string;
+        gameClass?: number;
+        group?: string | null;
+      };
+    }
+  ): Promise<TeamEntity> {
     await this.ensureCacheLoaded();
 
     const now = new Date().toISOString();
     const team: TeamEntity = {
       type: 'team',
       id: teamId,
-      name,
-      league,
+      name: teamData.name,
+      logo: teamData.logo,
+      website: teamData.website,
+      portrait: teamData.portrait,
+      address: teamData.address,
+      league: teamData.league,
       lastUpdated: now,
       ttl: this.calculateTtl()
     };
@@ -342,7 +361,20 @@ export class EntityMasterService {
   }
 
   // Bulk operations for background processing
-  async bulkUpdateTeams(teams: Array<{id: string, name: string, league?: string}>): Promise<void> {
+  async bulkUpdateTeams(teams: Array<{
+    id: string;
+    name: string;
+    logo?: string;
+    website?: string;
+    portrait?: string;
+    address?: string[];
+    league?: {
+      id: string;
+      name: string;
+      gameClass?: number;
+      group?: string | null;
+    };
+  }>): Promise<void> {
     if (teams.length === 0) return;
 
     await this.ensureCacheLoaded();
@@ -355,6 +387,10 @@ export class EntityMasterService {
         type: 'team',
         id: teamData.id,
         name: teamData.name,
+        logo: teamData.logo,
+        website: teamData.website,
+        portrait: teamData.portrait,
+        address: teamData.address,
         league: teamData.league,
         lastUpdated: now,
         ttl

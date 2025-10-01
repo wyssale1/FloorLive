@@ -17,7 +17,15 @@ export interface TeamEntity extends BaseEntity {
   type: 'team';
   shortName?: string;
   logo?: string;
-  league?: string;
+  website?: string;
+  portrait?: string;
+  address?: string[];
+  league?: {
+    id: string;
+    name: string;
+    gameClass?: number; // 11 = men, 21 = women
+    group?: string | null;
+  };
 }
 
 export interface PlayerEntity extends BaseEntity {

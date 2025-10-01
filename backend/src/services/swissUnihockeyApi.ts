@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { SwissUnihockeyApiResponse, GameListParams } from '../types/api.js';
 import { Game, GameEvent, Team } from '../types/domain.js';
 import { getCurrentSeasonYear } from '../utils/seasonUtils.js';
+import { leagueResolver } from './leagueResolver.js';
 
 export class SwissUnihockeyApiClient {
   private client: AxiosInstance;
@@ -57,7 +58,7 @@ export class SwissUnihockeyApiClient {
   async getGameDetails(gameId: string): Promise<Game | null> {
     try {
       const response = await this.client.get<any>(`/games/${gameId}`);
-      return this.mapGameDetailsFromApi(response.data);
+      return await this.mapGameDetailsFromApi(response.data);
     } catch (error) {
       console.error(`Error fetching game ${gameId}:`, error);
       return null;
@@ -111,7 +112,7 @@ export class SwissUnihockeyApiClient {
   async getTeamDetails(teamId: string): Promise<any | null> {
     try {
       const response = await this.client.get<any>(`/teams/${teamId}`);
-      return this.mapTeamDetailsFromApi(response.data);
+      return await this.mapTeamDetailsFromApi(response.data, teamId);
     } catch (error) {
       console.error(`Error fetching team details for ${teamId}:`, error);
       return null;
@@ -757,7 +758,7 @@ export class SwissUnihockeyApiClient {
     return Boolean(referee && referee.trim() !== '' && referee !== '0' && referee !== 'null' && referee !== 'undefined');
   }
 
-  private mapGameDetailsFromApi(apiData: any): Game | null {
+  private async mapGameDetailsFromApi(apiData: any): Promise<Game | null> {
     if (!apiData || !apiData.data?.regions?.[0]?.rows?.[0]) return null;
 
     try {
@@ -836,6 +837,25 @@ export class SwissUnihockeyApiClient {
       const homeLogo = cells[0]?.image?.url || null;
       const awayLogo = cells[2]?.image?.url || null;
 
+      // Resolve league metadata from team IDs
+      const leagueName = this.parseLeagueName(apiData.data.subtitle);
+      let leagueId = '';
+      let gameClass: number | undefined = undefined;
+      let group: string | null = null;
+
+      if (homeTeamId || awayTeamId) {
+        try {
+          const resolvedLeague = await leagueResolver.getCommonLeague(homeTeamId, awayTeamId);
+          if (resolvedLeague) {
+            leagueId = resolvedLeague.id;
+            gameClass = resolvedLeague.gameClass;
+            group = resolvedLeague.group ?? null;
+          }
+        } catch (error) {
+          console.warn(`Could not resolve league for game ${homeTeamId} vs ${awayTeamId}:`, error);
+        }
+      }
+
       return {
         id: `${homeTeamId}_${awayTeamId}_${date}` || 'unknown',
         home_team: {
@@ -858,8 +878,8 @@ export class SwissUnihockeyApiClient {
         start_time: time,
         game_date: date,
         league: {
-          id: '',
-          name: this.parseLeagueName(apiData.data.subtitle)
+          id: leagueId,
+          name: leagueName
         },
         location,
         venue,
@@ -1027,7 +1047,7 @@ export class SwissUnihockeyApiClient {
     return 'upcoming';
   }
 
-  private mapTeamDetailsFromApi(apiData: any): any | null {
+  private async mapTeamDetailsFromApi(apiData: any, teamId?: string): Promise<any | null> {
     if (!apiData?.data?.regions?.[0]?.rows?.[0]) return null;
 
     try {
@@ -1038,21 +1058,35 @@ export class SwissUnihockeyApiClient {
 
       // Based on actual API response structure:
       // cells[0] = team name
-      // cells[1] = logo 
+      // cells[1] = logo
       // cells[2] = website
       // cells[3] = portrait (text)
       // cells[4] = league
       // cells[5] = address
 
+      const leagueName = cells[4]?.text?.[0] || 'Unknown League';
+      const actualTeamId = teamId || row.id?.toString() || '';
+
+      // Infer league ID and gameClass from league name
+      let leagueId = '';
+      const inferredLeagueId = this.getLeagueIdFromName(leagueName);
+      if (inferredLeagueId) {
+        leagueId = inferredLeagueId.toString();
+      }
+
+      const gameClass = this.getGameClassFromLeagueName(leagueName);
+
       return {
-        id: row.id?.toString() || '',
+        id: actualTeamId,
         name: cells[0]?.text?.[0] || 'Unknown Team',
         logo: cells[1]?.image?.url || null,
         website: cells[2]?.url?.href || null,
         portrait: cells[3]?.text?.[0] || null,
         league: {
-          id: '',
-          name: cells[4]?.text?.[0] || 'Unknown League'
+          id: leagueId,
+          name: leagueName,
+          gameClass: gameClass || undefined,
+          group: null
         },
         address: cells[5]?.text || null
       };

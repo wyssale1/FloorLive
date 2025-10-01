@@ -34,7 +34,9 @@
       "Bash(npm start)",
       "Bash(xargs npx tsc --noEmit --project)",
       "Bash(PORT=3002 npm run start)",
-      "Bash(VITE_API_URL=http://localhost:3002/api npm run dev)"
+      "Bash(VITE_API_URL=http://localhost:3002/api npm run dev)",
+      "Bash(/dev/null)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
