@@ -1,0 +1,1586 @@
+openapi: 3.0.3
+info:
+  title: Swiss Unihockey API
+  description: |
+    REST API for Swiss Unihockey with public and private endpoints.
+    Some resources require authentication with a consumer key and secret.
+  version: 2.28.0
+  contact:
+    email: it@swissunihockey.ch
+
+servers:
+  - url: https://api-v2.swissunihockey.ch
+    description: Production server
+
+security:
+  - {}
+  - TokenAuth: []
+
+tags:
+  - name: Games
+    description: Game information and operations
+  - name: Teams
+    description: Team information
+  - name: Players
+    description: Player information
+  - name: Clubs
+    description: Club information
+  - name: Rankings
+    description: League rankings
+  - name: Topscorers
+    description: Top scorer statistics
+  - name: Calendars
+    description: iCalendar feeds
+  - name: Leagues
+    description: League information
+  - name: Groups
+    description: Group information
+  - name: Seasons
+    description: Season information
+  - name: National Players
+    description: National team players
+  - name: Cups
+    description: Cup competitions
+  - name: Game Events
+    description: Events during games
+  - name: Sessions
+    description: Session and favorites management
+  - name: Business API
+    description: Private endpoints for game reporting
+  - name: API v3
+    description: JSON:API specification endpoints
+
+paths:
+  /api/games:
+    get:
+      tags:
+        - Games
+      summary: Retrieve list of games
+      description: |
+        Returns games list with various modes:
+        - cup: Cup games for a round
+        - current: Current games
+        - direct: Direct meetings of two teams
+        - favorite: Next games for favorites
+        - list: Overview list (default)
+        - club: Club games
+        - team: Team games
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+            enum: [cup, current, direct, favorite, list, club, team]
+        - name: locale
+          in: query
+          description: ISO 639-1 language code
+          schema:
+            type: string
+            enum: [en, de-CH, fr-CH, it-CH]
+            default: de-CH
+        - name: season
+          in: query
+          description: Season year (e.g., 2013 for 13/14 season)
+          schema:
+            type: integer
+        - name: league
+          in: query
+          schema:
+            type: integer
+        - name: game_class
+          in: query
+          schema:
+            type: integer
+        - name: group
+          in: query
+          schema:
+            type: string
+        - name: team_id
+          in: query
+          schema:
+            type: integer
+        - name: player_id
+          in: query
+          schema:
+            type: integer
+        - name: club_id
+          in: query
+          schema:
+            type: integer
+        - name: tournament_id
+          in: query
+          schema:
+            type: string
+        - name: round
+          in: query
+          schema:
+            type: string
+        - name: side
+          in: query
+          schema:
+            type: string
+            enum: [left, right]
+        - name: game_id
+          in: query
+          schema:
+            type: string
+        - name: amount
+          in: query
+          schema:
+            type: integer
+        - name: on_date
+          in: query
+          description: Date in format YYYY-MM-DD
+          schema:
+            type: string
+            format: date
+        - name: sid
+          in: query
+          description: Session ID for favorites
+          schema:
+            type: string
+        - name: league_ids
+          in: query
+          description: Comma-separated list of league IDs
+          schema:
+            type: string
+        - name: game_class_ids
+          in: query
+          description: Comma-separated list of game class IDs
+          schema:
+            type: string
+        - name: tournament_ids
+          in: query
+          description: Comma-separated list of tournament IDs
+          schema:
+            type: string
+        - name: only_video_streamed
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: view
+          in: query
+          schema:
+            type: string
+            enum: [short, full]
+            default: full
+        - name: use_streaming_logos
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/games/{game_id}:
+    get:
+      tags:
+        - Games
+      summary: Retrieve game details
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: locale
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game details as attribute list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeListResponse'
+
+  /api/games/{game_id}/summary:
+    get:
+      tags:
+        - Games
+      summary: Retrieve game summary
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Textual summary of the game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeListResponse'
+
+  /api/games/{game_id}/teams/{is_home}/lineup:
+    get:
+      tags:
+        - Games
+      summary: Retrieve team lineup for a game
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: is_home
+          in: path
+          required: true
+          description: 0 for away team, 1 for home team
+          schema:
+            type: integer
+            enum: [0, 1]
+        - name: view
+          in: query
+          schema:
+            type: string
+            enum: [short, full]
+            default: full
+        - name: hide_empty
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Team lineup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/teams:
+    get:
+      tags:
+        - Teams
+      summary: Retrieve list of teams
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+            enum: [by_club]
+        - name: season
+          in: query
+          schema:
+            type: integer
+        - name: club_id
+          in: query
+          schema:
+            type: integer
+        - name: league
+          in: query
+          schema:
+            type: integer
+        - name: game_class
+          in: query
+          schema:
+            type: integer
+        - name: locale
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/teams/{team_id}:
+    get:
+      tags:
+        - Teams
+      summary: Retrieve team details
+      parameters:
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Team details as attribute list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeListResponse'
+
+  /api/teams/{team_id}/players:
+    get:
+      tags:
+        - Teams
+      summary: Retrieve team players (Kaderliste)
+      parameters:
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of players in the team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/teams/{team_id}/statistics:
+    get:
+      tags:
+        - Teams
+      summary: Retrieve team statistics
+      description: Past seasons and successes of a team
+      parameters:
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Team statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/players/{player_id}:
+    get:
+      tags:
+        - Players
+      summary: Retrieve player details
+      parameters:
+        - name: player_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Player details as attribute list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeListResponse'
+
+  /api/players/{player_id}/overview:
+    get:
+      tags:
+        - Players
+      summary: Retrieve player game overview
+      parameters:
+        - name: player_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Overview of player's games
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/clubs:
+    get:
+      tags:
+        - Clubs
+      summary: List all clubs
+      parameters:
+        - name: season
+          in: query
+          schema:
+            type: integer
+        - name: return_type
+          in: query
+          schema:
+            type: string
+            enum: [dropdown]
+      responses:
+        '200':
+          description: List of clubs
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/TableResponse'
+                  - $ref: '#/components/schemas/DropdownResponse'
+
+  /api/clubs/{club_id}/statistics:
+    get:
+      tags:
+        - Clubs
+      summary: Retrieve club team overview
+      parameters:
+        - name: club_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: season
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Overview of club teams
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/rankings:
+    get:
+      tags:
+        - Rankings
+      summary: Retrieve league rankings
+      parameters:
+        - name: season
+          in: query
+          schema:
+            type: integer
+        - name: league
+          in: query
+          schema:
+            type: integer
+        - name: game_class
+          in: query
+          schema:
+            type: integer
+        - name: group
+          in: query
+          schema:
+            type: integer
+        - name: view
+          in: query
+          schema:
+            type: string
+            enum: [short, full]
+            default: full
+      responses:
+        '200':
+          description: Rankings table
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/topscorers:
+    get:
+      tags:
+        - Topscorers
+      summary: Retrieve Swiss Unihockey Topscorers
+      parameters:
+        - name: season
+          in: query
+          schema:
+            type: integer
+        - name: phase
+          in: query
+          schema:
+            type: string
+            enum: [group, finals]
+        - name: amount
+          in: query
+          description: Number of ranks to load, or 'all'
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+                enum: [all]
+      responses:
+        '200':
+          description: Topscorers table
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/topscorers/mobiliar:
+    get:
+      tags:
+        - Topscorers
+      summary: Retrieve Mobiliar Topscorers
+      parameters:
+        - name: season
+          in: query
+          schema:
+            type: integer
+        - name: club_id
+          in: query
+          schema:
+            type: integer
+        - name: view_type
+          in: query
+          schema:
+            type: string
+            enum: [table, attribute_list]
+            default: attribute_list
+      responses:
+        '200':
+          description: Mobiliar topscorers
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/TableResponse'
+                  - $ref: '#/components/schemas/AttributeListResponse'
+
+  /api/calendars:
+    get:
+      tags:
+        - Calendars
+      summary: Retrieve iCalendar feed
+      description: Returns calendar in iCalendar (.ics) format
+      parameters:
+        - name: team_id
+          in: query
+          schema:
+            type: string
+        - name: club_id
+          in: query
+          schema:
+            type: string
+        - name: season
+          in: query
+          schema:
+            type: integer
+        - name: league
+          in: query
+          schema:
+            type: string
+        - name: game_class
+          in: query
+          schema:
+            type: string
+        - name: group
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: iCalendar format
+          content:
+            text/calendar:
+              schema:
+                type: string
+
+  /api/leagues:
+    get:
+      tags:
+        - Leagues
+      summary: Retrieve leagues
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [dropdown]
+      responses:
+        '200':
+          description: Leagues dropdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DropdownResponse'
+
+  /api/groups:
+    get:
+      tags:
+        - Groups
+      summary: Retrieve groups
+      parameters:
+        - name: season
+          in: query
+          schema:
+            type: integer
+        - name: league
+          in: query
+          schema:
+            type: integer
+        - name: game_class
+          in: query
+          schema:
+            type: integer
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [dropdown]
+      responses:
+        '200':
+          description: Groups dropdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DropdownResponse'
+
+  /api/seasons:
+    get:
+      tags:
+        - Seasons
+      summary: Retrieve seasons
+      parameters:
+        - name: return_type
+          in: query
+          schema:
+            type: string
+            enum: [dropdown]
+      responses:
+        '200':
+          description: Seasons list or dropdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DropdownResponse'
+
+  /api/national_players:
+    get:
+      tags:
+        - National Players
+      summary: Retrieve national team players
+      responses:
+        '200':
+          description: List of national players
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/national_players/statistics:
+    get:
+      tags:
+        - National Players
+      summary: Retrieve national players statistics
+      parameters:
+        - name: selection_id
+          in: query
+          schema:
+            type: integer
+            enum: [1, 2]
+          description: 1 for male, 2 for female
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: direction
+          in: query
+          schema:
+            type: string
+            enum: [desc, asc]
+      responses:
+        '200':
+          description: National players statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/cups/{championship_id}:
+    get:
+      tags:
+        - Cups
+      summary: Retrieve cup details
+      parameters:
+        - name: championship_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cup details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/game_events:
+    get:
+      tags:
+        - Game Events
+      summary: Retrieve game events
+      parameters:
+        - name: game_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: team
+          in: query
+          schema:
+            type: string
+            enum: [home, away]
+      responses:
+        '200':
+          description: Game events table
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableResponse'
+
+  /api/sessions/add_favorite:
+    post:
+      tags:
+        - Sessions
+      summary: Add a favorite
+      security:
+        - {}
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                sid:
+                  type: string
+                  nullable: true
+                favorites[]:
+                  type: string
+                  description: JSON string of favorite
+      responses:
+        '200':
+          description: Session with added favorite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sid:
+                    type: string
+                  favorites:
+                    type: array
+                    items:
+                      type: object
+
+  /api/sessions/remove_favorite:
+    post:
+      tags:
+        - Sessions
+      summary: Remove a favorite
+      security:
+        - {}
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                sid:
+                  type: string
+                favorites[]:
+                  type: string
+      responses:
+        '200':
+          description: Session with removed favorite
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/sessions/matchcenter:
+    get:
+      tags:
+        - Sessions
+      summary: Retrieve matchcenter data
+      parameters:
+        - name: sid
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Matchcenter sections
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [matchcenter]
+                  data:
+                    type: object
+                    properties:
+                      sections:
+                        type: array
+                        items:
+                          type: object
+
+  /bo/session/auth:
+    post:
+      tags:
+        - Business API
+      summary: Authenticate with partner credentials
+      description: Obtain authentication token using API key and secret
+      security:
+        - {}
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - api_key
+                - secret
+              properties:
+                api_key:
+                  type: string
+                secret:
+                  type: string
+      responses:
+        '200':
+          description: Authentication token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+
+  /bo/session/auth_anlass:
+    post:
+      tags:
+        - Business API
+      summary: Authenticate with anlass credentials
+      security:
+        - {}
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - anlass_id
+                - password
+              properties:
+                anlass_id:
+                  type: integer
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authentication token and anlass_id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+                  anlass_id:
+                    type: integer
+
+  /bo/games:
+    get:
+      tags:
+        - Business API
+      summary: Retrieve games list for reporting
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: set
+          in: query
+          schema:
+            type: string
+            enum: [game_report]
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of games
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/games/{game_id}:
+    get:
+      tags:
+        - Business API
+      summary: Retrieve comprehensive game details
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: set
+          in: query
+          schema:
+            type: string
+            enum: [game_report]
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comprehensive game details
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/games/{game_id}/lineups/{team_id}:
+    put:
+      tags:
+        - Business API
+      summary: Create or update team lineup
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                positions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      player_id:
+                        type: integer
+                      license_id:
+                        type: integer
+                      number:
+                        type: string
+                      captain:
+                        type: string
+                        enum: ['yes', 'no']
+                      do_not_remember_number:
+                        type: string
+                        enum: ['yes', 'no']
+                auth_token:
+                  type: string
+      responses:
+        '200':
+          description: Lineup created/updated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/games/{game_id}/events:
+    post:
+      tags:
+        - Business API
+      summary: Create game event
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - category_id
+                - time
+                - world_time
+                - auth_token
+              properties:
+                category_id:
+                  type: integer
+                  description: Event type ID
+                time:
+                  type: string
+                  description: Game time (e.g., 0:23:00)
+                world_time:
+                  type: string
+                  format: date-time
+                  description: Absolute time (e.g., 2015-10-28T12:34:45+01:00)
+                team_id:
+                  type: integer
+                player_id:
+                  type: integer
+                assister_id:
+                  type: integer
+                code:
+                  type: integer
+                  minimum: 0
+                  maximum: 999
+                auth_token:
+                  type: string
+      responses:
+        '200':
+          description: Event created
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/games/{game_id}/events/{event_id}:
+    delete:
+      tags:
+        - Business API
+      summary: Delete game event
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event deleted
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/games/{game_id}/status:
+    post:
+      tags:
+        - Business API
+      summary: Set game status
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - event
+                - auth_token
+              properties:
+                event:
+                  type: string
+                  enum: [start, start_third, end_third, report_result, game_over, start_penalty_shootout, forfait, abort, undo]
+                auth_token:
+                  type: string
+                home:
+                  type: integer
+                  description: Home team score (for report_result)
+                away:
+                  type: integer
+                  description: Away team score (for report_result)
+                spectators:
+                  type: integer
+                second:
+                  type: integer
+                  description: Playtime in seconds
+                penalty_shootout:
+                  type: string
+                  enum: ['yes', 'no']
+                prolongation:
+                  type: string
+                  enum: ['yes', 'no']
+                winner:
+                  type: string
+                  enum: [home, away]
+                  description: For forfait event
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/players:
+    get:
+      tags:
+        - Business API
+      summary: Lookup players by license number
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: license_number
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching players
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/people:
+    get:
+      tags:
+        - Business API
+      summary: List people with roles
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: ids
+          in: query
+          description: Comma-separated list of person IDs
+          schema:
+            type: string
+        - name: changed_since
+          in: query
+          description: Date in ISO format (e.g., 2016-12-23)
+          schema:
+            type: string
+            format: date
+        - name: changed_until
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: set
+          in: query
+          schema:
+            type: string
+            enum: [minimal, with_roles]
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of people
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bo/people/{id}/validate_password:
+    put:
+      tags:
+        - Business API
+      summary: Validate person password
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - password
+                - auth_token
+              properties:
+                password:
+                  type: string
+                auth_token:
+                  type: string
+      responses:
+        '200':
+          description: Password validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                  payload:
+                    type: object
+                    properties:
+                      password:
+                        type: string
+                        enum: [valid, invalid]
+
+  /api/v3/games:
+    get:
+      tags:
+        - API v3
+      summary: Retrieve games (JSON:API format)
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: filter[from_date]
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: filter[to_date]
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: filter[with_live_stream]
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+        - name: include
+          in: query
+          description: Related resources to include (e.g., home_team,away_team)
+          schema:
+            type: string
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Games list in JSON:API format
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+
+  /api/v3/games/{id}:
+    get:
+      tags:
+        - API v3
+      summary: Retrieve single game details
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: include
+          in: query
+          schema:
+            type: string
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game details in JSON:API format
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+
+  /api/v3/games/{id}/add_extra_goal:
+    post:
+      tags:
+        - API v3
+      summary: Add extra goal (e.g., for penalty shootout win)
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - team_id
+                - auth_token
+              properties:
+                team_id:
+                  type: integer
+                auth_token:
+                  type: string
+      responses:
+        '200':
+          description: Goal added
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+
+  /api/v3/games/{game_id}/teams/{id}/lineup_candidates:
+    get:
+      tags:
+        - API v3
+      summary: Retrieve eligible team members for game
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Eligible team members
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+
+  /api/v3/games/{game_id}/teams/{id}/validate_lineup:
+    get:
+      tags:
+        - API v3
+      summary: Validate lineup
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: filter[licenses]
+          in: query
+          required: true
+          description: Comma-separated list of license IDs
+          schema:
+            type: string
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lineup validation result
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+
+  /api/v3/teams/{id}/last_started_game:
+    get:
+      tags:
+        - API v3
+      summary: Retrieve team's last started game
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: auth_token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Last started game
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+
+components:
+  securitySchemes:
+    TokenAuth:
+      type: apiKey
+      in: query
+      name: auth_token
+      description: Authentication token obtained from /bo/session/auth or /bo/session/auth_anlass
+
+  schemas:
+    TableResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [table]
+        subtype:
+          type: string
+          enum: [attribute_list]
+        data:
+          type: object
+          properties:
+            context:
+              type: object
+            title:
+              type: string
+            tabs:
+              type: array
+              items:
+                type: object
+            slider:
+              type: object
+            headers:
+              type: array
+              items:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  long:
+                    type: string
+                  short:
+                    type: string
+                  prefer:
+                    type: string
+                    enum: [short, long, fit]
+                  align:
+                    type: string
+                    enum: [r, l, c]
+                  width:
+                    type: integer
+            regions:
+              type: array
+              items:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  rows:
+                    type: array
+                    items:
+                      type: object
+        reload_link:
+          type: object
+        doc:
+          type: string
+
+    AttributeListResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [table]
+        subtype:
+          type: string
+          enum: [attribute_list]
+        data:
+          type: object
+          properties:
+            tabs:
+              type: array
+            headers:
+              type: array
+              items:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  key:
+                    type: string
+            regions:
+              type: array
+              items:
+                type: object
+            title:
+              type: string
+        doc:
+          type: string
+
+    DropdownResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [dropdown]
+        text:
+          type: string
+        resource:
+          type: string
+        entries:
+          type: array
+          items:
+            type: object
+            properties:
+              text:
+                type: string
+              set_in_context:
+                type: object
+              entries:
+                type: array
+              highlight:
+                type: boolean
+        levels:
+          type: array
+          items:
+            type: string
+        highlight:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          enum: [error]
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+            code:
+              type: integer
