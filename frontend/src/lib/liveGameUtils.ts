@@ -15,10 +15,12 @@ export interface LiveGameStatus {
  * 1. Check time range (game time to +3 hours)
  * 2. If we already have scores AND in time range = finished game, use existing scores
  * 3. If no scores BUT in time range = potentially live, use event scores
+ * 4. If live game details available, prefer those scores over events
  */
 export function determineGameLiveStatus(
   game: any,
   events: GameEvent[] = [],
+  liveGameDetails?: any,
   currentTime: Date = new Date()
 ): LiveGameStatus {
   // Initialize default status
@@ -51,18 +53,31 @@ export function determineGameLiveStatus(
       // No meaningful scores or 0-0 = potentially live
       status.status = 'live'
       status.isLive = true
-      console.log('Game marked as live - fetching events for scores')
-      
-      // Try to get scores from events for live games
-      const latestScore = parseLatestScoreFromEvents(events)
-      console.log(`Events for live game:`, events.length, 'events')
-      console.log(`Latest score from events:`, latestScore)
-      if (latestScore) {
-        status.homeScore = latestScore.home
-        status.awayScore = latestScore.away
-        console.log(`Updated scores from events: ${latestScore.home}-${latestScore.away}`)
+      console.log('Game marked as live - checking for live scores')
+
+      // Priority 1: Try to get scores from live game details (most reliable)
+      if (liveGameDetails) {
+        const liveScore = parseLiveScoreFromGameDetails(liveGameDetails)
+        console.log(`Live score from game details:`, liveScore)
+        if (liveScore) {
+          status.homeScore = liveScore.home
+          status.awayScore = liveScore.away
+          console.log(`Updated scores from game details: ${liveScore.home}-${liveScore.away}`)
+        }
       }
-      
+
+      // Priority 2: Try to get scores from events if no live details available
+      if (status.homeScore === null && status.awayScore === null) {
+        const latestScore = parseLatestScoreFromEvents(events)
+        console.log(`Events for live game:`, events.length, 'events')
+        console.log(`Latest score from events:`, latestScore)
+        if (latestScore) {
+          status.homeScore = latestScore.home
+          status.awayScore = latestScore.away
+          console.log(`Updated scores from events: ${latestScore.home}-${latestScore.away}`)
+        }
+      }
+
       // Check if game has started/ended based on events for additional info
       const gameEvents = analyzeGameEvents(events)
       status.currentPeriod = gameEvents.currentPeriod
@@ -75,6 +90,38 @@ export function determineGameLiveStatus(
   }
 
   return status
+}
+
+/**
+ * Parses live score from game details response
+ * Handles formats like "0:0*", "2:1*" or detailed periods "(1:2, 1:2, 0:0)"
+ */
+export function parseLiveScoreFromGameDetails(gameDetails: any): { home: number, away: number } | null {
+  if (!gameDetails) {
+    console.log('No game details provided to parseLiveScoreFromGameDetails')
+    return null
+  }
+
+  // Check if this is a live game based on status
+  if (gameDetails.status !== 'live') {
+    console.log('Game details not marked as live:', gameDetails.status)
+    return null
+  }
+
+  // Try to get scores from the game details
+  const homeScore = gameDetails.homeScore ?? gameDetails.home_score
+  const awayScore = gameDetails.awayScore ?? gameDetails.away_score
+
+  if (homeScore !== null && awayScore !== null) {
+    console.log(`Live scores from game details: ${homeScore}:${awayScore}`)
+    return {
+      home: homeScore,
+      away: awayScore
+    }
+  }
+
+  console.log('No live scores found in game details')
+  return null
 }
 
 /**

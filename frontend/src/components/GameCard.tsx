@@ -5,7 +5,7 @@ import { memo, useMemo, useCallback } from 'react'
 import type { Game } from '../lib/mockData'
 import { cn } from '../lib/utils'
 import { determineGameLiveStatus, shouldPollGameForUpdates } from '../lib/liveGameUtils'
-import { useGameEvents } from '../hooks/useQueries'
+import { useGameEvents, useLiveGameDetail } from '../hooks/useQueries'
 import TeamLogo from './TeamLogo'
 import LiveBadge from './LiveBadge'
 import PlayerStatsIcons from './PlayerStatsIcons'
@@ -35,10 +35,19 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
   // Only fetch events if the game might be live
   const { data: events = [] } = useGameEvents(game.id, shouldFetchEvents)
 
-  // Calculate live status with events
-  const liveStatus = useMemo(() => {
-    return determineGameLiveStatus(game, events)
+  // Check if potentially live for game details fetching
+  const isPotentiallyLive = useMemo(() => {
+    const initialStatus = determineGameLiveStatus(game, events)
+    return initialStatus.status === 'live'
   }, [game, events])
+
+  // Fetch live game details if potentially live (for accurate live scores)
+  const { data: liveGameDetails } = useLiveGameDetail(game.id, isPotentiallyLive, shouldFetchEvents)
+
+  // Calculate live status with events and live game details
+  const liveStatus = useMemo(() => {
+    return determineGameLiveStatus(game, events, liveGameDetails)
+  }, [game, events, liveGameDetails])
 
   // Memoize computed values
   const { isLive, isUpcoming, hasScores, isCurrentGame } = useMemo(() => ({

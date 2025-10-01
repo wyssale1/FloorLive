@@ -75,6 +75,20 @@ export function useGameEvents(gameId: string, enabled = true) {
   })
 }
 
+export function useLiveGameDetail(gameId: string, isLive: boolean, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.games.detail(gameId),
+    queryFn: async () => {
+      const game = await apiClient.getGameDetails(gameId)
+      return game ? game : null
+    },
+    enabled: !!gameId && enabled && isLive,
+    staleTime: 30 * 1000, // 30 seconds for live games
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: isLive ? 30 * 1000 : false, // Auto-refetch every 30 seconds for live games
+  })
+}
+
 // Teams
 export function useTeamDetail(teamId: string, enabled = true) {
   return useQuery({

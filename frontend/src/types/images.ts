@@ -194,9 +194,9 @@ export const DEFAULT_SIZE_CONFIGS: Record<ImageSize, SizeConfig> = {
     retinaScales: [1, 2]
   },
   small: {
-    width: 32,
-    height: 32,
-    css: 'w-8 h-8',
+    width: 24,
+    height: 24,
+    css: 'w-6 h-6',
     retinaScales: [1, 2, 3]
   },
   medium: {
