@@ -2,17 +2,18 @@ import { useState, useEffect } from 'react'
 import { MapPin, Clock, Users, Trophy, Flag } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { apiClient } from '../lib/apiClient'
+import type { Game } from '../lib/apiClient'
 import { formatSwissDate } from '../lib/utils'
 import GameList from './GameList'
 import GameCardSkeleton from './GameCardSkeleton'
 
 interface GameOverviewProps {
-  game: any
+  game: Game
   gameId: string
 }
 
 export default function GameOverview({ game, gameId }: GameOverviewProps) {
-  const [headToHeadGames, setHeadToHeadGames] = useState<any[]>([])
+  const [headToHeadGames, setHeadToHeadGames] = useState<Game[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {

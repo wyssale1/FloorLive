@@ -31,8 +31,9 @@ export interface ResponsiveAssetUrls {
 /**
  * Generate asset URLs for a given entity (player or team)
  * Based on our known asset structure: /assets/{entity}s/{entity}-{id}/{id}_{size}.{format}
+ * This is a pure utility function, not a React hook
  */
-export function useAssetUrls(entityType: EntityType, entityId: string, size: AssetSize): AssetUrls {
+export function generateAssetUrls(entityType: EntityType, entityId: string, size: AssetSize): AssetUrls {
   if (!entityId) {
     // Return empty URLs if no ID provided
     return {
@@ -57,8 +58,9 @@ export function useAssetUrls(entityType: EntityType, entityId: string, size: Ass
 /**
  * Generate all asset URLs for multiple sizes
  * Useful when you need URLs for different sizes at once
+ * This is a pure utility function, not a React hook
  */
-export function useAssetUrlsMultiSize(entityType: EntityType, entityId: string, sizes: AssetSize[] = ['small', 'medium', 'large']): Record<AssetSize, AssetUrls> {
+export function generateAssetUrlsMultiSize(entityType: EntityType, entityId: string, sizes: AssetSize[] = ['small', 'medium', 'large']): Record<AssetSize, AssetUrls> {
   if (!entityId) {
     const emptyUrls = { avif: '', webp: '', png: '' };
     return {
@@ -71,7 +73,7 @@ export function useAssetUrlsMultiSize(entityType: EntityType, entityId: string, 
   const result = {} as Record<AssetSize, AssetUrls>;
 
   for (const size of sizes) {
-    result[size] = useAssetUrls(entityType, entityId, size);
+    result[size] = generateAssetUrls(entityType, entityId, size);
   }
 
   return result;
@@ -79,8 +81,9 @@ export function useAssetUrlsMultiSize(entityType: EntityType, entityId: string, 
 
 /**
  * Generate responsive URLs for a specific format
+ * This is a pure utility function, not a React hook
  */
-export function useResponsiveAssetUrls(entityType: EntityType, entityId: string, size: AssetSize): ResponsiveAssetUrls {
+export function generateResponsiveAssetUrls(entityType: EntityType, entityId: string, size: AssetSize): ResponsiveAssetUrls {
   if (!entityId) {
     const emptyUrls = { '1x': '' };
     return {
@@ -95,7 +98,7 @@ export function useResponsiveAssetUrls(entityType: EntityType, entityId: string,
   const basePath = `/assets/${entityPlural}/${directory}`;
   const baseFileName = `${entityId}_${size}`;
 
-  const generateResponsiveUrls = (format: ImageFormat): ResponsiveUrls => {
+  const buildResponsiveUrls = (format: ImageFormat): ResponsiveUrls => {
     const urls: ResponsiveUrls = {
       '1x': `${basePath}/${baseFileName}.${format}`
     };
@@ -112,9 +115,9 @@ export function useResponsiveAssetUrls(entityType: EntityType, entityId: string,
   };
 
   return {
-    avif: generateResponsiveUrls('avif'),
-    webp: generateResponsiveUrls('webp'),
-    png: generateResponsiveUrls('png')
+    avif: buildResponsiveUrls('avif'),
+    webp: buildResponsiveUrls('webp'),
+    png: buildResponsiveUrls('png')
   };
 }
 
@@ -149,7 +152,7 @@ export function useResponsiveAssetUrlsWithDPR(
     }
   }, []);
 
-  const responsiveUrls = useResponsiveAssetUrls(entityType, entityId, size);
+  const responsiveUrls = generateResponsiveAssetUrls(entityType, entityId, size);
 
   // Generate srcSet strings for each format
   const generateSrcSet = (format: ImageFormat): string => {
@@ -204,7 +207,7 @@ export function useAssetUrlArray(
   size: AssetSize,
   externalUrl?: string
 ): string[] {
-  const assetUrls = useAssetUrls(entityType, entityId, size);
+  const assetUrls = generateAssetUrls(entityType, entityId, size);
 
   const urls = [
     assetUrls.avif,   // 1. Our AVIF (best quality)

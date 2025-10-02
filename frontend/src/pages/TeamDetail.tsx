@@ -78,8 +78,7 @@ export default function TeamDetail() {
   // Use React Query for league rankings
   const {
     data: rankingsData,
-    isLoading: rankingsLoading,
-    isError: _rankingsError
+    isLoading: rankingsLoading
   } = useRankings({
     season: targetSeason,
     league: leagueId || undefined,
