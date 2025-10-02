@@ -447,6 +447,26 @@ export class SwissUnihockeyApiClient {
     }
   }
 
+  private convertSwissDateToISODate(dateStr: string): string {
+    try {
+      // Check if already in ISO format (YYYY-MM-DD)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        return dateStr;
+      }
+
+      // Convert Swiss format (DD.MM.YYYY) to ISO (YYYY-MM-DD)
+      if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateStr)) {
+        const [day, month, year] = dateStr.split('.');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+
+      // Fallback: return as-is (e.g., for German words like "heute")
+      return dateStr;
+    } catch {
+      return dateStr;
+    }
+  }
+
   private mapHeadToHeadGamesFromApi(apiData: any): Game[] {
     const rows = apiData?.data?.regions?.[0]?.rows || [];
     if (!rows.length) return [];
@@ -876,7 +896,7 @@ export class SwissUnihockeyApiClient {
         period: undefined,
         time: status === 'upcoming' ? time : null,
         start_time: time,
-        game_date: date,
+        game_date: this.convertSwissDateToISODate(date),
         league: {
           id: leagueId,
           name: leagueName

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Shield } from 'lucide-react'
 import { memo, useMemo, useCallback } from 'react'
 import type { Game } from '../lib/mockData'
-import { cn } from '../lib/utils'
+import { cn, formatSwissDate } from '../lib/utils'
 import { determineGameLiveStatus, shouldPollGameForUpdates } from '../lib/liveGameUtils'
 import { useGameEvents, useLiveGameDetail } from '../hooks/useQueries'
 import TeamLogo from './TeamLogo'
@@ -56,15 +56,6 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
     hasScores: liveStatus.isLive || game.status === 'finished' || (game.homeScore !== null || game.awayScore !== null) || (liveStatus.homeScore !== null || liveStatus.awayScore !== null),
     isCurrentGame: currentGameId === game.id
   }), [liveStatus.isLive, game.status, game.homeScore, game.awayScore, liveStatus.homeScore, liveStatus.awayScore, currentGameId, game.id])
-
-  const formatDate = useCallback((dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('de-CH', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
-  }, [])
 
   // Determine winner for finished games (memoized)
   const winner = useMemo(() => {
@@ -189,7 +180,7 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
                   ? 'bg-blue-100 text-blue-700'
                   : 'bg-gray-100 text-gray-600'
               }`}>
-                {formatDate(game.gameDate)}
+                {formatSwissDate(game.gameDate)}
               </div>
               {/* Player performance stats next to date */}
               {playerPerformance && (

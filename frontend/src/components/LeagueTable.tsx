@@ -153,7 +153,7 @@ export default function LeagueTable({
               <div className="flex items-center space-x-3 min-w-0 flex-1">
                 {/* Position Number */}
                 <div className="flex-shrink-0 w-8 pl-1">
-                  <span className={`text-sm font-medium rounded-full w-5 h-5 flex items-center justify-center text-xs ${
+                  <span className={`font-medium rounded-full w-5 h-5 flex items-center justify-center text-xs ${
                     isCurrentTeam || isHighlightedTeam 
                       ? 'text-blue-700 bg-blue-100' 
                       : 'text-gray-600 bg-gray-50'

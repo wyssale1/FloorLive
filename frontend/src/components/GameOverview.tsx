@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { MapPin, Clock, Users, Shield } from 'lucide-react'
+import { MapPin, Clock, Users, Trophy, Flag } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { apiClient } from '../lib/apiClient'
+import { formatSwissDate } from '../lib/utils'
 import GameList from './GameList'
 import GameCardSkeleton from './GameCardSkeleton'
 
@@ -48,7 +49,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
           <div>
             <div className="text-sm font-medium text-gray-700">Date & Time</div>
             <div className="text-sm text-gray-600">
-              {game.gameDate} at {game.startTime}
+              {formatSwissDate(game.gameDate)} at {game.startTime}
             </div>
           </div>
         </div>
@@ -62,7 +63,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
       key: 'league',
       content: (
         <div className="flex items-center space-x-2">
-          <Shield className="w-4 h-4 text-gray-400" />
+          <Trophy className="w-4 h-4 text-gray-400" />
           <div>
             <div className="text-sm font-medium text-gray-700">League</div>
             <div className="text-sm text-gray-600">
@@ -136,11 +137,11 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
 
   // Referees
   const validReferees = [game.referees?.first, game.referees?.second]
-    .filter(ref => ref && 
-                 typeof ref === 'string' && 
-                 ref.trim() !== '' && 
-                 ref !== '0' && 
-                 ref !== 'null' && 
+    .filter(ref => ref &&
+                 typeof ref === 'string' &&
+                 ref.trim() !== '' &&
+                 ref !== '0' &&
+                 ref !== 'null' &&
                  ref !== 'undefined' &&
                  ref.toLowerCase() !== 'null')
   if (validReferees.length > 0) {
@@ -148,7 +149,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
       key: 'referees',
       content: (
         <div className="flex items-center space-x-2 sm:col-span-2">
-          <Shield className="w-4 h-4 text-gray-400" />
+          <Flag className="w-4 h-4 text-gray-400" />
           <div>
             <div className="text-sm font-medium text-gray-700">
               {validReferees.length === 1 ? 'Referee' : 'Referees'}
