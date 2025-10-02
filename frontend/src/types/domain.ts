@@ -17,6 +17,8 @@ export interface LogoUrls {
 export interface League {
   id: string;
   name: string;
+  gameClass?: number;
+  group?: string | null;
 }
 
 export interface Venue {

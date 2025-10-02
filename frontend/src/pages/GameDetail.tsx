@@ -78,6 +78,7 @@ export default function GameDetail() {
   } = useRankings({
     season: targetSeason,
     league: leagueId || undefined,
+    game_class: game?.league?.gameClass?.toString(),
     leagueName: game?.league?.name,
     teamNames: game ? [game.homeTeam?.name, game.awayTeam?.name].filter(Boolean) : undefined
   }, !!game && !!leagueId)

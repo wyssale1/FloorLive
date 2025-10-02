@@ -899,7 +899,9 @@ export class SwissUnihockeyApiClient {
         game_date: this.convertSwissDateToISODate(date),
         league: {
           id: leagueId,
-          name: leagueName
+          name: leagueName,
+          gameClass: gameClass,
+          group: group
         },
         location,
         venue,
