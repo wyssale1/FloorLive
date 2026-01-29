@@ -8,45 +8,43 @@ interface TeamLogoProps {
   team: {
     id: string;
     name: string;
-    logo?: string; // Swiss Unihockey logo URL
+    logo?: string; // Swiss Unihockey logo URL (now passed from parent)
     logoUrls?: LogoUrls;
     hasLogo?: boolean;
   };
   size?: 'tiny' | 'small' | 'medium';
   className?: string;
   fallbackIcon?: React.ReactNode;
-  showSwissUnihockeyFallback?: boolean; // New prop to control fallback behavior
-  variant?: 'default' | 'square'; // New prop for container variant
+  showSwissUnihockeyFallback?: boolean;
+  variant?: 'default' | 'square';
 }
 
-function TeamLogo({ 
-  team, 
-  size = 'small', 
-  className = '', 
+function TeamLogo({
+  team,
+  size = 'small',
+  className = '',
   fallbackIcon,
   showSwissUnihockeyFallback = false,
   variant = 'default'
 }: TeamLogoProps) {
   // Prepare image options for OptimizedImage (memoized)
+  // Logo is now expected to be passed directly from parent (e.g., from useGameLogos hook in GameCard)
   const imageOptions = useMemo(() => ({
     baseId: `team-${team.id}`,
     basePath: '/assets/teams',
     size: size as 'tiny' | 'small' | 'medium',
     providedUrls: team.logoUrls?.[size as keyof LogoUrls],
-    fallbackUrl: showSwissUnihockeyFallback ? team.logo : undefined,
-    enableResponsive: false // Teams logos don't need responsive variants
+    fallbackUrl: showSwissUnihockeyFallback ? (team.logo || undefined) : undefined,
+    enableResponsive: false
   }), [team.id, team.logoUrls, size, showSwissUnihockeyFallback, team.logo])
 
-  // Simple size class from centralized config
-  const sizeClass = DEFAULT_SIZE_CONFIGS[size].css; // e.g. 'w-16 h-16'
+  const sizeClass = DEFAULT_SIZE_CONFIGS[size].css;
 
-  // Helper function to wrap content in square container
   const wrapInSquareContainer = (content: React.ReactNode) => {
     if (variant !== 'square') {
-      // For default variant, return content as-is (backward compatibility)
       return content;
     }
-    
+
     return (
       <div className={`${sizeClass} bg-white border border-gray-100 rounded-lg shadow-sm flex items-center justify-center p-2 ${className}`}>
         {content}
@@ -54,7 +52,6 @@ function TeamLogo({
     );
   };
 
-  // Memoize fallback components
   const FallbackIcon = useMemo(() =>
     fallbackIcon || <Shield className={`${sizeClass} text-gray-400`} />,
     [fallbackIcon, sizeClass]
@@ -74,10 +71,9 @@ function TeamLogo({
       loading="lazy"
       fallbackComponent={fallbackComponent}
     />
-  ), [imageOptions, team.name, sizeClass, className, fallbackComponent])
+  ), [imageOptions, team.name, sizeClass, className, variant, fallbackComponent])
 
   return wrapInSquareContainer(logoElement)
 }
 
-// Memoize the component to prevent unnecessary re-renders
 export default memo(TeamLogo)

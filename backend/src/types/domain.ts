@@ -15,6 +15,8 @@ export interface LogoUrls {
 export interface League {
   id: string;
   name: string;
+  gameClass?: number;
+  group?: string | null;
 }
 
 export interface Venue {
@@ -30,6 +32,7 @@ export interface Coordinates {
 export interface Referees {
   first?: string;
   second?: string;
+  [key: number]: string;
 }
 
 export interface Team {

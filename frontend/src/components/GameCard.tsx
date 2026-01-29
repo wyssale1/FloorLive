@@ -6,6 +6,7 @@ import type { Game } from '../lib/mockData'
 import { cn, formatSwissDate } from '../lib/utils'
 import { determineGameLiveStatus, shouldPollGameForUpdates } from '../lib/liveGameUtils'
 import { useGameEvents, useLiveGameDetail } from '../hooks/useQueries'
+import { useGameLogos } from '../hooks/useGameLogos'
 import TeamLogo from './TeamLogo'
 import LiveBadge from './LiveBadge'
 import PlayerStatsIcons from './PlayerStatsIcons'
@@ -48,6 +49,13 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
   const liveStatus = useMemo(() => {
     return determineGameLiveStatus(game, events, liveGameDetails)
   }, [game, events, liveGameDetails])
+
+  // Lazy-load team logos from game details API
+  const { homeLogo, awayLogo } = useGameLogos(
+    game.id,
+    game.homeTeam.logo,
+    game.awayTeam.logo
+  );
 
   // Memoize computed values
   const { isLive, isUpcoming, hasScores, isCurrentGame } = useMemo(() => ({
@@ -132,20 +140,25 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
       teamStyle = isWinner ? 'text-gray-800 font-bold' : isLoser ? 'text-gray-500 font-medium' : 'text-gray-700 font-medium'
     }
 
+    // Use lazy-loaded logo from game details
+    const lazyLogo = isHomeTeam ? homeLogo : awayLogo;
+    const teamWithLogo = { ...team, logo: team.logo || lazyLogo || undefined };
+
     return (
       <div className="flex items-center space-x-3 min-w-0 flex-1">
         <TeamLogo
-          team={team}
+          team={teamWithLogo}
           size="tiny"
           className="shrink-0"
           fallbackIcon={<Shield className="w-4 h-4 text-gray-400" />}
+          showSwissUnihockeyFallback={true}
         />
         <span className={`text-sm truncate ${teamStyle}`}>
           {team.name}
         </span>
       </div>
     )
-  }, [winner, isUpcoming])
+  }, [winner, isUpcoming, homeLogo, awayLogo])
 
   return (
     <Link to="/game/$gameId" params={{ gameId: game.id }} className="block">
@@ -175,11 +188,10 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
           {/* Date display if enabled */}
           {showDate && game.gameDate && (
             <div className="ml-3 flex-shrink-0">
-              <div className={`px-2 py-1 rounded text-xs font-medium ${
-                isCurrentGame
+              <div className={`px-2 py-1 rounded text-xs font-medium ${isCurrentGame
                   ? 'bg-blue-100 text-blue-700'
                   : 'bg-gray-100 text-gray-600'
-              }`}>
+                }`}>
                 {formatSwissDate(game.gameDate)}
               </div>
               {/* Player performance stats next to date */}
