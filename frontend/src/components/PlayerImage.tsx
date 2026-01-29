@@ -22,7 +22,7 @@ const JerseyBadge = ({ jerseyNumber, showNumberBadge }: { jerseyNumber?: string 
   if (!showNumberBadge || !jerseyNumber) return null;
 
   return (
-    <div className="absolute -bottom-1.5 -right-1.5 w-4.5 h-4.5 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-2xs font-medium border border-white">
+    <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-2xs border border-white">
       {jerseyNumber}
     </div>
   );
