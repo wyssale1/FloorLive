@@ -1,6 +1,6 @@
-import { User } from 'lucide-react';
-import { DEFAULT_SIZE_CONFIGS } from '../types/images';
-import { usePlayerImage } from '../hooks/usePlayerImage';
+import { User } from "lucide-react";
+import { DEFAULT_SIZE_CONFIGS } from "../types/images";
+import { usePlayerImage } from "../hooks/usePlayerImage";
 
 interface PlayerImageProps {
   player: {
@@ -8,7 +8,7 @@ interface PlayerImageProps {
     name: string;
     profileImage?: string;
   };
-  size?: 'medium' | 'small';
+  size?: "medium" | "small";
   className?: string;
   fallbackIcon?: React.ReactNode;
   onClick?: () => void;
@@ -18,11 +18,17 @@ interface PlayerImageProps {
 }
 
 // Sub-component: Jersey Number Badge
-const JerseyBadge = ({ jerseyNumber, showNumberBadge }: { jerseyNumber?: string | number; showNumberBadge?: boolean }) => {
+const JerseyBadge = ({
+  jerseyNumber,
+  showNumberBadge,
+}: {
+  jerseyNumber?: string | number;
+  showNumberBadge?: boolean;
+}) => {
   if (!showNumberBadge || !jerseyNumber) return null;
 
   return (
-    <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-2xs border border-white">
+    <div className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-3xs border border-white">
       {jerseyNumber}
     </div>
   );
@@ -30,20 +36,19 @@ const JerseyBadge = ({ jerseyNumber, showNumberBadge }: { jerseyNumber?: string 
 
 export default function PlayerImage({
   player,
-  size = 'medium',
-  className = '',
+  size = "medium",
+  className = "",
   fallbackIcon,
   onClick,
   hideCursor = false,
   jerseyNumber,
-  showNumberBadge = false
+  showNumberBadge = false,
 }: PlayerImageProps) {
-
   // Lazy load image if not provided
   const { profileImage } = usePlayerImage(player.id, player.profileImage);
 
   const sizeClass = DEFAULT_SIZE_CONFIGS[size].css;
-  const containerClasses = `${sizeClass} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`;
+  const containerClasses = `${sizeClass} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? "cursor-pointer" : ""}`;
 
   // Render API image
   const renderApiImage = () => (
@@ -72,15 +77,21 @@ export default function PlayerImage({
 
   const hasImage = !!profileImage;
   const content = hasImage ? renderApiImage() : renderFallbackContent();
-  const centeringClasses = hasImage ? '' : 'flex items-center justify-center';
+  const centeringClasses = hasImage ? "" : "flex items-center justify-center";
   const showBadge = hasImage || !jerseyNumber;
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <div className={`${containerClasses} ${centeringClasses}`} onClick={onClick}>
+      <div
+        className={`${containerClasses} ${centeringClasses}`}
+        onClick={onClick}
+      >
         {content}
       </div>
-      <JerseyBadge jerseyNumber={jerseyNumber} showNumberBadge={showNumberBadge && showBadge} />
+      <JerseyBadge
+        jerseyNumber={jerseyNumber}
+        showNumberBadge={showNumberBadge && showBadge}
+      />
     </div>
   );
 }

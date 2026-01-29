@@ -125,6 +125,11 @@
     line-height: 0.75rem;
   }
 
+  .text-3xs {
+    font-size: 0.5rem;
+    line-height: 0.625rem;
+  }
+
   /* GPU acceleration for animations */
   .transform-gpu {
     transform: translateZ(0);
