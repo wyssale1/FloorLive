@@ -1,12 +1,10 @@
 import { getTeamDisplayName, getTeamId } from './teamUtils.js';
-import { assetService } from '../services/assetService.js';
 
 /**
  * Add optimistic logo URLs to teams in games
- * Uses simple team overrides mapping
+ * Uses simple team overrides mapping and API logo URLs
  */
 export async function addOptimisticLogosToGames(games: any[]): Promise<void> {
-  // Process all teams in parallel instead of sequentially
   const logoPromises: Promise<void>[] = [];
 
   for (const game of games) {
@@ -19,36 +17,22 @@ export async function addOptimisticLogosToGames(games: any[]): Promise<void> {
     }
   }
 
-  // Wait for all logo processing to complete in parallel
   await Promise.all(logoPromises);
 }
 
 /**
- * Trigger background logo processing for games (fire-and-forget)
- * Note: Logo processing is now done at build-time via scripts/image-processor.js
- * This function is kept for compatibility but does minimal work
+ * No-op function - kept for compatibility
  */
 export function triggerBackgroundLogoProcessing(games: any[]): void {
-  // No-op since we moved to build-time processing
-  // Logos are now processed locally and committed to git
+  // No-op - logos now come directly from API
 }
 
 async function processTeamLogos(team: any): Promise<void> {
   if (!team.name) return;
-  
+
   // Apply display name override if available
   team.name = await getTeamDisplayName(team.name);
-  
-  // Try to get team ID from manual mapping
-  const teamId = await getTeamId(team.name);
-  
-  if (teamId) {
-    // Only add logoUrls if processed logo actually exists
-    const hasValidLogo = await assetService.hasTeamLogo(teamId);
-    if (hasValidLogo) {
-      team.logoUrls = assetService.getTeamLogoUrls(teamId);
-    }
-  }
-  // If no team ID mapping exists, no logo URLs are added
-}
 
+  // Logo URLs now come from API response via team details
+  // No local asset processing needed
+}

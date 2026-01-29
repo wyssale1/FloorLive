@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
-import { assetService } from '../services/assetService.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -97,19 +96,19 @@ router.get('/:teamId', async (req, res) => {
 router.get('/:teamId/players', async (req, res) => {
   try {
     const { teamId } = req.params;
-    
+
     if (!teamId) {
       return res.status(400).json({ error: 'Team ID is required' });
     }
 
     const cacheKey = `team:${teamId}:players`;
     let players = cache.get(cacheKey);
-    
+
     if (!players) {
       players = await apiClient.getTeamPlayers(teamId);
-      
-      // Cache players for 6 hours (roster doesn't change very often)
-      cache.set(cacheKey, players, 21600000);
+
+      // Cache players for 30 minutes (allows for roster updates)
+      cache.set(cacheKey, players, 1800000);
     }
 
     // Process players: add to master registry and check for updates
@@ -145,7 +144,7 @@ router.get('/:teamId/players', async (req, res) => {
         numberCounts.set(player.number, count + 1);
       }
     });
-    
+
     // Log any duplicate numbers
     for (const [number, count] of numberCounts.entries()) {
       if (count > 1) {
@@ -155,16 +154,11 @@ router.get('/:teamId/players', async (req, res) => {
       }
     }
 
-    // Add hasProcessedImages property to each player for frontend optimization
-    const enhancedPlayers = (players as any[]).map(player => ({
-      ...player,
-      hasProcessedImages: assetService.hasPlayerDirectory(player.id)
-    }));
-
+    // Return players - images come from API via /api/players/{id}
     res.json({
       teamId,
-      players: enhancedPlayers,
-      count: enhancedPlayers.length,
+      players: players,
+      count: (players as any[]).length,
       timestamp: new Date().toISOString()
     });
 
@@ -181,17 +175,17 @@ router.get('/:teamId/players', async (req, res) => {
 router.get('/:teamId/statistics', async (req, res) => {
   try {
     const { teamId } = req.params;
-    
+
     if (!teamId) {
       return res.status(400).json({ error: 'Team ID is required' });
     }
 
     const cacheKey = `team:${teamId}:statistics`;
     let statistics = cache.get(cacheKey);
-    
+
     if (!statistics) {
       statistics = await apiClient.getTeamStatistics(teamId);
-      
+
       if (!statistics) {
         return res.status(404).json({ error: 'Team statistics not found' });
       }
@@ -219,17 +213,17 @@ router.get('/:teamId/statistics', async (req, res) => {
 router.get('/:teamId/competitions', async (req, res) => {
   try {
     const { teamId } = req.params;
-    
+
     if (!teamId) {
       return res.status(400).json({ error: 'Team ID is required' });
     }
 
     const cacheKey = `team:${teamId}:competitions`;
     let competitions = cache.get(cacheKey);
-    
+
     if (!competitions) {
       competitions = await apiClient.getTeamCompetitions(teamId);
-      
+
       // Cache competitions for 6 hours (they don't change often)
       cache.set(cacheKey, competitions, 21600000);
     }
@@ -255,7 +249,7 @@ router.get('/:teamId/games', async (req, res) => {
   try {
     const { teamId } = req.params;
     const { season } = req.query;
-    
+
     if (!teamId) {
       return res.status(400).json({ error: 'Team ID is required' });
     }
@@ -263,10 +257,10 @@ router.get('/:teamId/games', async (req, res) => {
     // Create cache key that includes season parameter
     const cacheKey = `team:${teamId}:games:${season || 'current'}`;
     let games = cache.get(cacheKey);
-    
+
     if (!games) {
       games = await apiClient.getTeamGames(teamId, season as string);
-      
+
       // Cache games for 30 minutes (they can change with schedule updates)
       cache.set(cacheKey, games, 1800000);
     }

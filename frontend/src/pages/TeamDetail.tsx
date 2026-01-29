@@ -54,7 +54,7 @@ export default function TeamDetail() {
   const { data: team, isLoading: teamLoading } = useTeamDetail(teamId)
   const { data: players = [], isLoading: playersLoading } = useTeamPlayers(teamId)
   const { data: upcomingGames = [], isLoading: gamesLoading } = useTeamUpcomingGames(teamId, false) // Lazy load
-  
+
 
   // Set dynamic page title and meta tags when team data is loaded
   const pageTitle = team ? pageTitles.team(team.name) : 'Team Details'
@@ -128,12 +128,12 @@ export default function TeamDetail() {
 
   // Lazy load upcoming games when tab is selected
   const { refetch: loadUpcomingGames } = useTeamUpcomingGames(teamId, false)
-  
+
   if (teamLoading) {
     return (
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
         {/* Team Header Skeleton */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 sm:mb-10"
@@ -141,7 +141,7 @@ export default function TeamDetail() {
           <div className="flex items-start space-x-6 sm:space-x-8">
             {/* Logo skeleton */}
             <Skeleton className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex-shrink-0" />
-            
+
             {/* Info skeleton */}
             <div className="flex flex-col justify-between min-h-16 sm:min-h-20 py-1">
               <Skeleton className="h-6 sm:h-8 w-48 sm:w-64 mb-2" />
@@ -163,7 +163,7 @@ export default function TeamDetail() {
       </div>
     )
   }
-  
+
   if (!team) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -178,7 +178,7 @@ export default function TeamDetail() {
     <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
 
       {/* Team Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-8 sm:mb-10"
@@ -186,33 +186,33 @@ export default function TeamDetail() {
         <div className="flex items-start space-x-6 sm:space-x-8">
           {/* Logo - Left side */}
           <div className="flex-shrink-0">
-            <TeamLogo 
-              team={team} 
-              size="medium" 
+            <TeamLogo
+              team={team}
+              size="medium"
               variant="square"
               showSwissUnihockeyFallback={true}
             />
           </div>
-          
+
           {/* Info - Right side, aligned to logo height */}
           <div className="flex flex-col justify-between min-h-16 sm:min-h-20 py-1">
             {/* Team name at top */}
             <h1 className="text-2xl sm:text-3xl font-medium text-gray-800 leading-tight">
               {team.name}
             </h1>
-            
+
             {/* League name in middle */}
             {team.league?.name && (
               <p className="text-sm text-gray-600 my-2 sm:my-3">{team.league.name}</p>
             )}
-            
+
             {/* Website at bottom, aligned with logo bottom */}
             {team.website && (
               <div className="flex items-center space-x-2 text-sm text-gray-600 mt-auto">
                 <Globe className="w-4 h-4" />
-                <a 
-                  href={team.website} 
-                  target="_blank" 
+                <a
+                  href={team.website}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-blue-600 transition-colors"
                 >
@@ -245,7 +245,7 @@ export default function TeamDetail() {
                     <TeamPlayersLegend />
                   )}
                 </div>
-                
+
                 {playersLoading ? (
                   <PlayerListSkeleton />
                 ) : players.length === 0 ? (
@@ -258,8 +258,8 @@ export default function TeamDetail() {
                 ) : (
                   <div className="space-y-6">
                     {Object.entries(groupPlayersByPosition(players)).map(([category, categoryPlayers], categoryIndex) => (
-                      <motion.div 
-                        key={category} 
+                      <motion.div
+                        key={category}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: categoryIndex * 0.1 }}
@@ -282,8 +282,7 @@ export default function TeamDetail() {
                                   player={{
                                     id: player.id || '',
                                     name: player.name || '',
-                                    profileImage: player.profileImage,
-                                    hasProcessedImages: player.hasProcessedImages
+                                    profileImage: player.profileImage
                                   }}
                                   size="small"
                                   className="flex-shrink-0"
@@ -292,8 +291,8 @@ export default function TeamDetail() {
                                 />
                                 <div className="min-w-0">
                                   <div className="text-sm font-medium text-gray-800">
-                                    <PlayerLink 
-                                      playerId={player.id && player.id.trim() ? player.id : ''} 
+                                    <PlayerLink
+                                      playerId={player.id && player.id.trim() ? player.id : ''}
                                       playerName={player.name}
                                     />
                                   </div>
@@ -304,7 +303,7 @@ export default function TeamDetail() {
                                   )}
                                 </div>
                               </div>
-                              
+
                               {(player.goals > 0 || player.assists > 0 || player.points > 0) && (
                                 <div className="flex items-center space-x-3 text-xs text-gray-600 flex-shrink-0">
                                   {player.goals > 0 && (

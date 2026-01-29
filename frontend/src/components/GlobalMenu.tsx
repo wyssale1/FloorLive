@@ -173,117 +173,115 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
           {/* Content Section */}
           <div className="flex-1 flex flex-col min-h-0">
             <AnimatePresence mode="wait">
-            {showSearchResults ? (
-              // Search Results
-              <motion.div
-                key="search-results"
-                variants={contentVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-4 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-              >
-                {isSearching ? (
-                  <div className="text-center py-8">
-                    <div className="text-gray-500">Searching...</div>
-                  </div>
-                ) : (
-                  <>
-                    {searchResults.teams.length > 0 && (
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-3">Teams</h3>
-                        <div className="space-y-2">
-                          {searchResults.teams.map((team) => (
-                            <motion.div
-                              key={team.id}
-                              variants={searchSectionVariants}
-                              className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-3 hover:bg-white/80 transition-colors cursor-pointer"
-                              onClick={() => {
-                                // Navigate to team
-                                window.location.href = `/team/${team.id}`
-                                closeMenu()
-                              }}
-                            >
-                              <div className="flex items-center space-x-3">
-                                {team.hasLogo ? (
-                                  <img
-                                    src={team.logoUrl}
-                                    alt={`${team.name} logo`}
-                                    className="w-8 h-8 rounded-full object-contain bg-gray-100"
-                                    loading="lazy"
-                                    onError={(e) => {
-                                      // Fallback to initials if image fails
-                                      const target = e.target as HTMLImageElement;
-                                      target.style.display = 'none';
-                                      target.nextElementSibling?.classList.remove('hidden');
+              {showSearchResults ? (
+                // Search Results
+                <motion.div
+                  key="search-results"
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-4 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                >
+                  {isSearching ? (
+                    <div className="text-center py-8">
+                      <div className="text-gray-500">Searching...</div>
+                    </div>
+                  ) : (
+                    <>
+                      {searchResults.teams.length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-700 mb-3">Teams</h3>
+                          <div className="space-y-2">
+                            {searchResults.teams.map((team) => (
+                              <motion.div
+                                key={team.id}
+                                variants={searchSectionVariants}
+                                className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-3 hover:bg-white/80 transition-colors cursor-pointer"
+                                onClick={() => {
+                                  // Navigate to team
+                                  window.location.href = `/team/${team.id}`
+                                  closeMenu()
+                                }}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  {team.logoUrl ? (
+                                    <img
+                                      src={team.logoUrl}
+                                      alt={`${team.name} logo`}
+                                      className="w-8 h-8 rounded-full object-contain bg-gray-100"
+                                      loading="lazy"
+                                      onError={(e) => {
+                                        // Fallback to initials if image fails
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        target.nextElementSibling?.classList.remove('hidden');
+                                      }}
+                                    />
+                                  ) : null}
+                                  <div className={`w-8 h-8 rounded-full bg-blue-500 text-white text-xs font-medium flex items-center justify-center ${team.logoUrl ? 'hidden' : ''}`}>
+                                    {team.name.split(' ').map((word: string) => word[0]).join('').substring(0, 2).toUpperCase()}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900">{team.name}</div>
+                                    <div className="text-sm text-gray-500">{typeof team.league === 'string' ? team.league : team.league?.name || 'Swiss Unihockey'}</div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {searchResults.players.length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-700 mb-3">Players</h3>
+                          <div className="space-y-2">
+                            {searchResults.players.map((player) => (
+                              <motion.div
+                                key={player.id}
+                                variants={searchSectionVariants}
+                                className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-3 hover:bg-white/80 transition-colors cursor-pointer"
+                                onClick={() => {
+                                  // Navigate to player
+                                  window.location.href = `/player/${player.id}`
+                                  closeMenu()
+                                }}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <PlayerImage
+                                    player={{
+                                      id: player.id,
+                                      name: player.name
                                     }}
+                                    size="small"
+                                    className="flex-shrink-0"
+                                    jerseyNumber={player.jerseyNumber}
+                                    showNumberBadge={true}
                                   />
-                                ) : null}
-                                <div className={`w-8 h-8 rounded-full bg-blue-500 text-white text-xs font-medium flex items-center justify-center ${team.hasLogo ? 'hidden' : ''}`}>
-                                  {team.name.split(' ').map((word: string) => word[0]).join('').substring(0, 2).toUpperCase()}
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900">{player.name}</div>
+                                    <div className="text-sm text-gray-500">{typeof player.team === 'string' ? player.team : player.team?.name || 'Team not available'}</div>
+                                  </div>
                                 </div>
-                                <div className="flex-1">
-                                  <div className="font-medium text-gray-900">{team.name}</div>
-                                  <div className="text-sm text-gray-500">{typeof team.league === 'string' ? team.league : team.league?.name || 'Swiss Unihockey'}</div>
-                                </div>
-                              </div>
-                            </motion.div>
-                          ))}
+                              </motion.div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {searchResults.players.length > 0 && (
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-3">Players</h3>
-                        <div className="space-y-2">
-                          {searchResults.players.map((player) => (
-                            <motion.div
-                              key={player.id}
-                              variants={searchSectionVariants}
-                              className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-3 hover:bg-white/80 transition-colors cursor-pointer"
-                              onClick={() => {
-                                // Navigate to player
-                                window.location.href = `/player/${player.id}`
-                                closeMenu()
-                              }}
-                            >
-                              <div className="flex items-center space-x-3">
-                                <PlayerImage
-                                  player={{
-                                    id: player.id,
-                                    name: player.name,
-                                    hasProcessedImages: player.hasProcessedImages,
-                                    profileImage: player.hasImage ? player.imageUrl : undefined
-                                  }}
-                                  size="small"
-                                  className="flex-shrink-0"
-                                  jerseyNumber={player.jerseyNumber}
-                                  showNumberBadge={true}
-                                />
-                                <div className="flex-1">
-                                  <div className="font-medium text-gray-900">{player.name}</div>
-                                  <div className="text-sm text-gray-500">{typeof player.team === 'string' ? player.team : player.team?.name || 'Team not available'}</div>
-                                </div>
-                              </div>
-                            </motion.div>
-                          ))}
+                      {!hasSearchResults && (
+                        <div className="text-center py-8">
+                          <div className="text-gray-500">No results found for "{searchQuery}"</div>
                         </div>
-                      </div>
-                    )}
-
-                    {!hasSearchResults && (
-                      <div className="text-center py-8">
-                        <div className="text-gray-500">No results found for "{searchQuery}"</div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </motion.div>
-            ) : (
-              // Shortcut Links
-              <ShortcutLinks key="shortcuts" />
-            )}
+                      )}
+                    </>
+                  )}
+                </motion.div>
+              ) : (
+                // Shortcut Links
+                <ShortcutLinks key="shortcuts" />
+              )}
             </AnimatePresence>
           </div>
         </motion.div>

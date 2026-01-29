@@ -1,11 +1,11 @@
 import { User } from 'lucide-react';
 import { DEFAULT_SIZE_CONFIGS } from '../types/images';
+import { usePlayerImage } from '../hooks/usePlayerImage';
 
 interface PlayerImageProps {
   player: {
     id: string;
     name: string;
-    hasProcessedImages?: boolean;
     profileImage?: string;
   };
   size?: 'medium' | 'small';
@@ -39,55 +39,23 @@ export default function PlayerImage({
   showNumberBadge = false
 }: PlayerImageProps) {
 
-  // Simple size class from centralized config
-  const sizeClass = DEFAULT_SIZE_CONFIGS[size].css; // e.g. 'w-16 h-16' or 'w-8 h-8'
+  // Lazy load image if not provided
+  const { profileImage } = usePlayerImage(player.id, player.profileImage);
 
-  const COMMON_IMAGE_PROPS = {
-    alt: `${player.name} portrait`,
-    loading: 'lazy' as const,
-    className: "w-full h-full object-cover"
-  };
-
-  // Helper functions - extracted for reusability
-  const getSizesAttribute = (): string => {
-    const sizeMap = { small: '64px', medium: '96px' };
-    return sizeMap[size];
-  };
-
-  const generateSrcSet = (format: string): string => {
-    const baseUrl = `/assets/players/player-${player.id}/${player.id}`;
-    const variants = [
-      `${baseUrl}_small.${format} 64w`,
-      `${baseUrl}_small2x.${format} 128w`,
-      `${baseUrl}_small3x.${format} 192w`,
-      `${baseUrl}_medium.${format} 96w`,
-      `${baseUrl}_medium2x.${format} 192w`,
-      `${baseUrl}_medium3x.${format} 288w`
-    ];
-    return variants.join(', ');
-  };
-
-  // Shared container classes
+  const sizeClass = DEFAULT_SIZE_CONFIGS[size].css;
   const containerClasses = `${sizeClass} rounded-full overflow-hidden bg-gray-100 ${onClick && !hideCursor ? 'cursor-pointer' : ''}`;
 
-  // Content generators - DRY principle
-  const renderProcessedImage = () => {
-    const sizesAttr = getSizesAttribute();
-    const fallbackSrc = `/assets/players/player-${player.id}/${player.id}_${size}.png`;
-
-    return (
-      <picture className="w-full h-full">
-        <source srcSet={generateSrcSet('avif')} sizes={sizesAttr} type="image/avif" />
-        <source srcSet={generateSrcSet('webp')} sizes={sizesAttr} type="image/webp" />
-        <img src={fallbackSrc} srcSet={generateSrcSet('png')} sizes={sizesAttr} {...COMMON_IMAGE_PROPS} />
-      </picture>
-    );
-  };
-
+  // Render API image
   const renderApiImage = () => (
-    <img src={player.profileImage} {...COMMON_IMAGE_PROPS} />
+    <img
+      src={profileImage!}
+      alt={`${player.name} portrait`}
+      loading="lazy"
+      className="w-full h-full object-cover"
+    />
   );
 
+  // Render fallback (jersey number or icon)
   const renderFallbackContent = () => {
     if (fallbackIcon) return fallbackIcon;
 
@@ -102,22 +70,10 @@ export default function PlayerImage({
     return <User className={`${sizeClass} text-gray-400`} />;
   };
 
-  // Determine content type and render accordingly
-  const getImageContent = () => {
-    if (player.hasProcessedImages) {
-      return { content: renderProcessedImage(), needsCentering: false, showBadge: true };
-    }
-
-    if (player.profileImage) {
-      return { content: renderApiImage(), needsCentering: false, showBadge: true };
-    }
-
-    return { content: renderFallbackContent(), needsCentering: true, showBadge: !jerseyNumber };
-  };
-
-  // Single return - DRY principle applied
-  const { content, needsCentering, showBadge } = getImageContent();
-  const centeringClasses = needsCentering ? 'flex items-center justify-center' : '';
+  const hasImage = !!profileImage;
+  const content = hasImage ? renderApiImage() : renderFallbackContent();
+  const centeringClasses = hasImage ? '' : 'flex items-center justify-center';
+  const showBadge = hasImage || !jerseyNumber;
 
   return (
     <div className={`relative inline-block ${className}`}>

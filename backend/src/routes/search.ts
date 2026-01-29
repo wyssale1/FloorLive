@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { entityMasterService } from '../services/entityMasterService.js';
-import { assetService } from '../services/assetService.js';
 
 const router = Router();
 
@@ -24,7 +23,7 @@ router.get('/', async (req, res) => {
     }
 
     const searchLimit = limit && typeof limit === 'string' ? parseInt(limit, 10) : 20;
-    const limitClamped = Math.min(Math.max(searchLimit, 1), 100); // Between 1 and 100
+    const limitClamped = Math.min(Math.max(searchLimit, 1), 100);
 
     // Search both teams and players in parallel
     const [teams, players] = await Promise.all([
@@ -32,23 +31,20 @@ router.get('/', async (req, res) => {
       entityMasterService.searchPlayers(q.trim(), limitClamped)
     ]);
 
-    // Format results for frontend with actual availability checks
-    // URLs are guaranteed to work via fallback middleware, but we check actual availability for UI
-    const formattedTeams = await Promise.all(teams.map(async team => ({
+    // Format results - use API logo URLs from entities-master.json
+    const formattedTeams = teams.map(team => ({
       id: team.id,
       name: team.name,
       league: team.league || 'Swiss Unihockey',
-      hasLogo: await assetService.hasTeamLogo(team.id),
-      logoUrl: `/assets/teams/team-${team.id}/small.webp`
-    })));
+      logoUrl: team.logo || null // API URL already in entities-master.json
+    }));
 
+    // Players: no image in search results, frontend shows fallback
     const formattedPlayers = players.map(player => ({
       id: player.id,
       name: player.name,
       team: player.team || null,
-      hasImage: assetService.hasPlayerDirectory(player.id),
-      hasProcessedImages: assetService.hasPlayerDirectory(player.id),
-      imageUrl: `/assets/players/player-${player.id}/${player.id}_small.webp`,
+      teamId: player.teamId || null,
       jerseyNumber: player.jerseyNumber || null
     }));
 
