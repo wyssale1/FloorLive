@@ -28,7 +28,7 @@ const JerseyBadge = ({
   if (!showNumberBadge || !jerseyNumber) return null;
 
   return (
-    <div className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center text-3xs border border-white">
+    <div className="absolute -bottom-1.25 -right-1.25 w-3.5 h-3.5 bg-gray-100 text-gray-700 rounded-full flex font-bold items-center justify-center text-3xs border border-white">
       {jerseyNumber}
     </div>
   );
