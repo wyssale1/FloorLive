@@ -8,6 +8,7 @@ import { format, parseISO } from 'date-fns'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags } from '../hooks/useMetaTags'
 import { useGamesByDate } from '../hooks/useQueries'
+import { useNextGameFinder } from '../hooks/useNextGameFinder'
 import { useStructuredData, generateWebSiteData, generateOrganizationData, generateGamesListData } from '../hooks/useStructuredData'
 
 export default function Home() {
@@ -33,6 +34,13 @@ export default function Home() {
 
   // Use React Query for games data
   const { data: games = [], isLoading, isError } = useGamesByDate(formattedDate)
+
+  // Find next date with games (only when no games for current date)
+  const shouldSearchForNextGames = !isLoading && games.length === 0
+  const { data: nextGameData } = useNextGameFinder(
+    selectedDate,
+    shouldSearchForNextGames
+  )
 
   // League ordering preferences (same as backend)
   // Ordered from highest to lowest league level
@@ -171,28 +179,46 @@ export default function Home() {
             <GameCardSkeleton variant="section" />
           </div>
         ) : orderedLeagueNames.length === 0 ? (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">No games scheduled</h2>
-            <p className="text-gray-600">
-              There are no games scheduled for {format(selectedDate, 'd. MMMM yyyy')}.
-            </p>
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">No games scheduled</h2>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                There are no games scheduled for {format(selectedDate, 'd. MMMM yyyy')}.
+              </p>
+
+              {/* Next Games Button - Integrated in empty state */}
+              {nextGameData && (
+                <motion.div
+                  initial={{ opacity: 0, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, filter: 'blur(0px)' }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <button
+                    onClick={() => handleDateSelect(nextGameData.date)}
+                    className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium px-4 py-2 hover:bg-blue-50 rounded-lg transition-all duration-200 border border-blue-200 hover:border-blue-300"
+                  >
+                    Next Games on {format(nextGameData.date, 'd. MMMM')}
+                  </button>
+                </motion.div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
             {orderedLeagueNames.map((leagueName, index) => (
-                <motion.div
-                  key={leagueName}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
-                  <GameSection
-                    title={leagueName}
-                    games={gamesByLeague[leagueName]}
-                    index={index}
-                  />
-                </motion.div>
-              ))}
+              <motion.div
+                key={leagueName}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <GameSection
+                  title={leagueName}
+                  games={gamesByLeague[leagueName]}
+                  index={index}
+                />
+              </motion.div>
+            ))}
           </div>
         )}
       </motion.div>
