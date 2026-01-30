@@ -14,10 +14,10 @@ const cache = new CacheService();
 router.get('/', async (req, res) => {
   try {
     const dateParam = req.query.date as string;
-    
+
     // Default to today if no date provided
-    const targetDate = dateParam 
-      ? parseISO(dateParam) 
+    const targetDate = dateParam
+      ? parseISO(dateParam)
       : new Date();
 
     if (!isValid(targetDate)) {
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
     // Check cache first
     let games = cache.getGames(dateString);
     let fromCache = false;
-    
+
     if (games === null) {
       try {
         // Use request batcher to deduplicate simultaneous requests for same date
@@ -151,11 +151,73 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/games/league - Get games for a specific league/group (lazy loading)
+router.get('/league', async (req, res) => {
+  try {
+    const { date, league, game_class, group } = req.query;
+
+    if (!date || !league || !game_class) {
+      return res.status(400).json({
+        error: 'Missing required parameters: date, league, game_class'
+      });
+    }
+
+    const dateString = date.toString();
+    const leagueId = parseInt(league.toString());
+    const gameClass = parseInt(game_class.toString());
+    const groupName = group ? group.toString() : undefined;
+
+    if (isNaN(leagueId) || isNaN(gameClass)) {
+      return res.status(400).json({
+        error: 'league and game_class must be valid numbers'
+      });
+    }
+
+    // Cache key includes group for proper caching
+    const cacheKey = `games:league:${dateString}:${leagueId}:${gameClass}:${groupName || 'all'}`;
+    let games = cache.get(cacheKey);
+
+    if (!games) {
+      games = await apiClient.getGamesByLeague({
+        date: dateString,
+        league: leagueId,
+        gameClass,
+        group: groupName,
+      });
+
+      // Cache for 5 minutes
+      cache.set(cacheKey, games, 300000);
+    }
+
+    // Add optimistic logo URLs (non-blocking)
+    addOptimisticLogosToGames(games as any[]).catch(err =>
+      console.warn('Non-critical logo processing failed:', err)
+    );
+
+    res.json({
+      date: dateString,
+      league: leagueId,
+      gameClass,
+      group: groupName || null,
+      games,
+      count: (games as any[]).length,
+      cached: games !== null
+    });
+
+  } catch (error) {
+    console.error('Error fetching league games:', error);
+    res.status(500).json({
+      error: 'Failed to fetch league games',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // GET /api/games/live - Get currently live games
 router.get('/live', async (req, res) => {
   try {
     let liveGames = cache.getLiveGames();
-    
+
     if (!liveGames) {
       liveGames = await apiClient.getCurrentGames();
       // Only cache if there are actual live games
@@ -188,7 +250,7 @@ router.get('/live', async (req, res) => {
 router.get('/:gameId', async (req, res) => {
   try {
     const { gameId } = req.params;
-    
+
     if (!gameId) {
       return res.status(400).json({ error: 'Game ID is required' });
     }
@@ -196,10 +258,10 @@ router.get('/:gameId', async (req, res) => {
     // Check cache first
     const cacheKey = `game:${gameId}`;
     let game = cache.get(cacheKey);
-    
+
     if (!game) {
       game = await apiClient.getGameDetails(gameId);
-      
+
       if (!game) {
         return res.status(404).json({ error: 'Game not found' });
       }
@@ -288,7 +350,7 @@ router.get('/:gameId/head-to-head', async (req, res) => {
     if (!gameId) return res.status(400).json({ error: 'Game ID is required' });
 
     let headToHeadGames = cache.get(`h2h:${gameId}`);
-    
+
     if (!headToHeadGames) {
       headToHeadGames = (await apiClient.getHeadToHeadGames(gameId)).slice(0, 5);
       cache.set(`h2h:${gameId}`, headToHeadGames, 3600000);

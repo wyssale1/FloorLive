@@ -41,12 +41,12 @@ export class SwissUnihockeyApiClient {
     const nextDay = new Date(targetDate);
     nextDay.setDate(targetDate.getDate() + 1);
     const nextDayStr = nextDay.toISOString().split('T')[0];
-    
+
     const allGames = await this.getGames({
       mode: 'current',
       before_date: nextDayStr
     });
-    
+
     // Filter games to only include the exact date requested
     return allGames.filter(game => game.game_date === date);
   }
@@ -54,6 +54,44 @@ export class SwissUnihockeyApiClient {
   async getCurrentGames(): Promise<Game[]> {
     return this.getGames({ mode: 'current' });
   }
+
+  /**
+   * Get games for a specific league, game class, and optional group
+   * Used for lazy-loading lower tier leagues in the calendar
+   */
+  async getGamesByLeague(params: {
+    date: string;
+    league: number;
+    gameClass: number;
+    group?: string | null;
+    season?: number;
+  }): Promise<Game[]> {
+    try {
+      const season = params.season || getCurrentSeasonYear();
+
+      const apiParams: Record<string, any> = {
+        mode: 'list',
+        season,
+        league: params.league,
+        game_class: params.gameClass,
+        on_date: params.date,
+        locale: 'de_CH',
+        view: 'full',
+      };
+
+      if (params.group) {
+        apiParams.group = params.group;
+      }
+
+      const response = await this.client.get<any>('/games', { params: apiParams });
+
+      return this.mapGamesFromApi(response.data);
+    } catch (error) {
+      console.error(`Error fetching games for league ${params.league}:`, error);
+      return [];
+    }
+  }
+
 
   async getGameDetails(gameId: string): Promise<Game | null> {
     try {
@@ -143,19 +181,19 @@ export class SwissUnihockeyApiClient {
   // Swiss Unihockey league name to ID mappings based on actual API structure
   private getGameClassFromLeagueName(leagueName: string): number | null {
     if (!leagueName) return null;
-    
+
     const leagueLower = leagueName.toLowerCase();
-    
+
     // Check for women's indicators
     if (leagueLower.includes('damen') || leagueLower.includes('women') || leagueLower.includes('dnlb') || leagueLower.includes('female')) {
       return 21; // Women's game class
     }
-    
+
     // Check for men's indicators  
     if (leagueLower.includes('herren') || leagueLower.includes('men') || leagueLower.includes('hnlb') || leagueLower.includes('male')) {
       return 11; // Men's game class
     }
-    
+
     // Default to men's if no clear indication (Swiss Unihockey often defaults to men)
     return 11;
   }
@@ -176,12 +214,12 @@ export class SwissUnihockeyApiClient {
       '5. Liga': 7,
       // Add more mappings as needed
     };
-    
+
     // Try direct match first
     if (leagueMap[leagueName]) {
       return leagueMap[leagueName];
     }
-    
+
     // Try partial matches for common patterns
     if (leagueName.includes('L-UPL') || leagueName.includes('UPL')) return 24;
     if (leagueName.includes('NLB') || leagueName.includes('NLA')) return 2; // Both NLA and NLB seem to use league=2
@@ -190,7 +228,7 @@ export class SwissUnihockeyApiClient {
     if (leagueName.includes('3. Liga')) return 5;
     if (leagueName.includes('4. Liga')) return 6;
     if (leagueName.includes('5. Liga')) return 7;
-    
+
     return null;
   }
 
@@ -198,19 +236,19 @@ export class SwissUnihockeyApiClient {
     try {
       // Note: API ignores parameters, so we fetch all rankings and filter server-side
       const apiParams: Record<string, string | number> = {};
-      
+
       if (params.season && params.season.trim()) {
         const seasonNum = parseInt(params.season.trim());
         if (!isNaN(seasonNum)) {
           apiParams.season = seasonNum;
         }
       }
-      
+
       const response = await this.client.get<any>('/rankings', { params: apiParams });
-      
+
       // Parse all available rankings from the response
       const allRankings = this.parseAvailableRankings(response.data);
-      
+
       // Apply server-side filtering based on params
       return await this.filterRankings(allRankings, params);
     } catch (error) {
@@ -223,17 +261,17 @@ export class SwissUnihockeyApiClient {
     if (!apiData?.data?.tabs) return [];
 
     const rankings: any[] = [];
-    
+
     for (const tab of apiData.data.tabs) {
       if (!tab.link?.set_in_context) continue;
 
       const context = tab.link.set_in_context;
       const tabTexts = tab.text || [];
-      
+
       // Extract league and division info from tab text
       const leagueName = tabTexts[0] || '';
       const divisionName = tabTexts[1] || '';
-      
+
       rankings.push({
         leagueId: context.league,
         gameClass: context.game_class,
@@ -270,36 +308,36 @@ export class SwissUnihockeyApiClient {
     // Filter by league name (enhanced with gender detection)
     if (params.leagueName) {
       const leagueNameLower = params.leagueName.toLowerCase();
-      
+
       // First try exact/partial name matching
-      let nameFiltered = filteredRankings.filter(r => 
+      let nameFiltered = filteredRankings.filter(r =>
         r.leagueName.toLowerCase().includes(leagueNameLower) ||
         r.fullName.toLowerCase().includes(leagueNameLower)
       );
-      
+
       // If we have multiple matches, try to detect gender from league name
       if (nameFiltered.length > 1) {
         // Check for women's indicators in league name
-        if (leagueNameLower.includes('damen') || 
-            leagueNameLower.includes('women') || 
-            leagueNameLower.includes('female') ||
-            leagueNameLower.includes('frauen') ||
-            leagueNameLower.includes('dnla') ||
-            leagueNameLower.includes('dnlb')) {
+        if (leagueNameLower.includes('damen') ||
+          leagueNameLower.includes('women') ||
+          leagueNameLower.includes('female') ||
+          leagueNameLower.includes('frauen') ||
+          leagueNameLower.includes('dnla') ||
+          leagueNameLower.includes('dnlb')) {
           const womenFiltered = nameFiltered.filter(r => r.gameClass === 21);
           if (womenFiltered.length > 0) nameFiltered = womenFiltered;
         }
         // Check for men's indicators in league name  
-        else if (leagueNameLower.includes('herren') || 
-                 leagueNameLower.includes('men') || 
-                 leagueNameLower.includes('male') ||
-                 leagueNameLower.includes('hnla') ||
-                 leagueNameLower.includes('hnlb')) {
+        else if (leagueNameLower.includes('herren') ||
+          leagueNameLower.includes('men') ||
+          leagueNameLower.includes('male') ||
+          leagueNameLower.includes('hnla') ||
+          leagueNameLower.includes('hnlb')) {
           const menFiltered = nameFiltered.filter(r => r.gameClass === 11);
           if (menFiltered.length > 0) nameFiltered = menFiltered;
         }
       }
-      
+
       filteredRankings = nameFiltered;
     }
 
@@ -311,14 +349,14 @@ export class SwissUnihockeyApiClient {
     // Additional gender detection using team names (if provided)
     if (filteredRankings.length > 1 && params.teamNames && params.teamNames.length > 0) {
       const teamNamesLower = params.teamNames.map((name: string) => name.toLowerCase());
-      const hasWomenIndicators = teamNamesLower.some((name: string) => 
-        name.includes('damen') || 
-        name.includes('women') || 
+      const hasWomenIndicators = teamNamesLower.some((name: string) =>
+        name.includes('damen') ||
+        name.includes('women') ||
         name.includes('ladies') ||
         name.includes('female') ||
         name.includes('frauen')
       );
-      
+
       if (hasWomenIndicators) {
         const womenFiltered = filteredRankings.filter(r => r.gameClass === 21);
         if (womenFiltered.length > 0) filteredRankings = womenFiltered;
@@ -427,7 +465,7 @@ export class SwissUnihockeyApiClient {
       }
 
       const response = await this.client.get<any>('/games', { params });
-      
+
       return this.mapTeamGamesFromApi(response.data);
     } catch (error) {
       console.error('Error fetching team games:', error);
@@ -481,7 +519,7 @@ export class SwissUnihockeyApiClient {
       // Simple date/time parsing
       const [dateStr, timeStr] = timeCell.split(' ');
       const gameDate = dateStr ? dateStr.split('.').reverse().join('-') : '';
-      
+
       // Simple score parsing
       const scoreMatch = scoreCell.match(/(\d+)[\s\-:]+(\d+)/);
       const homeScore = scoreMatch ? parseInt(scoreMatch[1]) : null;
@@ -495,7 +533,7 @@ export class SwissUnihockeyApiClient {
           short_name: homeTeamName.substring(0, 3).toUpperCase()
         },
         away_team: {
-          id: cells[2]?.link?.ids?.[0]?.toString() || `team-${index}-away`, 
+          id: cells[2]?.link?.ids?.[0]?.toString() || `team-${index}-away`,
           name: awayTeamName,
           short_name: awayTeamName.substring(0, 3).toUpperCase()
         },
@@ -508,7 +546,7 @@ export class SwissUnihockeyApiClient {
       };
     }).filter((game: Game) => game.home_team.name && game.away_team.name);
   }
-  
+
   async getTeamCompetitions(teamId: string): Promise<any[]> {
     // Team competitions endpoints need further investigation
     console.log(`Team competitions endpoints need investigation for team ${teamId}`);
@@ -523,7 +561,7 @@ export class SwissUnihockeyApiClient {
 
   private mapGamesFromApi(apiData: any): Game[] {
     const games: Game[] = [];
-    
+
     if (!apiData?.data?.regions) return games;
 
     // Get the actual game date from the API context
@@ -531,7 +569,7 @@ export class SwissUnihockeyApiClient {
 
     apiData.data.regions.forEach((region: any) => {
       const leagueName = region.text || 'Unknown League';
-      
+
       if (region.rows && Array.isArray(region.rows)) {
         region.rows.forEach((row: any) => {
           try {
@@ -554,11 +592,51 @@ export class SwissUnihockeyApiClient {
       return null;
     }
 
-    // Parse cells: [time, home_team, separator, away_team, score]
-    const timeCell = row.cells[0]?.text?.[0] || '';
-    const homeTeamName = row.cells[1]?.text?.[0] || '';
-    const awayTeamName = row.cells[3]?.text?.[0] || '';
-    const scoreCell = row.cells[4]?.text?.[0] || '';
+    const cells = row.cells;
+
+    // Detect cell structure variant:
+    // mode=current: [time, home_team, separator, away_team, score] (5 cells)
+    // mode=list:    [datetime, location, home_team, home_logo, separator, away_logo, away_team, score, ...] (8+ cells)
+    const isListMode = cells.length >= 8 && cells[3]?.image;
+
+    let timeCell = '';
+    let homeTeamName = '';
+    let awayTeamName = '';
+    let scoreCell = '';
+    let homeTeamId = '';
+    let awayTeamId = '';
+    let location = '';
+
+    if (isListMode) {
+      // mode=list structure: [datetime(0), location(1), home_team(2), home_logo(3), sep(4), away_logo(5), away_team(6), score(7)]
+      timeCell = cells[0]?.text?.[0] || '';
+      location = cells[1]?.text?.[0] || '';
+      homeTeamName = cells[2]?.text?.[0] || '';
+      awayTeamName = cells[6]?.text?.[0] || '';
+      scoreCell = cells[7]?.text?.[0] || '';
+
+      // Extract team IDs
+      if (cells[2]?.link?.ids?.[0]) {
+        homeTeamId = cells[2].link.ids[0].toString();
+      }
+      if (cells[6]?.link?.ids?.[0]) {
+        awayTeamId = cells[6].link.ids[0].toString();
+      }
+    } else {
+      // mode=current structure: [time, home_team, separator, away_team, score]
+      timeCell = cells[0]?.text?.[0] || '';
+      homeTeamName = cells[1]?.text?.[0] || '';
+      awayTeamName = cells[3]?.text?.[0] || '';
+      scoreCell = cells[4]?.text?.[0] || '';
+
+      // Extract team IDs
+      if (cells[1]?.link?.ids?.[0]) {
+        homeTeamId = cells[1].link.ids[0].toString();
+      }
+      if (cells[3]?.link?.ids?.[0]) {
+        awayTeamId = cells[3].link.ids[0].toString();
+      }
+    }
 
     // Parse score if it exists (e.g., "2:1" or "2 - 1")
     let homeScore = null;
@@ -585,33 +663,11 @@ export class SwissUnihockeyApiClient {
 
     // Additional live detection fallbacks
     if (timeCell.toLowerCase().includes('live') ||
-        timeCell.includes('Spiel läuft') ||
-        scoreCell.toLowerCase().includes('live')) {
+      timeCell.includes('Spiel läuft') ||
+      scoreCell.toLowerCase().includes('live')) {
       status = 'live';
     }
 
-    // Extract team IDs from links if available 
-    // Note: Use different extraction approach than mapGameDetailsFromApi since data structure might differ
-    let homeTeamId = '';
-    let awayTeamId = '';
-    
-    // Try to extract team IDs from multiple possible locations
-    if (row.cells[1]?.link?.ids?.[0]) {
-      homeTeamId = row.cells[1].link.ids[0].toString();
-    } else if (row.cells[1]?.href) {
-      // Extract ID from href if available (e.g., "/teams/12345")
-      const match = row.cells[1].href.match(/\/teams\/(\d+)/);
-      if (match) homeTeamId = match[1];
-    }
-    
-    if (row.cells[3]?.link?.ids?.[0]) {
-      awayTeamId = row.cells[3].link.ids[0].toString();
-    } else if (row.cells[3]?.href) {
-      // Extract ID from href if available (e.g., "/teams/12345")
-      const match = row.cells[3].href.match(/\/teams\/(\d+)/);
-      if (match) awayTeamId = match[1];
-    }
-    
     // If no team names, return null to skip this game
     if (!homeTeamName || !awayTeamName) {
       return null;
@@ -625,8 +681,20 @@ export class SwissUnihockeyApiClient {
       awayTeamId = awayTeamName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
     }
 
+    // Extract game ID from the first cell's link if available
+    const gameId = cells[0]?.link?.ids?.[0]?.toString() || row.id?.toString() || '';
+
+    // Parse date from timeCell if it contains date info (e.g., "25.01.2026 14:00")
+    let parsedGameDate = gameDate;
+    let startTime = timeCell;
+    const dateTimeMatch = timeCell.match(/(\d{2}\.\d{2}\.\d{4})\s+(\d{2}:\d{2})/);
+    if (dateTimeMatch) {
+      parsedGameDate = this.convertSwissDateToISODate(dateTimeMatch[1]);
+      startTime = dateTimeMatch[2];
+    }
+
     return {
-      id: row.id?.toString() || '',
+      id: gameId,
       home_team: {
         id: homeTeamId,
         name: homeTeamName,
@@ -640,13 +708,13 @@ export class SwissUnihockeyApiClient {
       home_score: homeScore,
       away_score: awayScore,
       status,
-      start_time: timeCell,
-      game_date: gameDate,
+      start_time: startTime,
+      game_date: parsedGameDate,
       league: {
         id: '',
         name: leagueName
       },
-      location: undefined,
+      location: location || undefined,
       period: undefined,
       time: status === 'live' ? timeCell : undefined
     };
@@ -735,34 +803,34 @@ export class SwissUnihockeyApiClient {
 
   private parseVenueName(venueName: string): string {
     if (!venueName) return '';
-    
+
     // Split by spaces and remove duplicate adjacent words
     const words = venueName.split(' ');
     const uniqueWords: string[] = [];
-    
+
     for (let i = 0; i < words.length; i++) {
       const currentWord = words[i];
       const previousWord = words[i - 1];
-      
+
       // Only add if it's not the same as the previous word (case-insensitive)
       if (!previousWord || currentWord.toLowerCase() !== previousWord.toLowerCase()) {
         uniqueWords.push(currentWord);
       }
     }
-    
+
     return uniqueWords.join(' ');
   }
 
   private parseLeagueName(subtitle: string): string {
     if (!subtitle) return 'Unknown League';
-    
+
     // Try to extract league code/name from subtitle
     // Common patterns: "Herren GF NLA Playoff...", "Herren GF L-UPL Playoff..."
     const leagueMatch = subtitle.match(/(?:GF\s+)?([A-Z]+-?[A-Z]*[A-Z]+)/);
     if (leagueMatch && leagueMatch[1]) {
       return leagueMatch[1];
     }
-    
+
     // Fallback: take first meaningful part after "GF" or similar
     const parts = subtitle.split(' ');
     for (const part of parts) {
@@ -770,7 +838,7 @@ export class SwissUnihockeyApiClient {
         return part;
       }
     }
-    
+
     return subtitle; // Return original if no pattern matches
   }
 
@@ -784,7 +852,7 @@ export class SwissUnihockeyApiClient {
     try {
       const row = apiData.data.regions[0].rows[0];
       const cells = row.cells;
-      
+
       if (!cells || !Array.isArray(cells)) return null;
 
       // Extract data from cells array based on API structure
@@ -922,16 +990,16 @@ export class SwissUnihockeyApiClient {
   private readonly EVENT_CLASSIFICATIONS = {
     // Goals
     'Torschütze': { type: 'goal', icon: 'goal', displayAs: 'inline' },
-    
+
     // Penalties
     "2'-Strafe": { type: 'penalty', icon: 'penalty', displayAs: 'inline' },
     "5'-Strafe": { type: 'penalty', icon: 'penalty', displayAs: 'inline' },
     "10'-Strafe": { type: 'penalty', icon: 'penalty', displayAs: 'inline' },
-    
+
     // Penalty shots
     'Penalty verschossen': { type: 'penalty_miss', icon: 'no_goal', displayAs: 'inline' },
     'Penalty verwandelt': { type: 'penalty_goal', icon: 'goal', displayAs: 'inline' },
-    
+
     // Game flow - displayed as badges
     'Spielbeginn': { type: 'game_start', icon: 'whistle', displayAs: 'badge' },
     'Spielende': { type: 'game_end', icon: 'whistle', displayAs: 'badge' },
@@ -944,7 +1012,7 @@ export class SwissUnihockeyApiClient {
     'Beginn Verlängerung': { type: 'overtime_start', icon: 'clock', displayAs: 'badge' },
     'Ende Verlängerung': { type: 'overtime_end', icon: 'clock', displayAs: 'badge' },
     'Penaltyschiessen': { type: 'penalty_shootout', icon: 'penalty_shootout', displayAs: 'badge' },
-    
+
     // Special events
     'Bester Spieler': { type: 'best_player', icon: 'star', displayAs: 'inline' },
     'Timeout': { type: 'timeout', icon: 'pause', displayAs: 'inline' },
@@ -975,10 +1043,10 @@ export class SwissUnihockeyApiClient {
 
         // Classify event type
         const classification = this.classifyEvent(description);
-        
+
         // Determine team side
         const teamSide = this.determineTeamSide(teamName, homeTeamName, awayTeamName);
-        
+
         // Parse player and assist
         const { playerName, assist } = this.parsePlayerAndAssist(player);
 
@@ -1017,7 +1085,7 @@ export class SwissUnihockeyApiClient {
         return classification;
       }
     }
-    
+
     // Default classification for unknown events
     return { type: 'other', icon: 'info', displayAs: 'inline' };
   }
@@ -1060,12 +1128,12 @@ export class SwissUnihockeyApiClient {
       if (status.includes('live') || status.includes('running')) return 'live';
       if (status.includes('finished') || status.includes('ended')) return 'finished';
     }
-    
+
     // Fallback: check if there are scores
     if (apiData.home_score !== null && apiData.away_score !== null) {
       return 'finished';
     }
-    
+
     return 'upcoming';
   }
 
@@ -1278,7 +1346,7 @@ export class SwissUnihockeyApiClient {
                 const statName = row.cells[0]?.text?.[0] || '';
                 const homeValue = row.cells[1]?.text?.[0] || '0';
                 const awayValue = row.cells[2]?.text?.[0] || '0';
-                
+
                 statistics.teamStats.home[statName] = homeValue;
                 statistics.teamStats.away[statName] = awayValue;
               }
@@ -1521,21 +1589,21 @@ export class SwissUnihockeyApiClient {
 
     try {
       const data = apiData.data;
-      
+
       // Extract player information from the API response
       // Handle the complex nested structure shown in the API example
       // Parse the regions[0].rows[0].cells structure first to get image
       const mainRow = data.regions?.[0]?.rows?.[0];
       const cells = mainRow?.cells || [];
-      
+
       // Extract profile image from cells[0].image.url (portrait is the first cell)
       const profileImage = cells[0]?.image?.url || null;
-      
+
       // Get the main player info from subtitle (player name)
       const playerName = data.subtitle || data.title || '';
-      
+
       // Use the already extracted cells from above
-      
+
       const playerInfo: any = {
         id: data.context?.player_id || '',
         name: playerName,
@@ -1551,7 +1619,7 @@ export class SwissUnihockeyApiClient {
       // cells[5] = height
       // cells[6] = weight
       // cells[7] = license type
-      
+
       if (cells.length > 1 && cells[1]?.text?.[0]) {
         const clubName = cells[1].text[0];
         playerInfo.club = {
@@ -1559,7 +1627,7 @@ export class SwissUnihockeyApiClient {
           name: clubName,
           logo: cells[1]?.image?.url || null
         };
-        
+
         // Set current season info
         playerInfo.currentSeason = {
           league: cells[7]?.text?.[0] || 'Unknown League',
@@ -1567,11 +1635,11 @@ export class SwissUnihockeyApiClient {
           jerseyNumber: cells[2]?.text?.[0] || undefined
         };
       }
-      
+
       // Extract other fields from their respective cells
       if (cells[2]?.text?.[0]) playerInfo.number = cells[2].text[0];
       if (cells[3]?.text?.[0]) playerInfo.position = cells[3].text[0];
-      
+
       // Parse year of birth
       if (cells[4]?.text?.[0]) {
         const yearText = cells[4].text[0];
@@ -1580,7 +1648,7 @@ export class SwissUnihockeyApiClient {
           playerInfo.yearOfBirth = parseInt(yearMatch[1]);
         }
       }
-      
+
       // Height and weight handling
       if (cells[5]?.text?.[0] && cells[5].text[0] !== '-') {
         playerInfo.height = cells[5].text[0];
@@ -1588,7 +1656,7 @@ export class SwissUnihockeyApiClient {
       if (cells[6]?.text?.[0] && cells[6].text[0] !== '-') {
         playerInfo.weight = cells[6].text[0];
       }
-      
+
       // License type
       if (cells[7]?.text?.[0]) {
         playerInfo.licenseType = cells[7].text[0];
@@ -1607,7 +1675,7 @@ export class SwissUnihockeyApiClient {
       Object.entries(headerMap).forEach(([key, cellIndex]) => {
         const cellValue = cells[cellIndex]?.text?.[0];
         if (!cellValue || cellValue === '-') return;
-        
+
         switch (key) {
           case 'nationality':
           case 'nationalität':

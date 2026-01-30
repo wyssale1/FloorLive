@@ -18,24 +18,45 @@ export type {
   TeamStatistics, TeamRanking, GameResponse
 };
 
+// League configuration types for lazy-loading
+export interface LeagueConfigItem {
+  id: number;
+  gameClass: number;
+  name: string;
+  displayName: string;
+  groups: string[] | null;
+  priority: number;
+  defaultExpanded: boolean;
+}
+
+export interface LeagueGroupConfigItem {
+  id: number;
+  gameClass: number;
+  name: string;
+  displayName: string;
+  group: string | null;
+  priority: number;
+  defaultExpanded: boolean;
+}
+
 // Dynamic API URL detection for Tailscale development
 const getApiBaseUrl = () => {
   // First check if explicitly set via environment
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  
+
   // In development, detect if we're running on Tailscale network
   if (import.meta.env.DEV) {
     const currentHost = window.location.hostname;
-    
+
     // Check if we're on a network IP (not localhost)
     if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
       // Use Tailscale IP for backend
       return `http://100.99.89.57:3001/api`;
     }
   }
-  
+
   // Default fallback
   return 'http://localhost:3001/api';
 };
@@ -128,7 +149,7 @@ class ApiClient {
         if (response.status === 404) return null;
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('Error fetching team details:', error);
@@ -142,7 +163,7 @@ class ApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data.players || [];
     } catch (error) {
@@ -158,7 +179,7 @@ class ApiClient {
         if (response.status === 404) return null;
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data.statistics || null;
     } catch (error) {
@@ -173,7 +194,7 @@ class ApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data.competitions || [];
     } catch (error) {
@@ -320,17 +341,73 @@ class ApiClient {
 
       const url = `${this.baseURL}/leagues/rankings${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         if (response.status === 404) return null;
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return data.rankings || null;
     } catch (error) {
       console.error('Error fetching rankings:', error);
       return null;
+    }
+  }
+
+  /**
+   * Get league configuration for lazy-loading calendar
+   * Returns top-tier (auto-expanded) and lower-tier (collapsed) leagues
+   */
+  async getLeagueConfig(): Promise<{
+    topTier: LeagueConfigItem[];
+    lowerTier: LeagueGroupConfigItem[];
+  } | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/leagues/config`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return {
+        topTier: data.topTier || [],
+        lowerTier: data.lowerTier || []
+      };
+    } catch (error) {
+      console.error('Error fetching league config:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get games for a specific league/group (lazy-loading)
+   */
+  async getLeagueGames(params: {
+    date: string;
+    league: number;
+    gameClass: number;
+    group?: string;
+  }): Promise<Game[]> {
+    try {
+      const searchParams = new URLSearchParams();
+      searchParams.append('date', params.date);
+      searchParams.append('league', params.league.toString());
+      searchParams.append('game_class', params.gameClass.toString());
+      if (params.group) {
+        searchParams.append('group', params.group);
+      }
+
+      const response = await fetch(`${this.baseURL}/games/league?${searchParams.toString()}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const apiGames: ApiGame[] = data.games || [];
+      return apiGames.map(transformGame);
+    } catch (error) {
+      console.error('Error fetching league games:', error);
+      return [];
     }
   }
 

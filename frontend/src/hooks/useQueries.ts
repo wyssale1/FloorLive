@@ -178,6 +178,17 @@ export function useRankings(params: {
   })
 }
 
+// League Configuration for lazy-loading
+export function useLeagueConfig(enabled = true) {
+  return useQuery({
+    queryKey: ['leagues', 'config'] as const,
+    queryFn: () => apiClient.getLeagueConfig(),
+    enabled,
+    staleTime: 60 * 60 * 1000, // 1 hour (config rarely changes)
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
+  })
+}
+
 // Live Game Polling Hook - Enhanced with React Query
 export function useLiveGamePolling(gameId: string, enabled = true) {
   const queryClient = useQueryClient()

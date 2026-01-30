@@ -4,10 +4,11 @@ import { motion } from 'framer-motion'
 import GameSection from '../components/GameSection'
 import GameCardSkeleton from '../components/GameCardSkeleton'
 import WeekPicker from '../components/WeekPicker'
+import ExpandableLeagueSection from '../components/ExpandableLeagueSection'
 import { format, parseISO } from 'date-fns'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags } from '../hooks/useMetaTags'
-import { useGamesByDate } from '../hooks/useQueries'
+import { useGamesByDate, useLeagueConfig } from '../hooks/useQueries'
 import { useNextGameFinder } from '../hooks/useNextGameFinder'
 import { useStructuredData, generateWebSiteData, generateOrganizationData, generateGamesListData } from '../hooks/useStructuredData'
 
@@ -34,6 +35,9 @@ export default function Home() {
 
   // Use React Query for games data
   const { data: games = [], isLoading, isError } = useGamesByDate(formattedDate)
+
+  // Fetch league configuration for expandable lower tier sections
+  const { data: leagueConfig } = useLeagueConfig()
 
   // Find next date with games (only when no games for current date)
   const shouldSearchForNextGames = !isLoading && games.length === 0
@@ -205,6 +209,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-6">
+            {/* Top-tier leagues (auto-expanded with games from API) */}
             {orderedLeagueNames.map((leagueName, index) => (
               <motion.div
                 key={leagueName}
@@ -219,6 +224,25 @@ export default function Home() {
                 />
               </motion.div>
             ))}
+
+            {/* Lower-tier leagues (expandable, lazy-loaded) */}
+            {leagueConfig?.lowerTier && leagueConfig.lowerTier.length > 0 && (
+              <>
+                <div className="border-t border-gray-200 pt-6 mt-6">
+                  <h3 className="text-sm font-medium text-gray-500 mb-4 px-1">
+                    Weitere Ligen
+                  </h3>
+                </div>
+                {leagueConfig.lowerTier.map((leagueGroup, index) => (
+                  <ExpandableLeagueSection
+                    key={`${leagueGroup.id}-${leagueGroup.gameClass}-${leagueGroup.group || 'all'}`}
+                    leagueGroup={leagueGroup}
+                    date={formattedDate}
+                    index={index}
+                  />
+                ))}
+              </>
+            )}
           </div>
         )}
       </motion.div>
