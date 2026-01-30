@@ -213,6 +213,45 @@ router.get('/league', async (req, res) => {
   }
 });
 
+// GET /api/games/league/count - Get game count only for filtering
+router.get('/league/count', async (req, res) => {
+  try {
+    const { date, league, game_class, group } = req.query;
+
+    if (!date || !league || !game_class) {
+      return res.status(400).json({ count: 0 });
+    }
+
+    const dateString = date.toString();
+    const leagueId = parseInt(league.toString());
+    const gameClass = parseInt(game_class.toString());
+    const groupName = group ? group.toString() : undefined;
+
+    if (isNaN(leagueId) || isNaN(gameClass)) {
+      return res.status(400).json({ count: 0 });
+    }
+
+    const cacheKey = `league_count_${dateString}_${leagueId}_${gameClass}_${groupName || 'all'}`;
+    let count = cache.get<number>(cacheKey);
+
+    if (count === undefined) {
+      const games = await apiClient.getGamesByLeague({
+        date: dateString,
+        league: leagueId,
+        gameClass,
+        group: groupName,
+      });
+      count = games.length;
+      cache.set(cacheKey, count, 300000); // 5 min cache
+    }
+
+    res.json({ count });
+  } catch (error) {
+    console.error('Error fetching league game count:', error);
+    res.status(500).json({ count: 0 });
+  }
+});
+
 // GET /api/games/live - Get currently live games
 router.get('/live', async (req, res) => {
   try {

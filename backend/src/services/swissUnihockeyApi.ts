@@ -85,7 +85,20 @@ export class SwissUnihockeyApiClient {
 
       const response = await this.client.get<any>('/games', { params: apiParams });
 
-      return this.mapGamesFromApi(response.data);
+      // Map games from API
+      const allGames = this.mapGamesFromApi(response.data);
+
+      // IMPORTANT: The API ignores on_date parameter with mode='list'
+      // We must filter games by date ourselves
+      const targetDate = params.date; // Format: YYYY-MM-DD
+      const filteredGames = allGames.filter(game => {
+        if (!game.game_date) return false;
+
+        // game.game_date is in format YYYY-MM-DD from mapRowToGame
+        return game.game_date === targetDate;
+      });
+
+      return filteredGames;
     } catch (error) {
       console.error(`Error fetching games for league ${params.league}:`, error);
       return [];

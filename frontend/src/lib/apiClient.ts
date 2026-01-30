@@ -411,6 +411,37 @@ class ApiClient {
     }
   }
 
+  /**
+   * Get game count for a specific league/group (for pre-filtering)
+   */
+  async getLeagueGameCount(params: {
+    date: string;
+    league: number;
+    gameClass: number;
+    group?: string;
+  }): Promise<number> {
+    try {
+      const searchParams = new URLSearchParams();
+      searchParams.append('date', params.date);
+      searchParams.append('league', params.league.toString());
+      searchParams.append('game_class', params.gameClass.toString());
+      if (params.group) {
+        searchParams.append('group', params.group);
+      }
+
+      const response = await fetch(`${this.baseURL}/games/league/count?${searchParams.toString()}`);
+      if (!response.ok) {
+        return 0;
+      }
+
+      const data = await response.json();
+      return data.count || 0;
+    } catch (error) {
+      console.error('Error fetching league game count:', error);
+      return 0;
+    }
+  }
+
   // Helper methods to match existing frontend interface
   getLeaguesForDate(games: Game[]): string[] {
     const leagues = [...new Set(games.map(game => game.league.name))];

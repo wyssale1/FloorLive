@@ -5,6 +5,7 @@ import GameSection from '../components/GameSection'
 import GameCardSkeleton from '../components/GameCardSkeleton'
 import WeekPicker from '../components/WeekPicker'
 import ExpandableLeagueSection from '../components/ExpandableLeagueSection'
+import { Tabs, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { format, parseISO } from 'date-fns'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags } from '../hooks/useMetaTags'
@@ -38,6 +39,18 @@ export default function Home() {
 
   // Fetch league configuration for expandable lower tier sections
   const { data: leagueConfig } = useLeagueConfig()
+
+  // Gender filter for lower tier leagues (default: Herren)
+  const [genderFilter, setGenderFilter] = useState<'Herren' | 'Damen'>('Herren')
+
+  // Filter lower tier leagues by gender
+  const filteredLowerTierLeagues = useMemo(() => {
+    if (!leagueConfig?.lowerTier) return []
+
+    return leagueConfig.lowerTier.filter(league =>
+      league.displayName.includes(genderFilter)
+    )
+  }, [leagueConfig, genderFilter])
 
   // Find next date with games (only when no games for current date)
   const shouldSearchForNextGames = !isLoading && games.length === 0
@@ -229,11 +242,19 @@ export default function Home() {
             {leagueConfig?.lowerTier && leagueConfig.lowerTier.length > 0 && (
               <>
                 <div className="border-t border-gray-200 pt-6 mt-6">
-                  <h3 className="text-sm font-medium text-gray-500 mb-4 px-1">
-                    Weitere Ligen
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-medium text-gray-500 px-1">
+                      Weitere Ligen
+                    </h3>
+                    <Tabs value={genderFilter} onValueChange={(value) => setGenderFilter(value as 'Herren' | 'Damen')}>
+                      <TabsList>
+                        <TabsTrigger value="Herren">Herren</TabsTrigger>
+                        <TabsTrigger value="Damen">Damen</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
                 </div>
-                {leagueConfig.lowerTier.map((leagueGroup, index) => (
+                {filteredLowerTierLeagues.map((leagueGroup, index) => (
                   <ExpandableLeagueSection
                     key={`${leagueGroup.id}-${leagueGroup.gameClass}-${leagueGroup.group || 'all'}`}
                     leagueGroup={leagueGroup}
