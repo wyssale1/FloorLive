@@ -13,7 +13,7 @@ import GameOverview from '../components/GameOverview'
 import { PeriodBadge } from '../components/LiveBadge'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
-import { extractLeagueId } from '../lib/utils'
+import { mapLeagueForRankings } from '../lib/utils'
 import { useLiveGamePolling, useRankings, useInvalidateQueries } from '../hooks/useQueries'
 import { determineGameLiveStatus } from '../lib/liveGameUtils'
 import { useGameWebSocket } from '../hooks/useWebSocket'
@@ -51,7 +51,7 @@ export default function GameDetail() {
     return determineGameLiveStatus(game, events)
   }, [game, events])
 
-  
+
 
   // Calculate season for league table
   const gameSeason = useMemo(() => {
@@ -69,7 +69,9 @@ export default function GameDetail() {
   }, [game])
 
   const targetSeason = selectedSeason || gameSeason
-  const leagueId = useMemo(() => game ? extractLeagueId(game.league) : null, [game])
+
+  // Map league to correct rankings parameters (fixes NLB issue)
+  const leagueParams = useMemo(() => game ? mapLeagueForRankings(game.league) : null, [game])
 
   // Use React Query for league table
   const {
@@ -77,25 +79,25 @@ export default function GameDetail() {
     isLoading: rankingsLoading
   } = useRankings({
     season: targetSeason,
-    league: leagueId || undefined,
+    league: leagueParams?.league,
     game_class: game?.league?.gameClass?.toString(),
-    leagueName: game?.league?.name,
+    leagueName: leagueParams?.leagueName,
     teamNames: game ? [game.homeTeam?.name, game.awayTeam?.name].filter(Boolean) : undefined
-  }, !!game && !!leagueId)
+  }, !!game && !!leagueParams)
 
   // Transform rankings data to table format
   const leagueTable = useMemo(() => {
     if (!rankingsData || !game) return null
 
     return {
-      leagueId: leagueId || 'general',
+      leagueId: leagueParams?.league || 'general',
       leagueName: game.league?.name || 'League',
       season: targetSeason,
       standings: rankingsData.standings?.standings || [],
       homeTeamId: game.homeTeam?.id,
       awayTeamId: game.awayTeam?.id
     }
-  }, [rankingsData, game, leagueId, targetSeason])
+  }, [rankingsData, game, leagueParams, targetSeason])
 
   // Season change handler
   const handleSeasonChange = useCallback((newSeason: string) => {
@@ -135,14 +137,14 @@ export default function GameDetail() {
   }, [game])
 
   // Set dynamic page title and meta tags when game data is loaded
-  const pageTitle = game 
+  const pageTitle = game
     ? pageTitles.game(game.homeTeam?.name || 'Team', game.awayTeam?.name || 'Team', game.status)
     : 'Game Details'
   usePageTitle(pageTitle)
 
   const metaOptions = game ? generateGameMeta({
     homeTeam: game.homeTeam?.name || 'Team',
-    awayTeam: game.awayTeam?.name || 'Team', 
+    awayTeam: game.awayTeam?.name || 'Team',
     homeScore: game.homeScore,
     awayScore: game.awayScore,
     status: game.status,
@@ -168,7 +170,7 @@ export default function GameDetail() {
       </div>
     )
   }
-  
+
   if (!game) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -186,7 +188,7 @@ export default function GameDetail() {
     <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl" data-game-date={game?.gameDate}>
 
       {/* Team Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -195,21 +197,21 @@ export default function GameDetail() {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
           <div className="flex items-start justify-between gap-3 sm:gap-6">
             {/* Home Team */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
               className="flex flex-col items-center text-center flex-1"
             >
-              <Link 
-                to="/team/$teamId" 
+              <Link
+                to="/team/$teamId"
                 params={{ teamId: game.homeTeam.id }}
                 className="flex flex-col items-center text-center hover:opacity-90 transition-opacity"
               >
                 <div className="mb-3 flex-shrink-0">
-                  <TeamLogo 
-                    team={game.homeTeam} 
-                    size="medium" 
+                  <TeamLogo
+                    team={game.homeTeam}
+                    size="medium"
                     variant="square"
                     showSwissUnihockeyFallback={true}
                   />
@@ -225,7 +227,7 @@ export default function GameDetail() {
             </motion.div>
 
             {/* Score */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.2 }}
@@ -243,28 +245,28 @@ export default function GameDetail() {
                     {(() => {
                       // For live games, use live scores; for finished games, prefer original scores
                       let homeScoreValue, awayScoreValue
-                      
+
                       if (liveStatus.isLive) {
                         // Live game: use live scores if available, fallback to game scores
-                        homeScoreValue = liveStatus.homeScore !== null ? liveStatus.homeScore : 
+                        homeScoreValue = liveStatus.homeScore !== null ? liveStatus.homeScore :
                           (game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : null)
-                        awayScoreValue = liveStatus.awayScore !== null ? liveStatus.awayScore : 
+                        awayScoreValue = liveStatus.awayScore !== null ? liveStatus.awayScore :
                           (game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : null)
                       } else {
                         // Finished/non-live game: use original game scores first, then live scores as fallback
-                        homeScoreValue = (game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) : 
+                        homeScoreValue = (game.homeScore !== null && game.homeScore !== undefined ? Number(game.homeScore) :
                           (liveStatus.homeScore !== null ? liveStatus.homeScore : null))
-                        awayScoreValue = (game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) : 
+                        awayScoreValue = (game.awayScore !== null && game.awayScore !== undefined ? Number(game.awayScore) :
                           (liveStatus.awayScore !== null ? liveStatus.awayScore : null))
                       }
-                      
+
                       const homeScore = homeScoreValue !== null && !isNaN(homeScoreValue) ? homeScoreValue : '-'
                       const awayScore = awayScoreValue !== null && !isNaN(awayScoreValue) ? awayScoreValue : '-'
-                      
+
                       const hasScores = homeScoreValue !== null && awayScoreValue !== null && !isNaN(homeScoreValue) && !isNaN(awayScoreValue)
                       const homeWins = hasScores && homeScoreValue !== null && awayScoreValue !== null && homeScoreValue > awayScoreValue
                       const awayWins = hasScores && homeScoreValue !== null && awayScoreValue !== null && awayScoreValue > homeScoreValue
-                      
+
                       return (
                         <>
                           <span className={homeWins ? 'font-bold' : 'font-medium'}>{homeScore}</span>
@@ -280,14 +282,14 @@ export default function GameDetail() {
               {/* Period Badge */}
               {liveStatus.currentPeriod && (
                 <div className="mb-2">
-                  <PeriodBadge 
-                    period={liveStatus.currentPeriod} 
-                    isIntermission={liveStatus.status === 'intermission'} 
+                  <PeriodBadge
+                    period={liveStatus.currentPeriod}
+                    isIntermission={liveStatus.status === 'intermission'}
                     variant="compact"
                   />
                 </div>
               )}
-              
+
               {/* Additional information below */}
               <div className="space-y-1">
                 {game.startTime && !liveStatus.isLive && (
@@ -296,7 +298,7 @@ export default function GameDetail() {
                     {game.startTime}
                   </div>
                 )}
-                
+
                 {game.gameDate && (
                   <div className="text-2xs text-gray-500">
                     {game.gameDate}
@@ -313,21 +315,21 @@ export default function GameDetail() {
             </motion.div>
 
             {/* Away Team */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
               className="flex flex-col items-center text-center flex-1"
             >
-              <Link 
-                to="/team/$teamId" 
+              <Link
+                to="/team/$teamId"
                 params={{ teamId: game.awayTeam.id }}
                 className="flex flex-col items-center text-center hover:opacity-90 transition-opacity"
               >
                 <div className="mb-3 flex-shrink-0">
-                  <TeamLogo 
-                    team={game.awayTeam} 
-                    size="medium" 
+                  <TeamLogo
+                    team={game.awayTeam}
+                    size="medium"
                     variant="square"
                     showSwissUnihockeyFallback={true}
                   />
@@ -354,7 +356,7 @@ export default function GameDetail() {
               value: 'overview',
               label: 'Game Info',
               content: (
-                <GameOverview 
+                <GameOverview
                   game={game}
                   gameId={gameId}
                 />
@@ -384,7 +386,7 @@ export default function GameDetail() {
                       </div>
                     )}
                   </div>
-                  
+
                   <GameTimeline events={events} />
                 </div>
               )

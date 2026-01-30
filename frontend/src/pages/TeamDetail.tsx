@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Users, Target, Globe, User, Hash, Calendar } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
-import { extractLeagueId } from '../lib/utils'
+import { mapLeagueForRankings } from '../lib/utils'
 import TeamLogo from '../components/TeamLogo'
 import PlayerListSkeleton from '../components/PlayerListSkeleton'
 import { Skeleton } from '../components/ui/skeleton'
@@ -60,9 +60,12 @@ export default function TeamDetail() {
   const pageTitle = team ? pageTitles.team(team.name) : 'Team Details'
   usePageTitle(pageTitle)
 
+  // Map league to correct rankings parameters (fixes NLB issue)
+  const leagueParams = useMemo(() => team ? mapLeagueForRankings(team.league) : null, [team])
+
   const metaOptions = team ? generateTeamMeta({
     teamName: team.name,
-    league: extractLeagueId(team.league) || undefined,
+    league: leagueParams?.league || undefined,
     logo: team.logo
   }) : {
     title: 'Team Details',
@@ -73,7 +76,6 @@ export default function TeamDetail() {
 
   // Calculate target season and league for rankings
   const targetSeason = selectedSeason || getCurrentSeasonYear().toString()
-  const leagueId = useMemo(() => team ? extractLeagueId(team.league) : null, [team])
 
   // Use React Query for league rankings
   const {
@@ -81,18 +83,18 @@ export default function TeamDetail() {
     isLoading: rankingsLoading
   } = useRankings({
     season: targetSeason,
-    league: leagueId || undefined,
+    league: leagueParams?.league,
     game_class: determineGameClass(team?.league?.name, players),
-    leagueName: team?.league?.name,
+    leagueName: leagueParams?.leagueName,
     teamNames: team ? [team.name].filter(Boolean) : undefined
-  }, !!team) // Enable rankings when team data is available
+  }, !!team && !!leagueParams) // Enable rankings when team data is available
 
   // Transform rankings data to table format
   const leagueTables = useMemo(() => {
     if (!rankingsData || !team) return []
 
     const tableData = {
-      leagueId: leagueId || 'general',
+      leagueId: leagueParams?.league || 'general',
       leagueName: team.league?.name || 'League',
       season: targetSeason,
       standings: rankingsData.standings?.standings || [],
@@ -100,7 +102,7 @@ export default function TeamDetail() {
     }
 
     return [tableData]
-  }, [rankingsData, team, leagueId, targetSeason, teamId])
+  }, [rankingsData, team, leagueParams, targetSeason, teamId])
 
   // Season change handler
   const handleSeasonChange = useCallback((newSeason: string) => {
