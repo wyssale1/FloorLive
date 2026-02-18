@@ -508,6 +508,125 @@ export class SwissUnihockeyApiClient {
     }
   }
 
+  /**
+   * Parses the round name from a playoff subtitle.
+   * "Herren GF NLB Playoff Viertelfinals …" → "Viertelfinal"
+   */
+  private parseRoundName(subtitle: string): string {
+    const m = subtitle.match(/(?:Playoff|Playout)\s+(\w[\w\s-]*?)(?:\s+\d{4}|$)/i)
+    if (!m) return 'Playoff'
+    const raw = m[1].trim().replace(/s$/i, '') // strip trailing 's' (Viertelfinals → Viertelfinal)
+    return raw
+  }
+
+  /**
+   * Parses a series standing text like "Team A - Team B 2:1 Serie beendet".
+   * Returns null if the text doesn't match the expected pattern.
+   */
+  private parseSeriesText(text: string): {
+    teamA: string; teamAWins: number;
+    teamB: string; teamBWins: number;
+    isFinished: boolean;
+  } | null {
+    // Format: "Team A - Team B X:Y [Serie beendet]"
+    const m = text.match(/^(.+?)\s+-\s+(.+?)\s+(\d+):(\d+)/)
+    if (!m) return null
+    return {
+      teamA: m[1].trim(),
+      teamAWins: parseInt(m[3]),
+      teamB: m[2].trim(),
+      teamBWins: parseInt(m[4]),
+      isFinished: text.includes('Serie beendet'),
+    }
+  }
+
+  /**
+   * Fetches the playoff series standing for a specific game.
+   * Returns null if the game is not a playoff game or no series data is found.
+   */
+  async getPlayoffSeriesForGame(gameId: string): Promise<import('../types/domain.js').PlayoffSeries | null> {
+    try {
+      // 1. Get game details to extract subtitle and team IDs
+      const gameResponse = await this.client.get<any>(`/games/${gameId}`)
+      const subtitle: string = gameResponse.data?.data?.subtitle || ''
+      const phase = parseGamePhase(subtitle)
+      if (phase !== 'playoff') return null
+
+      const cells = gameResponse.data?.data?.regions?.[0]?.rows?.[0]?.cells || []
+      const homeTeamId: string = cells[1]?.link?.ids?.[0]?.toString() || ''
+      const awayTeamId: string = cells[3]?.link?.ids?.[0]?.toString() || ''
+      const homeTeamName: string = cells[1]?.text?.[0] || ''
+      const awayTeamName: string = cells[3]?.text?.[0] || ''
+
+      if (!homeTeamId && !awayTeamId) return null
+
+      // 2. Resolve the league for this game
+      let leagueId: number | null = null
+      try {
+        const resolved = await leagueResolver.getCommonLeague(homeTeamId, awayTeamId)
+        if (resolved?.id) leagueId = parseInt(resolved.id)
+      } catch { /* ignore */ }
+
+      if (!leagueId) return null
+
+      const seasonYear = parseInt(subtitle.match(/(\d{4})\/\d{2}/)?.[1] || String(getCurrentSeasonYear()))
+
+      // 3. Fetch mode=list for this league to get series standings
+      const listResponse = await this.client.get<any>('/games', {
+        params: { mode: 'list', league: leagueId, season: seasonYear }
+      })
+
+      const regions: any[] = listResponse.data?.data?.regions || []
+      const roundName = this.parseRoundName(subtitle)
+
+      // 4. Find the region (series) that contains both teams
+      for (const region of regions) {
+        const regionText: string = region.text || ''
+        const parsed = this.parseSeriesText(regionText)
+        if (!parsed) continue
+
+        const namesMatch = (
+          (parsed.teamA === homeTeamName || parsed.teamA === awayTeamName) &&
+          (parsed.teamB === homeTeamName || parsed.teamB === awayTeamName)
+        )
+        if (namesMatch) {
+          return {
+            roundName,
+            teamAName: parsed.teamA,
+            teamAWins: parsed.teamAWins,
+            teamBName: parsed.teamB,
+            teamBWins: parsed.teamBWins,
+            isFinished: parsed.isFinished,
+          }
+        }
+      }
+      return null
+    } catch (error) {
+      console.error(`Error fetching playoff series for game ${gameId}:`, error)
+      return null
+    }
+  }
+
+  /**
+   * Returns the gamePhase for a list of game IDs (batch lookup).
+   * Makes parallel requests to /games/{id} for each ID.
+   */
+  async getGamePhases(gameIds: string[]): Promise<Record<string, 'regular' | 'cup' | 'playoff'>> {
+    const result: Record<string, 'regular' | 'cup' | 'playoff'> = {}
+    await Promise.all(
+      gameIds.map(async (gameId) => {
+        try {
+          const response = await this.client.get<any>(`/games/${gameId}`)
+          const subtitle: string = response.data?.data?.subtitle || ''
+          result[gameId] = parseGamePhase(subtitle)
+        } catch {
+          result[gameId] = 'regular'
+        }
+      })
+    )
+    return result
+  }
+
   async getTeamGames(teamId: string, season?: string): Promise<Game[]> {
     const seasonYear = season ? parseInt(season) : getCurrentSeasonYear();
     const baseParams = {
@@ -1047,7 +1166,8 @@ export class SwissUnihockeyApiClient {
           first: firstReferee || undefined,
           second: secondReferee || undefined
         },
-        spectators: parseInt(spectators) || 0
+        spectators: parseInt(spectators) || 0,
+        gamePhase: parseGamePhase(apiData.data?.subtitle || ''),
       };
     } catch (error) {
       console.error('Error mapping game details from API:', error);
@@ -1140,7 +1260,8 @@ export class SwissUnihockeyApiClient {
         events.push(event);
       }
 
-      return this.deduplicateEvents(events);
+      const deduped = this.deduplicateEvents(events);
+      return this.fixDoubledScoresIfNeeded(deduped);
     } catch (error) {
       console.error('Error mapping game events from API:', error);
       return [];
@@ -1179,6 +1300,65 @@ export class SwissUnihockeyApiClient {
     }
 
     return Array.from(seen.values());
+  }
+
+  /**
+   * Detects whether the Swiss API has doubled all goal scores for this game and, if so,
+   * halves them back to the real values.
+   *
+   * The Swiss API sometimes (not always) emits scores that increment by 2 per goal instead
+   * of 1.  Detection is based on two conditions that must both be true:
+   *   1. The first goal of the game shows a score of 2:0 or 0:2 (should be 1:0 / 0:1).
+   *   2. Every consecutive goal increment is exactly 2.
+   *
+   * Only goal-type event descriptions are modified; all other events are left untouched.
+   */
+  private fixDoubledScoresIfNeeded(events: GameEvent[]): GameEvent[] {
+    // Collect indices and parsed scores of goal-like events (contain an "X:Y" in description)
+    const goalIndices: number[] = [];
+    const goalScores: { home: number; away: number }[] = [];
+
+    events.forEach((event, idx) => {
+      const desc = event.description ?? '';
+      const isGoalLike =
+        desc.includes('Torschütze') ||
+        desc.includes('Eigentor') ||
+        desc.includes('Penalty verwandelt');
+      if (!isGoalLike) return;
+      const m = desc.match(/(\d+):(\d+)/);
+      if (!m) return;
+      goalIndices.push(idx);
+      goalScores.push({ home: parseInt(m[1]), away: parseInt(m[2]) });
+    });
+
+    if (goalScores.length === 0) return events;
+
+    // The events array is reverse-chronological; the *last* entry is the first goal of the game.
+    const firstGoalScore = goalScores[goalScores.length - 1];
+    const firstGoalTotal = firstGoalScore.home + firstGoalScore.away;
+
+    // Normal games start 1:0 or 0:1 (total = 1). Doubled games start 2:0 or 0:2 (total = 2).
+    if (firstGoalTotal !== 2) return events;
+
+    // Confirm that every consecutive score delta is 2 (iterate chronologically = reverse of array).
+    for (let i = goalScores.length - 2; i >= 0; i--) {
+      const prev = goalScores[i + 1]; // earlier in time
+      const curr = goalScores[i];     // later in time
+      const delta = Math.abs(curr.home - prev.home) + Math.abs(curr.away - prev.away);
+      if (delta !== 2) return events; // Mixed increments – don't touch anything
+    }
+
+    // All checks passed: halve every score embedded in goal-type event descriptions.
+    const fixed = [...events];
+    goalIndices.forEach(idx => {
+      const event = fixed[idx];
+      const newDesc = (event.description ?? '').replace(
+        /(\d+):(\d+)/,
+        (_, h, a) => `${parseInt(h) / 2}:${parseInt(a) / 2}`
+      );
+      fixed[idx] = { ...event, description: newDesc };
+    });
+    return fixed;
   }
 
   private classifyEvent(description: string): { type: string; icon: string; displayAs: string } {

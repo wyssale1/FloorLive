@@ -340,6 +340,19 @@ class ApiClient {
         upcomingGames.push(game);
       });
 
+      // Batch-fetch game phases and enrich upcoming games with gamePhase
+      if (upcomingGames.length > 0) {
+        try {
+          const gameIds = upcomingGames.map((g: any) => g.id);
+          const phases = await this.getGamePhases(gameIds);
+          upcomingGames.forEach((g: any) => {
+            if (phases[g.id]) g.gamePhase = phases[g.id];
+          });
+        } catch {
+          // Non-critical: games still show without phase badge
+        }
+      }
+
       return upcomingGames;
     } catch (error) {
       console.error('Error fetching team upcoming games:', error);
@@ -358,6 +371,28 @@ class ApiClient {
     } catch (error) {
       console.error('Error fetching head-to-head games:', error);
       return [];
+    }
+  }
+
+  async getSeriesStanding(gameId: string): Promise<import('../types/domain').PlayoffSeries | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/games/${gameId}/series`);
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.series ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  async getGamePhases(gameIds: string[]): Promise<Record<string, 'regular' | 'cup' | 'playoff'>> {
+    if (gameIds.length === 0) return {};
+    try {
+      const response = await fetch(`${this.baseURL}/games/phases?ids=${gameIds.join(',')}`);
+      if (!response.ok) return {};
+      return await response.json();
+    } catch {
+      return {};
     }
   }
 

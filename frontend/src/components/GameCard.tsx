@@ -185,6 +185,17 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
             {renderTeamLine(game.awayTeam, false)}
           </div>
 
+          {/* Phase badge for playoff/cup games */}
+          {(game.gamePhase === 'playoff' || game.gamePhase === 'cup') && (
+            <div className={`ml-2 flex-shrink-0 px-2 py-1 rounded text-xs font-medium ${
+              game.gamePhase === 'playoff'
+                ? 'bg-orange-100 text-orange-600'
+                : 'bg-violet-100 text-violet-600'
+            }`}>
+              {game.gamePhase === 'playoff' ? 'Playoff' : 'Cup'}
+            </div>
+          )}
+
           {/* Date display if enabled */}
           {showDate && game.gameDate && (
             <div className="ml-3 flex-shrink-0">

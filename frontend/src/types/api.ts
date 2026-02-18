@@ -52,6 +52,15 @@ export interface ApiGame {
     second?: string;
   };
   spectators?: number;
+  gamePhase?: 'regular' | 'cup' | 'playoff';
+  playoffSeries?: {
+    roundName: string;
+    teamAName: string;
+    teamAWins: number;
+    teamBName: string;
+    teamBWins: number;
+    isFinished: boolean;
+  };
 }
 
 export interface ApiGameEvent {
@@ -203,7 +212,9 @@ export const transformGame = (apiGame: ApiGame): Game => ({
   coordinates: apiGame.coordinates,
   referees: apiGame.referees,
   spectators: apiGame.spectators,
-  isLive: apiGame.status === 'live'
+  isLive: apiGame.status === 'live',
+  gamePhase: apiGame.gamePhase,
+  playoffSeries: apiGame.playoffSeries,
 });
 
 export const transformGameEvent = (apiEvent: ApiGameEvent): GameEvent => ({

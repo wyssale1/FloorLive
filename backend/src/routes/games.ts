@@ -252,6 +252,49 @@ router.get('/league/count', async (req, res) => {
   }
 });
 
+// GET /api/games/phases?ids=123,456,789 - Batch game phase lookup
+// Returns { [gameId]: 'regular' | 'cup' | 'playoff' }
+// Results are cached 1 hour per game.
+router.get('/phases', async (req, res) => {
+  try {
+    const idsParam = req.query.ids as string | undefined;
+    if (!idsParam) return res.json({});
+
+    const gameIds = idsParam.split(',').map(id => id.trim()).filter(Boolean);
+    if (gameIds.length === 0) return res.json({});
+    if (gameIds.length > 30) return res.status(400).json({ error: 'Too many IDs (max 30)' });
+
+    const result: Record<string, string> = {};
+
+    await Promise.all(
+      gameIds.map(async (gameId) => {
+        const cacheKey = `phase:${gameId}`;
+        const cached = cache.get(cacheKey);
+        if (cached) {
+          result[gameId] = cached as string;
+          return;
+        }
+        try {
+          const response = await (apiClient as any).client.get(`/games/${gameId}`);
+          const subtitle: string = response.data?.data?.subtitle || '';
+          const phase = subtitle.toLowerCase().includes('cup') ? 'cup'
+            : (subtitle.toLowerCase().includes('playoff') || subtitle.toLowerCase().includes('playout')) ? 'playoff'
+            : 'regular';
+          cache.set(cacheKey, phase, 3600000);
+          result[gameId] = phase;
+        } catch {
+          result[gameId] = 'regular';
+        }
+      })
+    );
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching game phases:', error);
+    res.status(500).json({ error: 'Failed to fetch game phases' });
+  }
+});
+
 // GET /api/games/live - Get currently live games
 router.get('/live', async (req, res) => {
   try {
@@ -406,6 +449,29 @@ router.get('/:gameId/head-to-head', async (req, res) => {
   } catch (error) {
     console.error('Error fetching head-to-head games:', error);
     res.status(500).json({ error: 'Failed to fetch head-to-head games' });
+  }
+});
+
+// GET /api/games/:gameId/series - Playoff series standing for a specific game
+// Returns null if not a playoff game or series data not found.
+router.get('/:gameId/series', async (req, res) => {
+  try {
+    const { gameId } = req.params;
+    if (!gameId) return res.status(400).json({ error: 'Game ID is required' });
+
+    const cacheKey = `series:${gameId}`;
+    let series = cache.get(cacheKey);
+
+    if (series === undefined) {
+      series = await apiClient.getPlayoffSeriesForGame(gameId);
+      // Cache 5 min so series wins update reasonably fast during active playoffs
+      cache.set(cacheKey, series ?? null, 5 * 60 * 1000);
+    }
+
+    res.json({ gameId, series: series ?? null });
+  } catch (error) {
+    console.error('Error fetching playoff series:', error);
+    res.status(500).json({ error: 'Failed to fetch playoff series' });
   }
 });
 

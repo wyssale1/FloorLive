@@ -61,6 +61,17 @@ export interface Game {
   coordinates?: Coordinates;
   referees?: Referees;
   spectators?: number;
+  gamePhase?: 'regular' | 'cup' | 'playoff';
+  playoffSeries?: PlayoffSeries;
+}
+
+export interface PlayoffSeries {
+  roundName: string;       // e.g. "Viertelfinal", "Halbfinal", "Final"
+  teamAName: string;
+  teamAWins: number;
+  teamBName: string;
+  teamBWins: number;
+  isFinished: boolean;
 }
 
 export interface GameEvent {

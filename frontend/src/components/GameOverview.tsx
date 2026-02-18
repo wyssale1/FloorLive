@@ -3,6 +3,7 @@ import { MapPin, Clock, Users, Trophy, Flag } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { apiClient } from '../lib/apiClient'
 import type { Game } from '../lib/apiClient'
+import type { PlayoffSeries } from '../types/domain'
 import { formatSwissDate } from '../lib/utils'
 import GameList from './GameList'
 import GameCardSkeleton from './GameCardSkeleton'
@@ -15,27 +16,33 @@ interface GameOverviewProps {
 export default function GameOverview({ game, gameId }: GameOverviewProps) {
   const [headToHeadGames, setHeadToHeadGames] = useState<Game[]>([])
   const [loading, setLoading] = useState(false)
+  const [seriesStanding, setSeriesStanding] = useState<PlayoffSeries | null>(null)
 
   useEffect(() => {
     const fetchHeadToHeadGames = async () => {
       setLoading(true)
       const games = await apiClient.getHeadToHeadGames(gameId)
-      
+
       // First filter out canceled games (keep only finished games with actual results)
-      const gamesWithResults = games.filter(game => 
-        game.status === 'finished' && 
-        game.homeScore !== null && 
+      const gamesWithResults = games.filter(game =>
+        game.status === 'finished' &&
+        game.homeScore !== null &&
         game.awayScore !== null
       )
-      
+
       // Then take the first 5 games with results
       const finishedGames = gamesWithResults.slice(0, 5)
-      
+
       setHeadToHeadGames(finishedGames)
       setLoading(false)
     }
     fetchHeadToHeadGames()
   }, [gameId])
+
+  useEffect(() => {
+    if (game.gamePhase !== 'playoff') return
+    apiClient.getSeriesStanding(gameId).then(setSeriesStanding)
+  }, [gameId, game.gamePhase])
 
   // Prepare game information items for staggered animation
   const gameInfoItems = []
@@ -190,7 +197,15 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
 
       {/* Head-to-Head Section */}
       <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-4 sm:p-6">
-        <h2 className="text-lg font-medium text-gray-800 mb-4">Recent Meetings</h2>
+        <div className="mb-4">
+          <h2 className="text-lg font-medium text-gray-800">Recent Meetings</h2>
+          {seriesStanding && (
+            <p className="text-sm text-gray-500 mt-1">
+              Playoff {seriesStanding.roundName} · Serie {seriesStanding.teamAWins}:{seriesStanding.teamBWins}
+              {seriesStanding.isFinished && ' · Serie beendet'}
+            </p>
+          )}
+        </div>
         
         {loading ? (
           <GameCardSkeleton variant="list" count={3} />
