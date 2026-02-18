@@ -36,7 +36,8 @@
       "Bash(PORT=3002 npm run start)",
       "Bash(VITE_API_URL=http://localhost:3002/api npm run dev)",
       "Bash(/dev/null)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": []
