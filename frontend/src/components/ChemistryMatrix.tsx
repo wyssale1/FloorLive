@@ -15,6 +15,13 @@ interface PlayerInfo {
   playerId: string | null
 }
 
+/** Splits "Alexander Wyss" → ["Alexander", "Wyss"], "A. Wyss" → ["A.", "Wyss"] */
+function splitName(name: string): [string, string] {
+  const idx = name.lastIndexOf(' ')
+  if (idx === -1) return ['', name]
+  return [name.slice(0, idx), name.slice(idx + 1)]
+}
+
 function heatClass(value: number, max: number): string {
   if (value === 0 || max === 0) return ''
   const ratio = value / max
@@ -122,21 +129,27 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
             </th>
 
             {/* Scorer column headers */}
-            {scorers.map((scorer, colIdx) => (
-              <motion.th
-                key={scorer.rawName}
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: colIdx * 0.03, duration: 0.25 }}
-                className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-r border-gray-100 p-2 font-medium text-gray-700 whitespace-nowrap min-w-[90px]"
-              >
-                <PlayerLink
-                  playerId={scorer.playerId ?? ''}
-                  playerName={scorer.displayName}
-                  className="text-xs font-medium text-gray-700"
-                />
-              </motion.th>
-            ))}
+            {scorers.map((scorer, colIdx) => {
+              const [first, last] = splitName(scorer.displayName)
+              return (
+                <motion.th
+                  key={scorer.rawName}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: colIdx * 0.02, duration: 0.2 }}
+                  className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-r border-gray-100 p-2 font-medium text-gray-700 min-w-[80px]"
+                >
+                  <PlayerLink
+                    playerId={scorer.playerId ?? ''}
+                    playerName={scorer.displayName}
+                    className="text-xs font-medium text-gray-700 leading-tight"
+                  >
+                    {first && <span className="block">{first}</span>}
+                    <span className="block">{last}</span>
+                  </PlayerLink>
+                </motion.th>
+              )
+            })}
 
             {/* Top-right summary label */}
             <th className="sticky top-0 right-0 z-20 border-b border-l border-gray-200 p-2 min-w-[52px] bg-gray-50/95 backdrop-blur-sm">
@@ -152,18 +165,26 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
             return (
               <tr key={assister.rawName} className="group">
                 {/* Assist row header – sticky left */}
-                <motion.td
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: rowIdx * 0.03, duration: 0.25 }}
-                  className="sticky left-0 z-10 bg-white/95 backdrop-blur-sm border-b border-r border-gray-100 p-2 font-medium text-gray-700 whitespace-nowrap group-hover:bg-gray-50/80"
-                >
-                  <PlayerLink
-                    playerId={assister.playerId ?? ''}
-                    playerName={assister.displayName}
-                    className="text-xs font-medium text-gray-700"
-                  />
-                </motion.td>
+                {(() => {
+                  const [first, last] = splitName(assister.displayName)
+                  return (
+                    <motion.td
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: rowIdx * 0.02, duration: 0.2 }}
+                      className="sticky left-0 z-10 bg-white/95 backdrop-blur-sm border-b border-r border-gray-100 p-2 font-medium text-gray-700 group-hover:bg-gray-50/80 min-w-[100px]"
+                    >
+                      <PlayerLink
+                        playerId={assister.playerId ?? ''}
+                        playerName={assister.displayName}
+                        className="text-xs font-medium text-gray-700 leading-tight"
+                      >
+                        {first && <span className="block">{first}</span>}
+                        <span className="block">{last}</span>
+                      </PlayerLink>
+                    </motion.td>
+                  )
+                })()}
 
                 {/* Data cells */}
                 {scorers.map((scorer, colIdx) => {
@@ -174,9 +195,9 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
                   return (
                     <motion.td
                       key={scorer.rawName}
-                      initial={{ opacity: 0, scale: 0.7 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: (rowIdx + colIdx) * 0.025, duration: 0.2, ease: 'easeOut' }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: (rowIdx + colIdx) * 0.015, duration: 0.15 }}
                       className={[
                         'border-b border-r border-gray-100 text-center align-middle p-0 transition-colors',
                         isSelf
@@ -226,9 +247,9 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
               return (
                 <motion.td
                   key={scorer.rawName}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: colIdx * 0.02, duration: 0.2 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: colIdx * 0.015, duration: 0.15 }}
                   className={`sticky bottom-0 z-10 border-t border-r text-center align-middle ${summaryCell}`}
                   style={{ minWidth: 90, height: 36 }}
                 >

@@ -36,3 +36,6 @@ backend/assets/**/*.temp
 
 # Old working repository backup
 docs/old-working-repo/
+
+# Chemistry analysis SQLite database
+backend/data/

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { FlaskConical, Play, ToggleLeft, ToggleRight, Calendar, AlertCircle } from 'lucide-react'
+import { FlaskConical, Play, Calendar, AlertCircle } from 'lucide-react'
 import { useChemistryAnalysis } from '../hooks/useChemistryAnalysis'
 import type { SoloGoalEntry } from '../hooks/useChemistryAnalysis'
 import ChemistryMatrix from './ChemistryMatrix'
@@ -146,15 +146,18 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
         {/* Home/Away toggle */}
         <button
           onClick={() => setFilters({ splitHomeAway: !filters.splitHomeAway })}
-          className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-gray-800 transition-colors"
+          className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+            filters.splitHomeAway
+              ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+              : 'text-gray-500 hover:bg-gray-100'
+          }`}
           aria-pressed={filters.splitHomeAway}
         >
-          {filters.splitHomeAway ? (
-            <ToggleRight className="w-4 h-4 text-blue-500" />
-          ) : (
-            <ToggleLeft className="w-4 h-4 text-gray-400" />
-          )}
-          Home / Away split
+          <span>Home / Away</span>
+          <span className="inline-flex items-center gap-1">
+            <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>H</span>
+            <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-400'}`}>A</span>
+          </span>
         </button>
       </div>
 
@@ -187,21 +190,6 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           Player names are based on match reports (abbreviated format). Full profiles are only
           linkable for NLA/NLB teams.
         </p>
-      )}
-
-      {/* Legend */}
-      {filters.splitHomeAway && (
-        <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
-          <span className="font-medium text-gray-600">Legend:</span>
-          <span className="flex items-center gap-1">
-            <span className="inline-block rounded px-1.5 py-0.5 bg-green-100 text-green-700 font-medium">nH</span>
-            Home goals
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="inline-block rounded px-1.5 py-0.5 bg-orange-100 text-orange-700 font-medium">nA</span>
-            Away goals
-          </span>
-        </div>
       )}
 
       {/* Matrix */}
