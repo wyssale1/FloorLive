@@ -241,12 +241,8 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
               )
             })}
 
-            {/* Bottom-right corner (grand total goals) */}
-            <td className={`sticky right-0 bottom-0 z-20 border-t border-l text-center align-middle ${summaryCell}`}>
-              <span className="text-[10px] font-bold text-gray-500">
-                {[...columnGoals.values()].reduce((a, b) => a + b, 0)}
-              </span>
-            </td>
+            {/* Bottom-right corner – intentionally empty */}
+            <td className={`sticky right-0 bottom-0 z-20 border-t border-l ${summaryCell}`} />
           </tr>
         </tfoot>
       </table>

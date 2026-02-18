@@ -401,41 +401,102 @@ async function runAnalysis(teamId: string, season: string): Promise<void> {
     try {
       const events = await apiClient.getGameEvents(gameId)
 
+      // ── Collect goal events for this game first ──────────────
+      // The Swiss API emits each assisted goal TWICE:
+      //   1. "Scorer (Assister)"  – the real combo event
+      //   2. "Scorer"             – a duplicate artifact (no assist listed)
+      // Solo goals (genuinely unassisted) appear only once (no assist).
+      //
+      // Deduplication rule per scorer per game:
+      //   genuine solos = max(0, noAssistCount - withAssistCount)
+      //   → only keep that many no-assist entries; discard the rest.
+
+      interface RawGoalEvent {
+        scorerRaw: string
+        assistRaw: string | null
+        scorerDisplay: string
+        scorerPlayerId: string | null
+        assistResolved: { displayName: string; playerId: string | null } | null
+        isHome: boolean
+      }
+
+      const rawGoals: RawGoalEvent[] = []
+
       for (const event of events) {
-        // Only goal events
         if (event.event_type !== 'goal' && event.event_type !== 'penalty_goal') continue
         if (!event.player?.trim()) continue
 
-        // Filter to only goals scored by our team
-        // We compare event.team_name to the known team name.
-        // Fallback: if teamName is unknown, accept all goals (shouldn't happen).
         const eventTeamName = (event as any).team_name as string | undefined
         if (teamName && eventTeamName && eventTeamName !== teamName) continue
 
-        // isHome: true if the scoring team was the home side
         const isHome = (event as any).team_side === 'home'
-
         const scorerRaw = event.player.trim()
         const assistRaw = event.assist?.trim() || null
-
         const { displayName: scorerDisplay, playerId: scorerPlayerId } = resolveName(scorerRaw, rosterLookup)
         const assistResolved = assistRaw ? resolveName(assistRaw, rosterLookup) : null
 
-        db.insert(goalEvents)
-          .values({
-            gameId,
-            teamId,
-            season,
-            gameDate: isoDate,
-            scorerRawName: scorerRaw,
-            scorerDisplayName: scorerDisplay,
-            scorerPlayerId,
-            assistRawName: assistRaw,
-            assistDisplayName: assistResolved?.displayName ?? null,
-            assistPlayerId: assistResolved?.playerId ?? null,
-            isHome,
-          })
-          .run()
+        rawGoals.push({ scorerRaw, assistRaw, scorerDisplay, scorerPlayerId, assistResolved, isHome })
+      }
+
+      // Count per scorer how many events have / don't have an assist
+      const withAssistCount = new Map<string, number>()
+      const noAssistCount = new Map<string, number>()
+      for (const ev of rawGoals) {
+        if (ev.assistRaw !== null) {
+          withAssistCount.set(ev.scorerRaw, (withAssistCount.get(ev.scorerRaw) ?? 0) + 1)
+        } else {
+          noAssistCount.set(ev.scorerRaw, (noAssistCount.get(ev.scorerRaw) ?? 0) + 1)
+        }
+      }
+
+      // Insert deduplicated events
+      const soloSlotsUsed = new Map<string, number>()
+
+      for (const ev of rawGoals) {
+        if (ev.assistRaw !== null) {
+          // Combo goal – always keep
+          db.insert(goalEvents)
+            .values({
+              gameId,
+              teamId,
+              season,
+              gameDate: isoDate,
+              scorerRawName: ev.scorerRaw,
+              scorerDisplayName: ev.scorerDisplay,
+              scorerPlayerId: ev.scorerPlayerId,
+              assistRawName: ev.assistRaw,
+              assistDisplayName: ev.assistResolved?.displayName ?? null,
+              assistPlayerId: ev.assistResolved?.playerId ?? null,
+              isHome: ev.isHome,
+            })
+            .run()
+        } else {
+          // No-assist event: only insert up to (noAssistCount - withAssistCount) times
+          const realSoloSlots = Math.max(
+            0,
+            (noAssistCount.get(ev.scorerRaw) ?? 0) - (withAssistCount.get(ev.scorerRaw) ?? 0)
+          )
+          const used = soloSlotsUsed.get(ev.scorerRaw) ?? 0
+          if (used < realSoloSlots) {
+            soloSlotsUsed.set(ev.scorerRaw, used + 1)
+            db.insert(goalEvents)
+              .values({
+                gameId,
+                teamId,
+                season,
+                gameDate: isoDate,
+                scorerRawName: ev.scorerRaw,
+                scorerDisplayName: ev.scorerDisplay,
+                scorerPlayerId: ev.scorerPlayerId,
+                assistRawName: null,
+                assistDisplayName: null,
+                assistPlayerId: null,
+                isHome: ev.isHome,
+              })
+              .run()
+          }
+          // else: duplicate artifact – skip
+        }
       }
     } catch (err) {
       console.error(`[Chemistry] Error processing game ${gameId}:`, err)

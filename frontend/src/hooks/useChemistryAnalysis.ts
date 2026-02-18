@@ -63,10 +63,35 @@ export function useChemistryAnalysis(teamId: string): UseChemistryAnalysisResult
 
   useEffect(() => {
     isMountedRef.current = true
+
+    // On mount: check if analysis already exists and load it directly
+    ;(async () => {
+      try {
+        const data = await apiClient.getChemistryStatus(teamId, season)
+        if (!isMountedRef.current) return
+        if (data.status === 'done') {
+          setStatus(data)
+          setPhase('done')
+          const matrixData = await apiClient.getChemistryMatrix(teamId, season, defaultFrom, defaultTo)
+          if (!isMountedRef.current) return
+          setMatrix(matrixData.matrix || [])
+          setSoloGoals(matrixData.soloGoals || [])
+        } else if (data.status === 'processing') {
+          setStatus(data)
+          setPhase('processing')
+          pollTimerRef.current = setTimeout(pollStatus, POLL_INTERVAL_MS)
+        }
+        // 'not_started' or 'error' → stay on idle / let user click Start
+      } catch {
+        // status endpoint not reachable → stay on idle
+      }
+    })()
+
     return () => {
       isMountedRef.current = false
       if (pollTimerRef.current) clearTimeout(pollTimerRef.current)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
