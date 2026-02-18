@@ -1,6 +1,6 @@
 import { useParams } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { Users, Target, Globe, User, Hash, Calendar } from 'lucide-react'
+import { Users, Target, Globe, User, Hash, Calendar, FlaskConical } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { mapLeagueForRankings } from '../lib/utils'
@@ -14,6 +14,7 @@ import GameCardSkeleton from '../components/GameCardSkeleton'
 import PlayerLink from '../components/PlayerLink'
 import PlayerImage from '../components/PlayerImage'
 import TeamPlayersLegend from '../components/TeamPlayersLegend'
+import ChemistryAnalysisTab from '../components/ChemistryAnalysisTab'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
 import { useTeamDetail, useTeamPlayers, useTeamUpcomingGames, useRankings } from '../hooks/useQueries'
@@ -393,6 +394,13 @@ export default function TeamDetail() {
                   </div>
                 )}
               </div>
+            )
+          },
+          {
+            value: 'analysis',
+            label: 'Analysis',
+            content: (
+              <ChemistryAnalysisTab teamId={teamId} />
             )
           },
           {

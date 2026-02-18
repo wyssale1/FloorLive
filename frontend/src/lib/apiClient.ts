@@ -39,6 +39,43 @@ export interface LeagueGroupConfigItem {
   defaultExpanded: boolean;
 }
 
+// Chemistry / Duo-Analysis types
+export interface MatrixEntry {
+  assistRawName: string
+  assistDisplayName: string
+  assistPlayerId: string | null
+  scorerRawName: string
+  scorerDisplayName: string
+  scorerPlayerId: string | null
+  total: number
+  homeGoals: number
+  awayGoals: number
+}
+
+export interface SoloGoalEntry {
+  scorerRawName: string
+  scorerDisplayName: string
+  scorerPlayerId: string | null
+  total: number
+  homeGoals: number
+  awayGoals: number
+}
+
+export interface ChemistryStatusResponse {
+  teamId: string
+  season: string
+  status: 'not_started' | 'processing' | 'done' | 'error'
+  gamesTotal: number
+  gamesProcessed: number
+  hasRoster: boolean
+  errorMessage?: string
+}
+
+export interface ChemistryMatrixResponse extends ChemistryStatusResponse {
+  matrix: MatrixEntry[]
+  soloGoals: SoloGoalEntry[]
+}
+
 // Dynamic API URL detection for Tailscale development
 const getApiBaseUrl = () => {
   // First check if explicitly set via environment
@@ -565,7 +602,39 @@ class ApiClient {
     }
   }
 
+  // ─── Chemistry / Duo-Analysis ───────────────────────────────
 
+  async triggerChemistryAnalysis(teamId: string, season: string): Promise<ChemistryStatusResponse> {
+    try {
+      const response = await fetch(`${this.baseURL}/teams/${teamId}/chemistry/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ season }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error triggering chemistry analysis:', error);
+      throw error;
+    }
+  }
+
+  async getChemistryStatus(teamId: string, season: string): Promise<ChemistryStatusResponse> {
+    const response = await fetch(`${this.baseURL}/teams/${teamId}/chemistry/status?season=${season}`);
+    return await response.json();
+  }
+
+  async getChemistryMatrix(
+    teamId: string,
+    season: string,
+    from?: string,
+    to?: string
+  ): Promise<ChemistryMatrixResponse> {
+    const params = new URLSearchParams({ season });
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    const response = await fetch(`${this.baseURL}/teams/${teamId}/chemistry?${params}`);
+    return await response.json();
+  }
 }
 
 export const apiClient = new ApiClient();

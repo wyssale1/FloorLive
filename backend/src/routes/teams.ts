@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { SwissUnihockeyApiClient } from '../services/swissUnihockeyApi.js';
 import { CacheService } from '../services/cacheService.js';
 import { entityMasterService } from '../services/entityMasterService.js';
+import { triggerAnalysis, getStatus, getMatrix } from '../services/chemistryService.js';
+import { getCurrentSeasonYear } from '../utils/seasonUtils.js';
 
 const router = Router();
 const apiClient = new SwissUnihockeyApiClient();
@@ -279,6 +281,66 @@ router.get('/:teamId/games', async (req, res) => {
       error: 'Failed to fetch team games',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// Chemistry / Duo-Analysis endpoints
+// ─────────────────────────────────────────────────────────────
+
+// POST /api/teams/:teamId/chemistry/analyze
+// Triggers the background analysis. Safe to call multiple times.
+router.post('/:teamId/chemistry/analyze', (req, res) => {
+  try {
+    const { teamId } = req.params;
+    const season = (req.body?.season || getCurrentSeasonYear()).toString();
+    const status = triggerAnalysis(teamId, season);
+    res.json({ teamId, season, ...status });
+  } catch (error) {
+    console.error('Error triggering chemistry analysis:', error);
+    res.status(500).json({ error: 'Failed to start analysis' });
+  }
+});
+
+// GET /api/teams/:teamId/chemistry/status?season=2025
+// Returns processing progress for polling.
+router.get('/:teamId/chemistry/status', (req, res) => {
+  try {
+    const { teamId } = req.params;
+    const season = (req.query.season || getCurrentSeasonYear()).toString();
+    const status = getStatus(teamId, season);
+    res.json({ teamId, season, ...status });
+  } catch (error) {
+    console.error('Error fetching chemistry status:', error);
+    res.status(500).json({ error: 'Failed to fetch analysis status' });
+  }
+});
+
+// GET /api/teams/:teamId/chemistry?season=2025&from=2024-09-01&to=2025-03-31
+// Returns the aggregated goal-combination matrix.
+router.get('/:teamId/chemistry', (req, res) => {
+  try {
+    const { teamId } = req.params;
+    const season = (req.query.season || getCurrentSeasonYear()).toString();
+    const from = req.query.from as string | undefined;
+    const to = req.query.to as string | undefined;
+
+    const status = getStatus(teamId, season);
+    if (status.status !== 'done') {
+      return res.status(202).json({
+        teamId,
+        season,
+        ...status,
+        matrix: [],
+        message: 'Analysis not complete yet'
+      });
+    }
+
+    const { matrix, soloGoals } = getMatrix(teamId, season, from, to);
+    res.json({ teamId, season, ...status, matrix, soloGoals });
+  } catch (error) {
+    console.error('Error fetching chemistry matrix:', error);
+    res.status(500).json({ error: 'Failed to fetch chemistry data' });
   }
 });
 

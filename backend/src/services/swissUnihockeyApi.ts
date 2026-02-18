@@ -463,27 +463,37 @@ export class SwissUnihockeyApiClient {
   }
 
   async getTeamGames(teamId: string, season?: string): Promise<Game[]> {
-    try {
-      const params: any = {
-        mode: 'team',
-        team_id: parseInt(teamId)
-      };
+    const seasonYear = season ? parseInt(season) : getCurrentSeasonYear();
+    const baseParams = {
+      mode: 'team',
+      team_id: parseInt(teamId),
+      season: seasonYear,
+    };
 
-      // Use provided season or current season
-      if (season) {
-        params.season = parseInt(season);
-      } else {
-        // Default to current season
-        params.season = getCurrentSeasonYear();
+    const allGames: Game[] = [];
+
+    // The Swiss API paginates team games (10 per page).
+    // Fetch all pages until we get a 400 or an empty page.
+    for (let page = 1; page <= 20; page++) {
+      try {
+        const response = await this.client.get<any>('/games', {
+          params: { ...baseParams, page }
+        });
+        const games = this.mapTeamGamesFromApi(response.data);
+        if (games.length === 0) break;
+        allGames.push(...games);
+        // If this page had fewer rows than a full page it's the last one
+        const rows = response.data?.data?.regions?.[0]?.rows || [];
+        if (rows.length < 10) break;
+      } catch (error: any) {
+        // 400 = no more pages
+        if (error?.response?.status === 400) break;
+        console.error(`Error fetching team games page ${page}:`, error);
+        break;
       }
-
-      const response = await this.client.get<any>('/games', { params });
-
-      return this.mapTeamGamesFromApi(response.data);
-    } catch (error) {
-      console.error('Error fetching team games:', error);
-      return [];
     }
+
+    return allGames;
   }
 
 
@@ -1438,31 +1448,46 @@ export class SwissUnihockeyApiClient {
       for (const row of rows) {
         if (!row.cells || !Array.isArray(row.cells)) continue;
 
+        // Actual Swiss API structure for mode=team:
+        // cells[0]: date (text[0]) + time (text[1])
+        // cells[1]: venue (text[0]) with map link
+        // cells[2]: home team name (no link on team cells)
+        // cells[3]: away team name
+        // cells[4]: score (e.g. "3:5") – present only for finished games
+        // row.link: { type:'web', page:'game_detail', ids:[gameId] }
         const date = row.cells[0]?.text?.[0] || '';
-        const time = row.cells[1]?.text?.[0] || '';
+        const time = row.cells[0]?.text?.[1] || '';
+        const venue = row.cells[1]?.text?.[0] || '';
         const homeTeam = row.cells[2]?.text?.[0] || '';
-        const awayTeam = row.cells[4]?.text?.[0] || '';
-        const venue = row.cells[5]?.text?.[0] || '';
+        const awayTeam = row.cells[3]?.text?.[0] || '';
+        const scoreRaw = row.cells[4]?.text?.[0] || '';
 
-        // Extract team IDs if available
-        const homeTeamId = row.cells[2]?.link?.ids?.[0]?.toString() || '';
-        const awayTeamId = row.cells[4]?.link?.ids?.[0]?.toString() || '';
+        // Game ID lives on the row link, not row.id
+        const gameId = row.link?.ids?.[0]?.toString() || '';
+
+        // Determine status from score presence
+        const scoreMatch = scoreRaw.match(/^(\d+):(\d+)/);
+        const homeScore = scoreMatch ? parseInt(scoreMatch[1]) : null;
+        const awayScore = scoreMatch ? parseInt(scoreMatch[2]) : null;
+        const status = scoreMatch ? 'finished' : 'upcoming';
+
+        if (!homeTeam && !awayTeam) continue;
 
         const game: Game = {
-          id: row.id?.toString() || `${homeTeamId}_${awayTeamId}_${date}`,
+          id: gameId,
           home_team: {
-            id: homeTeamId,
+            id: '',   // not available in this endpoint
             name: homeTeam,
             short_name: homeTeam.substring(0, 3).toUpperCase()
           },
           away_team: {
-            id: awayTeamId,
+            id: '',   // not available in this endpoint
             name: awayTeam,
             short_name: awayTeam.substring(0, 3).toUpperCase()
           },
-          home_score: null,
-          away_score: null,
-          status: 'upcoming' as const,
+          home_score: homeScore,
+          away_score: awayScore,
+          status: status as any,
           start_time: time,
           game_date: date,
           league: {

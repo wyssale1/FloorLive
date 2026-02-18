@@ -18,6 +18,7 @@ import { SchedulerService } from './services/schedulerService.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
 import { SEOService } from './services/seoService.js';
 import { logger } from './utils/logger.js';
+import { initDb } from './db/index.js';
 
 // Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -196,6 +197,9 @@ app.use((req, res) => {
 
 // Create HTTP server
 const server = createServer(app);
+
+// Initialize SQLite database
+initDb();
 
 // Initialize services
 const websocketService = new WebSocketService(server);
