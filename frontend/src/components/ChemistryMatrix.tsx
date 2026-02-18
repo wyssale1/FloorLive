@@ -265,7 +265,7 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
               <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Goals</span>
             </td>
 
-            {scorers.map((scorer, colIdx) => {
+            {scorers.map((scorer) => {
               const total = columnGoals.get(scorer.rawName) ?? 0
               return (
                 <td

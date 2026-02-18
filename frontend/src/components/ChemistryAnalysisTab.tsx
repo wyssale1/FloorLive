@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { FlaskConical, Play, Calendar, AlertCircle } from 'lucide-react'
 import { useChemistryAnalysis } from '../hooks/useChemistryAnalysis'
-import type { SoloGoalEntry } from '../hooks/useChemistryAnalysis'
 import ChemistryMatrix from './ChemistryMatrix'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
 
