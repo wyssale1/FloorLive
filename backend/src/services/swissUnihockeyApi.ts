@@ -1140,11 +1140,45 @@ export class SwissUnihockeyApiClient {
         events.push(event);
       }
 
-      return events;
+      return this.deduplicateEvents(events);
     } catch (error) {
       console.error('Error mapping game events from API:', error);
       return [];
     }
+  }
+
+  /**
+   * Deduplicates events returned by the Swiss API.
+   *
+   * The API sends TWO rows per goal:
+   *   Row 1 (first):  description = "Torschütze 10:8" (post-goal score), player may include assist
+   *   Row 2 (second): description = "Torschütze 10:7" (pre-goal score),  no assist
+   *
+   * Because the score embedded in the description differs, a naive key comparison misses the
+   * duplicate. We normalise the description by stripping "X:Y" score patterns before keying.
+   * The first occurrence is always the correct one (right score, possible assist), so we never
+   * replace it with a later occurrence.
+   *
+   * Penalties appear as fully identical duplicate rows and are handled by the same "keep first"
+   * rule.
+   */
+  private deduplicateEvents(events: GameEvent[]): GameEvent[] {
+    const seen = new Map<string, GameEvent>();
+
+    for (const event of events) {
+      // Strip embedded scores like "10:8" so "Torschütze 10:8" and "Torschütze 10:7" collapse
+      // to the same key.
+      const normalizedDesc = (event.description ?? '').replace(/\d+:\d+/, '').trim();
+      const key = `${event.time}|${normalizedDesc}|${event.team_name ?? ''}|${event.player}`;
+
+      if (!seen.has(key)) {
+        seen.set(key, event);
+        // Always keep the first occurrence – it carries the correct post-goal score and
+        // the assist when present. Never replace with a later row.
+      }
+    }
+
+    return Array.from(seen.values());
   }
 
   private classifyEvent(description: string): { type: string; icon: string; displayAs: string } {
