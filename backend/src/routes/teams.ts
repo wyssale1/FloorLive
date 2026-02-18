@@ -316,14 +316,16 @@ router.get('/:teamId/chemistry/status', (req, res) => {
   }
 });
 
-// GET /api/teams/:teamId/chemistry?season=2025&from=2024-09-01&to=2025-03-31
+// GET /api/teams/:teamId/chemistry?season=2025&from=2024-09-01&to=2025-03-31&phase=all
 // Returns the aggregated goal-combination matrix.
+// phase: 'all' | 'regular' | 'cup' | 'playoff' (default: 'all')
 router.get('/:teamId/chemistry', (req, res) => {
   try {
     const { teamId } = req.params;
     const season = (req.query.season || getCurrentSeasonYear()).toString();
     const from = req.query.from as string | undefined;
     const to = req.query.to as string | undefined;
+    const phase = (req.query.phase as string | undefined) || 'all';
 
     const status = getStatus(teamId, season);
     if (status.status !== 'done') {
@@ -336,7 +338,7 @@ router.get('/:teamId/chemistry', (req, res) => {
       });
     }
 
-    const { matrix, soloGoals } = getMatrix(teamId, season, from, to);
+    const { matrix, soloGoals } = getMatrix(teamId, season, from, to, phase);
     res.json({ teamId, season, ...status, matrix, soloGoals });
   } catch (error) {
     console.error('Error fetching chemistry matrix:', error);

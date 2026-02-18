@@ -7,11 +7,14 @@ export type { MatrixEntry, SoloGoalEntry }
 
 export type AnalysisPhase = 'idle' | 'starting' | 'processing' | 'done' | 'error'
 
+export type GamePhaseFilter = 'regular' | 'cup' | 'playoff'
+
 export interface ChemistryFilters {
   season: string
   from: string   // ISO date "YYYY-MM-DD"
   to: string     // ISO date "YYYY-MM-DD"
   splitHomeAway: boolean
+  gamePhases: GamePhaseFilter[]  // empty = all phases
 }
 
 export interface UseChemistryAnalysisResult {
@@ -56,6 +59,7 @@ export function useChemistryAnalysis(teamId: string): UseChemistryAnalysisResult
     from: defaultFrom,
     to: defaultTo,
     splitHomeAway: false,
+    gamePhases: [],  // empty = all phases
   })
 
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -99,7 +103,7 @@ export function useChemistryAnalysis(teamId: string): UseChemistryAnalysisResult
       loadMatrix()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.from, filters.to, filters.season])
+  }, [filters.from, filters.to, filters.season, filters.gamePhases])
 
   const loadMatrix = useCallback(async () => {
     try {
@@ -107,7 +111,8 @@ export function useChemistryAnalysis(teamId: string): UseChemistryAnalysisResult
         teamId,
         filters.season,
         filters.from,
-        filters.to
+        filters.to,
+        filters.gamePhases
       )
       if (!isMountedRef.current) return
       setMatrix(data.matrix || [])
@@ -115,7 +120,7 @@ export function useChemistryAnalysis(teamId: string): UseChemistryAnalysisResult
     } catch (err) {
       console.error('[useChemistryAnalysis] Failed to load matrix:', err)
     }
-  }, [teamId, filters.season, filters.from, filters.to])
+  }, [teamId, filters.season, filters.from, filters.to, filters.gamePhases])
 
   const pollStatus = useCallback(async () => {
     if (!isMountedRef.current) return

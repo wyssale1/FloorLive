@@ -627,11 +627,13 @@ class ApiClient {
     teamId: string,
     season: string,
     from?: string,
-    to?: string
+    to?: string,
+    phases?: string[]
   ): Promise<ChemistryMatrixResponse> {
     const params = new URLSearchParams({ season });
     if (from) params.set('from', from);
     if (to) params.set('to', to);
+    if (phases && phases.length > 0) params.set('phase', phases.join(','));
     const response = await fetch(`${this.baseURL}/teams/${teamId}/chemistry?${params}`);
     return await response.json();
   }

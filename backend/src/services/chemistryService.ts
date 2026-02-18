@@ -1,7 +1,8 @@
 import { eq, and, sql } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { teamAnalysisState, processedGames, goalEvents } from '../db/schema.js'
-import { SwissUnihockeyApiClient } from './swissUnihockeyApi.js'
+import { SwissUnihockeyApiClient, parseGamePhase } from './swissUnihockeyApi.js'
+import type { GamePhase } from './swissUnihockeyApi.js'
 import { getCurrentSeasonYear } from '../utils/seasonUtils.js'
 
 const apiClient = new SwissUnihockeyApiClient()
@@ -194,17 +195,28 @@ export function getMatrix(
   teamId: string,
   season: string,
   fromDate?: string,
-  toDate?: string
+  toDate?: string,
+  gamePhase?: string  // 'all' | 'regular' | 'cup' | 'playoff'
 ): { matrix: MatrixEntry[]; soloGoals: SoloGoalEntry[] } {
-  // Shared date conditions (without assist filter)
-  const dateConditions: string[] = [
+  // Shared conditions
+  const conditions: string[] = [
     `team_id = '${teamId}'`,
     `season = '${season}'`,
   ]
-  if (fromDate) dateConditions.push(`game_date >= '${fromDate}'`)
-  if (toDate) dateConditions.push(`game_date <= '${toDate}'`)
+  if (fromDate) conditions.push(`game_date >= '${fromDate}'`)
+  if (toDate) conditions.push(`game_date <= '${toDate}'`)
+  if (gamePhase && gamePhase !== 'all') {
+    // Support comma-separated phase list, e.g. "regular,cup"
+    const phases = gamePhase.split(',').map(p => p.trim()).filter(Boolean)
+    if (phases.length === 1) {
+      conditions.push(`game_phase = '${phases[0]}'`)
+    } else if (phases.length > 1) {
+      const inList = phases.map(p => `'${p}'`).join(', ')
+      conditions.push(`game_phase IN (${inList})`)
+    }
+  }
 
-  const dateWhere = dateConditions.join(' AND ')
+  const dateWhere = conditions.join(' AND ')
 
   // ── Combo goals (with assist) ──────────────────────────────
   const comboRows = db.all<{
@@ -399,7 +411,7 @@ async function runAnalysis(teamId: string, season: string): Promise<void> {
     }
 
     try {
-      const events = await apiClient.getGameEvents(gameId)
+      const { events, phase: gamePhase } = await apiClient.getGameEventsAndPhase(gameId)
 
       // ── Collect goal events for this game first ──────────────
       // The Swiss API emits each assisted goal TWICE:
@@ -468,6 +480,7 @@ async function runAnalysis(teamId: string, season: string): Promise<void> {
               assistDisplayName: ev.assistResolved?.displayName ?? null,
               assistPlayerId: ev.assistResolved?.playerId ?? null,
               isHome: ev.isHome,
+              gamePhase,
             })
             .run()
         } else {
@@ -492,6 +505,7 @@ async function runAnalysis(teamId: string, season: string): Promise<void> {
                 assistDisplayName: null,
                 assistPlayerId: null,
                 isHome: ev.isHome,
+                gamePhase,
               })
               .run()
           }

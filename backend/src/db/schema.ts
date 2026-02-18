@@ -41,4 +41,10 @@ export const goalEvents = sqliteTable('goal_events', {
   assistPlayerId: text('assist_player_id'),               // Real API ID or NULL
 
   isHome: integer('is_home', { mode: 'boolean' }).notNull(), // true = home goal, false = away
+
+  // Game phase: 'regular' | 'cup' | 'playoff'
+  // 'regular'  = regular season rounds (Runde X)
+  // 'cup'      = Mobiliar Unihockey Cup
+  // 'playoff'  = Playoff / Playout (post-regular elimination rounds)
+  gamePhase: text('game_phase').notNull().default('regular'),
 })

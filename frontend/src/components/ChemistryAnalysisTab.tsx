@@ -1,5 +1,12 @@
 import { motion } from 'framer-motion'
-import { FlaskConical, Play, Calendar, AlertCircle } from 'lucide-react'
+import { FlaskConical, Play, AlertCircle, ChevronDown } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
+import type { GamePhaseFilter } from '../hooks/useChemistryAnalysis'
 import { useChemistryAnalysis } from '../hooks/useChemistryAnalysis'
 import ChemistryMatrix from './ChemistryMatrix'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
@@ -23,6 +30,27 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
   } = useChemistryAnalysis(teamId)
 
   const currentSeason = getCurrentSeasonYear()
+
+  const PHASE_LABELS: Record<GamePhaseFilter, string> = {
+    regular: 'Liga',
+    cup: 'Cup',
+    playoff: 'Playoff',
+  }
+
+  const ALL_PHASES: GamePhaseFilter[] = ['regular', 'cup', 'playoff']
+
+  function togglePhase(phase: GamePhaseFilter) {
+    const current = filters.gamePhases
+    const next = current.includes(phase)
+      ? current.filter(p => p !== phase)
+      : [...current, phase]
+    // If all 3 selected or none → reset to empty (= Alle)
+    setFilters({ gamePhases: next.length === ALL_PHASES.length ? [] : next })
+  }
+
+  const phaseLabel = filters.gamePhases.length === 0
+    ? 'Alle Spiele'
+    : filters.gamePhases.map(p => PHASE_LABELS[p]).join(', ')
 
   // ── Idle / Not started ──────────────────────────────────────
   if (phase === 'idle') {
@@ -142,25 +170,50 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           </span>
         </div>
 
-        {/* Home/Away toggle */}
-        <button
-          onClick={() => setFilters({ splitHomeAway: !filters.splitHomeAway })}
-          className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
-            filters.splitHomeAway
-              ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-              : 'text-gray-500 hover:bg-gray-100'
-          }`}
-          aria-pressed={filters.splitHomeAway}
-        >
-          <span>Home / Away</span>
-          <span className="inline-flex items-center gap-1">
-            <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>H</span>
-            <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-400'}`}>A</span>
-          </span>
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Game phase multi-select dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-gray-100/80 hover:bg-gray-200/80 border border-gray-200/50 rounded-full transition-all duration-200 cursor-pointer hover:shadow-sm ${filters.gamePhases.length > 0 ? 'text-blue-700 bg-blue-50/80 border-blue-200/50 hover:bg-blue-100/80' : 'text-gray-700'}`}>
+                <span>{phaseLabel}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-gray-500 transition-transform duration-200" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[140px] bg-white/95 backdrop-blur-sm border-gray-200/50">
+              {ALL_PHASES.map(phase => (
+                <DropdownMenuCheckboxItem
+                  key={phase}
+                  checked={filters.gamePhases.length === 0 || filters.gamePhases.includes(phase)}
+                  onCheckedChange={() => togglePhase(phase)}
+                  className="text-sm cursor-pointer"
+                >
+                  {PHASE_LABELS[phase]}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Home/Away toggle */}
+          <button
+            onClick={() => setFilters({ splitHomeAway: !filters.splitHomeAway })}
+            className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+              filters.splitHomeAway
+                ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                : 'text-gray-500 hover:bg-gray-100'
+            }`}
+            aria-pressed={filters.splitHomeAway}
+          >
+            <span>Home / Away</span>
+            <span className="inline-flex items-center gap-1">
+              <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>H</span>
+              <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-400'}`}>A</span>
+            </span>
+          </button>
+        </div>
       </div>
 
-      {/* Date range filter */}
+      {/* Date range filter – commented out for Phase 1, to be enabled later */}
+      {/*
       <div className="flex items-center gap-2 flex-wrap">
         <Calendar className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
         <label className="text-xs text-gray-500">From</label>
@@ -182,6 +235,7 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           className="text-xs border border-gray-200 rounded px-2 py-1 text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-blue-300"
         />
       </div>
+      */}
 
       {/* Name resolution note */}
       {!hasRoster && (

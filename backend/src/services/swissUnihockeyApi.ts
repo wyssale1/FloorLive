@@ -4,6 +4,23 @@ import { Game, GameEvent, Team } from '../types/domain.js';
 import { getCurrentSeasonYear } from '../utils/seasonUtils.js';
 import { leagueResolver } from './leagueResolver.js';
 
+export type GamePhase = 'regular' | 'cup' | 'playoff'
+
+/**
+ * Classifies a game by its subtitle from the Swiss Unihockey API.
+ * Examples:
+ *   "Herren GF 1. Liga Gruppe 2 Runde 14 2025/26"         → 'regular'
+ *   "Mobiliar Unihockey Cup Männer 1/32-Final 2025/26"     → 'cup'
+ *   "Herren GF NLB Playoff Viertelfinals 2025/26"          → 'playoff'
+ *   "Junioren U21 A Playouts Playouts 2025/26"             → 'playoff'
+ */
+export function parseGamePhase(subtitle: string): GamePhase {
+  const s = subtitle.toLowerCase()
+  if (s.includes('cup')) return 'cup'
+  if (s.includes('playoff') || s.includes('playout')) return 'playoff'
+  return 'regular'
+}
+
 export class SwissUnihockeyApiClient {
   private client: AxiosInstance;
   private baseURL = 'https://api-v2.swissunihockey.ch/api';
@@ -129,6 +146,35 @@ export class SwissUnihockeyApiClient {
     } catch (error) {
       console.error(`Error fetching events for game ${gameId}:`, error);
       return [];
+    }
+  }
+
+  /**
+   * Fetches game events AND detects the game phase from the subtitle in a single
+   * call to /games/{gameId} (same request getGameEvents uses internally).
+   * No extra API call compared to the standard getGameEvents flow.
+   */
+  async getGameEventsAndPhase(gameId: string): Promise<{ events: GameEvent[]; phase: GamePhase }> {
+    try {
+      const gameResponse = await this.client.get<any>(`/games/${gameId}`)
+      const subtitle: string = gameResponse.data?.data?.subtitle || ''
+      const phase = parseGamePhase(subtitle)
+
+      // Extract home/away team names directly from the raw response
+      const cells = gameResponse.data?.data?.regions?.[0]?.rows?.[0]?.cells || []
+      const homeTeamName: string = cells[1]?.text?.[0] || ''
+      const awayTeamName: string = cells[3]?.text?.[0] || ''
+
+      const lightGameDetails = {
+        home_team: { id: '', name: homeTeamName, short_name: homeTeamName, logo: null },
+        away_team: { id: '', name: awayTeamName, short_name: awayTeamName, logo: null },
+      }
+
+      const events = await this.getGameEventsOptimized(gameId, lightGameDetails as any)
+      return { events, phase }
+    } catch (error) {
+      console.error(`Error fetching events and phase for game ${gameId}:`, error)
+      return { events: [], phase: 'regular' }
     }
   }
 

@@ -69,4 +69,23 @@ export function initDb() {
     CREATE INDEX IF NOT EXISTS idx_processed_games_team
       ON processed_games(team_id, season);
   `)
+
+  // ── Schema migrations ──────────────────────────────────────
+  // Add game_phase column if it doesn't exist yet (one-time migration).
+  // When the column is freshly added, reset all analysis data so teams
+  // re-analyse with correct phase tagging (regular / cup / playoff).
+  let phaseColumnAdded = false
+  try {
+    sqlite.exec(`ALTER TABLE goal_events ADD COLUMN game_phase TEXT NOT NULL DEFAULT 'regular'`)
+    phaseColumnAdded = true
+  } catch {
+    // Column already exists – nothing to do
+  }
+
+  if (phaseColumnAdded) {
+    console.log('[DB] Added game_phase column – resetting all analysis data for re-processing')
+    sqlite.exec(`DELETE FROM goal_events`)
+    sqlite.exec(`DELETE FROM processed_games`)
+    sqlite.exec(`UPDATE team_analysis_state SET status = 'pending', games_total = 0, games_processed = 0`)
+  }
 }

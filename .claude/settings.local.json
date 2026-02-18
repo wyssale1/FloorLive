@@ -40,11 +40,14 @@
       "Bash(xargs:*)",
       "Bash(python3 -m json.tool:*)",
       "Bash(python3:*)",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(grep:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "shadcn",
     "tailwindcss-server"
