@@ -196,18 +196,14 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           {/* Home/Away toggle */}
           <button
             onClick={() => setFilters({ splitHomeAway: !filters.splitHomeAway })}
-            className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
               filters.splitHomeAway
                 ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
                 : 'text-gray-500 hover:bg-gray-100'
             }`}
             aria-pressed={filters.splitHomeAway}
           >
-            <span>Home / Away</span>
-            <span className="inline-flex items-center gap-1">
-              <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>H</span>
-              <span className={`rounded px-1 py-0.5 font-medium tabular-nums transition-colors ${filters.splitHomeAway ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-400'}`}>A</span>
-            </span>
+            Home / Away
           </button>
         </div>
       </div>
