@@ -1,6 +1,6 @@
 import { Target, AlertTriangle, Pause, Crown, HelpCircle, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 
 export default function GameEventsLegend() {
   const [isOpen, setIsOpen] = useState(false)
@@ -88,7 +88,7 @@ export default function GameEventsLegend() {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             ref={legendRef}
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -108,8 +108,8 @@ export default function GameEventsLegend() {
               </button>
             </div>
             <div className="space-y-2.5">
-              {legendItems.map((item, index) => (
-                <div key={index} className="flex items-start space-x-3">
+              {legendItems.map((item) => (
+                <div key={item.label} className="flex items-start space-x-3">
                   <div className="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
                     {item.icon}
                   </div>
@@ -120,7 +120,7 @@ export default function GameEventsLegend() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

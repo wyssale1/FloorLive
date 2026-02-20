@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Crown as CrownIcon } from 'lucide-react'
 
 interface CrownProps {
@@ -7,7 +7,7 @@ interface CrownProps {
 
 export default function Crown({ className = '' }: CrownProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ 
         y: -10, 
         opacity: 0, 
@@ -32,7 +32,7 @@ export default function Crown({ className = '' }: CrownProps) {
         filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
       }}
     >
-      <motion.div
+      <m.div
         animate={{ 
           y: [0, -1, 0], 
           rotate: [-15, -12, -15] 
@@ -44,7 +44,7 @@ export default function Crown({ className = '' }: CrownProps) {
         }}
       >
         <CrownIcon className="w-4 h-4 text-yellow-500 fill-white stroke-yellow-500" strokeWidth={2} />
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   )
 }

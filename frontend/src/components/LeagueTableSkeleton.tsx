@@ -31,7 +31,7 @@ export default function LeagueTableSkeleton({ teamCount = 12 }: LeagueTableSkele
       {/* Table Rows */}
       <div className="space-y-0 divide-y divide-gray-200">
         {Array(teamCount).fill(0).map((_, index) => (
-          <div key={index} className="flex items-center justify-between py-3 px-0">
+          <div key={`skeleton-${index}`} className="flex items-center justify-between py-3 px-0">
             <div className="flex items-center space-x-3 min-w-0 flex-1">
               {/* Position Number */}
               <div className="flex-shrink-0 w-8 pl-1">

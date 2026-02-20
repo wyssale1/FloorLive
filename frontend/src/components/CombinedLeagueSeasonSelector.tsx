@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,7 +60,7 @@ export default function CombinedLeagueSeasonSelector({
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild disabled={disabled || loading}>
-        <motion.button
+        <m.button
           className={`
             inline-flex items-center gap-3 px-4 py-2 text-sm font-medium
             bg-gray-100/80 hover:bg-gray-200/80 border border-gray-200/50
@@ -85,7 +85,7 @@ export default function CombinedLeagueSeasonSelector({
               isOpen ? 'rotate-180' : ''
             }`}
           />
-        </motion.button>
+        </m.button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent

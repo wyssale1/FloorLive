@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { MapPin, Clock, Users, Trophy, Flag } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { apiClient } from '../lib/apiClient'
 import type { Game } from '../lib/apiClient'
 import type { PlayoffSeries } from '../types/domain'
@@ -179,7 +179,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {gameInfoItems.map((item, index) => (
-            <motion.div
+            <m.div
               key={item.key}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -190,7 +190,7 @@ export default function GameOverview({ game, gameId }: GameOverviewProps) {
               }}
             >
               {item.content}
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

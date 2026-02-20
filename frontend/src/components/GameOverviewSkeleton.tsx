@@ -62,7 +62,7 @@ export default function GameOverviewSkeleton() {
         {/* Game cards skeleton */}
         <div className="space-y-1">
           {Array(3).fill(0).map((_, index) => (
-            <div key={index}>
+            <div key={`skeleton-${index}`}>
               <div className="p-3">
                 <div className="flex items-center">
                   {/* Left side - Score or time */}

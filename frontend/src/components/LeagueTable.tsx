@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Link } from '@tanstack/react-router'
 import { Trophy, RotateCcw } from 'lucide-react'
 import TeamLogo from './TeamLogo'
@@ -37,11 +37,13 @@ interface LeagueTableProps {
   onLeagueChange?: (league: League) => void
 }
 
+const EMPTY_HIGHLIGHT_IDS: string[] = []
+
 export default function LeagueTable({
   table,
   loading,
   currentTeamId,
-  highlightTeamIds = [],
+  highlightTeamIds = EMPTY_HIGHLIGHT_IDS,
   availableSeasons,
   onSeasonChange,
   seasonSelectorDisabled = false,
@@ -139,7 +141,7 @@ export default function LeagueTable({
             : 'hover:bg-gray-50'
           
           return (
-            <motion.div
+            <m.div
               key={team.teamId || index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -232,7 +234,7 @@ export default function LeagueTable({
                   <div className="font-medium text-gray-700">{team.games}</div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           )
         })}
       </div>

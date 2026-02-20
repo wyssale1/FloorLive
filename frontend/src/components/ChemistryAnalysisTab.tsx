@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { FlaskConical, Play, AlertCircle, ChevronDown } from 'lucide-react'
 import {
   DropdownMenu,
@@ -55,7 +55,7 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
   // ── Idle / Not started ──────────────────────────────────────
   if (phase === 'idle') {
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6 sm:p-10 flex flex-col items-center text-center gap-4"
@@ -78,7 +78,7 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           Start Analysis
         </button>
         <p className="text-xs text-gray-400">Season {currentSeason}/{currentSeason + 1}</p>
-      </motion.div>
+      </m.div>
     )
   }
 
@@ -89,7 +89,7 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
     const total = status?.gamesTotal ?? 0
 
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6 sm:p-10 flex flex-col items-center text-center gap-5"
@@ -115,7 +115,7 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
             <span>{pct}%</span>
           </div>
           <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <motion.div
+            <m.div
               className="h-full bg-blue-400 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
@@ -123,14 +123,14 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
             />
           </div>
         </div>
-      </motion.div>
+      </m.div>
     )
   }
 
   // ── Error ───────────────────────────────────────────────────
   if (phase === 'error') {
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6 sm:p-10 flex flex-col items-center text-center gap-4"
@@ -149,13 +149,13 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           <Play className="w-4 h-4" />
           Retry
         </button>
-      </motion.div>
+      </m.div>
     )
   }
 
   // ── Done – show matrix ──────────────────────────────────────
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6 space-y-4"
@@ -243,6 +243,6 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
 
       {/* Matrix */}
       <ChemistryMatrix matrix={matrix} soloGoals={soloGoals} splitHomeAway={filters.splitHomeAway} />
-    </motion.div>
+    </m.div>
   )
 }

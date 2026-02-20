@@ -1,6 +1,6 @@
 import { HelpCircle, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 
 export default function PlayerStatsLegend() {
   const [isOpen, setIsOpen] = useState(false)
@@ -88,7 +88,7 @@ export default function PlayerStatsLegend() {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             ref={legendRef}
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -108,8 +108,8 @@ export default function PlayerStatsLegend() {
               </button>
             </div>
             <div className="space-y-2.5">
-              {legendItems.map((item, index) => (
-                <div key={index} className="flex items-start space-x-3">
+              {legendItems.map((item) => (
+                <div key={item.abbr} className="flex items-start space-x-3">
                   <div className="flex-shrink-0 w-8 text-center">
                     <span className="text-sm font-bold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded text-xs">
                       {item.abbr}
@@ -122,7 +122,7 @@ export default function PlayerStatsLegend() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

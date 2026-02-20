@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { Search, X } from 'lucide-react'
 import { Input } from './ui/input'
 import ShortcutLinks from './ShortcutLinks'
@@ -138,7 +138,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <m.div
           variants={contentVariants}
           initial="hidden"
           animate="visible"
@@ -146,7 +146,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
           className={`pt-6 flex flex-col h-full ${className}`}
         >
           {/* Search Section */}
-          <motion.div variants={searchSectionVariants} className="mb-8 flex-shrink-0">
+          <m.div variants={searchSectionVariants} className="mb-8 flex-shrink-0">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-700 z-10" />
               <Input
@@ -168,14 +168,14 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                 </button>
               )}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Content Section */}
           <div className="flex-1 flex flex-col min-h-0">
             <AnimatePresence mode="wait">
               {showSearchResults ? (
                 // Search Results
-                <motion.div
+                <m.div
                   key="search-results"
                   variants={contentVariants}
                   initial="hidden"
@@ -194,7 +194,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                           <h3 className="text-sm font-medium text-gray-700 mb-3">Teams</h3>
                           <div className="space-y-2">
                             {searchResults.teams.map((team) => (
-                              <motion.div
+                              <m.div
                                 key={team.id}
                                 variants={searchSectionVariants}
                                 className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-3 hover:bg-white/80 transition-colors cursor-pointer"
@@ -227,7 +227,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                     <div className="text-sm text-gray-500">{typeof team.league === 'string' ? team.league : team.league?.name || 'Swiss Unihockey'}</div>
                                   </div>
                                 </div>
-                              </motion.div>
+                              </m.div>
                             ))}
                           </div>
                         </div>
@@ -238,7 +238,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                           <h3 className="text-sm font-medium text-gray-700 mb-3">Players</h3>
                           <div className="space-y-2">
                             {searchResults.players.map((player) => (
-                              <motion.div
+                              <m.div
                                 key={player.id}
                                 variants={searchSectionVariants}
                                 className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-lg p-3 hover:bg-white/80 transition-colors cursor-pointer"
@@ -264,7 +264,7 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                                     <div className="text-sm text-gray-500">{typeof player.team === 'string' ? player.team : player.team?.name || 'Team not available'}</div>
                                   </div>
                                 </div>
-                              </motion.div>
+                              </m.div>
                             ))}
                           </div>
                         </div>
@@ -277,14 +277,14 @@ export default function GlobalMenu({ className = '' }: GlobalMenuProps) {
                       )}
                     </>
                   )}
-                </motion.div>
+                </m.div>
               ) : (
                 // Shortcut Links
                 <ShortcutLinks key="shortcuts" />
               )}
             </AnimatePresence>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   )

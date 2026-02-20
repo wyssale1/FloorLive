@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import LeagueTable from '../components/LeagueTable'
 import LeagueTableSkeleton from '../components/LeagueTableSkeleton'
 import CombinedLeagueSeasonSelector from '../components/CombinedLeagueSeasonSelector'
@@ -224,7 +224,7 @@ export default function Rankings() {
     <div className="min-h-screen bg-gray-50/30 pt-4">
       <div className="max-w-7xl mx-auto px-4 pb-8">
         {/* Page Header */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -245,16 +245,16 @@ export default function Rankings() {
               />
             )}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Rankings Content */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={activeTab}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -291,9 +291,9 @@ export default function Rankings() {
                   currentLeague={currentLeague}
                 />
               )}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   )

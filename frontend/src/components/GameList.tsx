@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import GameCard from './GameCard'
 import type { Game } from '../lib/mockData'
 
@@ -17,7 +17,7 @@ export default function GameList({ games, showSeparators = true, className = "",
   return (
     <div className={className}>
       {games.map((game, index) => (
-        <motion.div 
+        <m.div 
           key={game.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -32,7 +32,7 @@ export default function GameList({ games, showSeparators = true, className = "",
           {showSeparators && index < games.length - 1 && (
             <div className={`border-b border-gray-100 mx-3 ${noPaddingOnMobile ? 'my-0' : 'my-1'}`}></div>
           )}
-        </motion.div>
+        </m.div>
       ))}
     </div>
   )

@@ -34,10 +34,14 @@ export default function OptimizedImage({
     onError?.();
   };
 
+  const interactiveProps = onClick
+    ? { role: 'button' as const, tabIndex: 0, onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') onClick() } }
+    : {}
+
   // Show fallback component if image failed to load and one is provided
   if (imageError && fallbackComponent) {
     return (
-      <div className={className} onClick={onClick} style={style}>
+      <div className={className} onClick={onClick} style={style} {...interactiveProps}>
         {fallbackComponent}
       </div>
     );
@@ -46,7 +50,7 @@ export default function OptimizedImage({
   // Show nothing if no valid image sources are available
   if (!fallbackSrc && !sources.length) {
     return fallbackComponent ? (
-      <div className={className} onClick={onClick} style={style}>
+      <div className={className} onClick={onClick} style={style} {...interactiveProps}>
         {fallbackComponent}
       </div>
     ) : null;
@@ -55,10 +59,10 @@ export default function OptimizedImage({
   // Use picture element when we have optimized sources
   if (sources.length > 0 && !imageError) {
     return (
-      <picture className={className} onClick={onClick} style={style}>
-        {sources.map((source, index) => (
+      <picture className={className} onClick={onClick} style={style} {...interactiveProps}>
+        {sources.map((source) => (
           <source
-            key={index}
+            key={source.type}
             srcSet={source.srcSet}
             type={source.type}
           />

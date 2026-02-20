@@ -1,5 +1,5 @@
 import { useParams, Link } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Clock } from 'lucide-react'
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { calculateSeasonYear, getCurrentSeasonYear } from '../lib/seasonUtils'
@@ -188,7 +188,7 @@ export default function GameDetail() {
     <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl" data-game-date={game?.gameDate}>
 
       {/* Team Header */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -197,7 +197,7 @@ export default function GameDetail() {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
           <div className="flex items-start justify-between gap-3 sm:gap-6">
             {/* Home Team */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
@@ -224,10 +224,10 @@ export default function GameDetail() {
                   </span>
                 </div>
               </Link>
-            </motion.div>
+            </m.div>
 
             {/* Score */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.2 }}
@@ -312,10 +312,10 @@ export default function GameDetail() {
                 )}
 
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Away Team */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
@@ -342,10 +342,10 @@ export default function GameDetail() {
                   </span>
                 </div>
               </Link>
-            </motion.div>
+            </m.div>
           </div>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Game Content Tabs */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">

@@ -1,5 +1,5 @@
 import { useParams } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Users, Target, Globe, User, Hash, Calendar } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
@@ -136,7 +136,7 @@ export default function TeamDetail() {
     return (
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
         {/* Team Header Skeleton */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 sm:mb-10"
@@ -152,7 +152,7 @@ export default function TeamDetail() {
               <Skeleton className="h-4 w-24 sm:w-32" />
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Content Skeleton */}
         <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
@@ -181,7 +181,7 @@ export default function TeamDetail() {
     <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
 
       {/* Team Header */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-8 sm:mb-10"
@@ -225,7 +225,7 @@ export default function TeamDetail() {
             )}
           </div>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Team Content Tabs */}
       <TabsContainer
@@ -261,7 +261,7 @@ export default function TeamDetail() {
                 ) : (
                   <div className="space-y-6">
                     {Object.entries(groupPlayersByPosition(players)).map(([category, categoryPlayers], categoryIndex) => (
-                      <motion.div
+                      <m.div
                         key={category}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -273,7 +273,7 @@ export default function TeamDetail() {
                         </h3>
                         <div className="space-y-0 divide-y divide-gray-100">
                           {categoryPlayers.map((player, playerIndex) => (
-                            <motion.div
+                            <m.div
                               key={player.id || playerIndex}
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -329,10 +329,10 @@ export default function TeamDetail() {
                                   )}
                                 </div>
                               )}
-                            </motion.div>
+                            </m.div>
                           ))}
                         </div>
-                      </motion.div>
+                      </m.div>
                     ))}
                   </div>
                 )}
@@ -349,7 +349,7 @@ export default function TeamDetail() {
                     <div className="space-y-4">
                       <Skeleton className="h-6 w-48 mb-6" />
                       {Array(12).fill(0).map((_, index) => (
-                        <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div key={`skeleton-${index}`} className="flex items-center justify-between py-2 border-b border-gray-100">
                           <div className="flex items-center space-x-3">
                             <Skeleton className="w-6 h-6 rounded-full" />
                             <Skeleton className="h-4 w-32" />
@@ -376,7 +376,7 @@ export default function TeamDetail() {
                 ) : (
                   <div className="space-y-6">
                     {leagueTables.map((table, index) => (
-                      <motion.div
+                      <m.div
                         key={table?.leagueId || index}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -389,7 +389,7 @@ export default function TeamDetail() {
                           onSeasonChange={handleSeasonChange}
                           seasonSelectorDisabled={rankingsLoading}
                         />
-                      </motion.div>
+                      </m.div>
                     ))}
                   </div>
                 )}
@@ -438,7 +438,7 @@ export default function TeamDetail() {
       {/* Team Portrait below tabs */}
       {team.portrait && (
         <div className="mt-6">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -448,7 +448,7 @@ export default function TeamDetail() {
             <div className="text-sm text-gray-600 leading-relaxed">
               {team.portrait}
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </div>

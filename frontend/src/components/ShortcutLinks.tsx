@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { useMenu } from '../contexts/MenuContext'
 
 // Shortcut link configuration
@@ -83,26 +83,26 @@ export default function ShortcutLinks({ className = '' }: ShortcutLinksProps) {
   }
 
   return (
-    <motion.div
+    <m.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
       className={`flex flex-col gap-3 ${className}`}
     >
-      <motion.h3
+      <m.h3
         variants={itemVariants}
         className="text-sm font-medium text-gray-700 mb-1"
       >
         Quick Navigation
-      </motion.h3>
+      </m.h3>
 
       <div className="flex flex-col gap-2">
         {shortcuts.map((shortcut) => {
           if (shortcut.external) {
             return (
-              <motion.div key={shortcut.label} variants={itemVariants}>
-                <motion.a
+              <m.div key={shortcut.label} variants={itemVariants}>
+                <m.a
                   href={(shortcut as ExternalShortcut).href}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -112,13 +112,13 @@ export default function ShortcutLinks({ className = '' }: ShortcutLinksProps) {
                   whileTap={{ scale: 0.98 }}
                 >
                   <div className="font-medium text-gray-900">{shortcut.label}</div>
-                </motion.a>
-              </motion.div>
+                </m.a>
+              </m.div>
             )
           }
 
           return (
-            <motion.div key={shortcut.label} variants={itemVariants}>
+            <m.div key={shortcut.label} variants={itemVariants}>
               <Link
                 to={(shortcut as InternalShortcut).to}
                 search={(shortcut as InternalShortcut).search}
@@ -127,10 +127,10 @@ export default function ShortcutLinks({ className = '' }: ShortcutLinksProps) {
               >
                 <div className="font-medium text-gray-900">{shortcut.label}</div>
               </Link>
-            </motion.div>
+            </m.div>
           )
         })}
       </div>
-    </motion.div>
+    </m.div>
   )
 }

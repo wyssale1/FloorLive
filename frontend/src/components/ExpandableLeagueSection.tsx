@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { ChevronRight, Loader2 } from 'lucide-react'
 import GameCard from './GameCard'
 import type { Game } from '../lib/mockData'
@@ -51,7 +51,7 @@ export default function ExpandableLeagueSection({
     }, [isExpanded, hasLoaded, date, leagueGroup])
 
     return (
-        <motion.section
+        <m.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
@@ -65,12 +65,12 @@ export default function ExpandableLeagueSection({
                     className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/60 transition-colors duration-200 group"
                 >
                     <div className="flex items-center gap-3">
-                        <motion.div
+                        <m.div
                             animate={{ rotate: isExpanded ? 90 : 0 }}
                             transition={{ duration: 0.2 }}
                         >
                             <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
-                        </motion.div>
+                        </m.div>
                         <h2 className="text-base font-medium text-gray-700 group-hover:text-gray-900">
                             {leagueGroup.displayName}
                         </h2>
@@ -97,7 +97,7 @@ export default function ExpandableLeagueSection({
                 {/* Expandable content with smooth height animation */}
                 <AnimatePresence initial={false}>
                     {isExpanded && (
-                        <motion.div
+                        <m.div
                             initial={{ height: 0 }}
                             animate={{ height: 'auto' }}
                             exit={{ height: 0 }}
@@ -117,13 +117,13 @@ export default function ExpandableLeagueSection({
                                 ) : (
                                     games.map((game, gameIndex) => (
                                         <div key={game.id}>
-                                            <motion.div
+                                            <m.div
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: gameIndex * 0.03 }}
                                             >
                                                 <GameCard game={game} />
-                                            </motion.div>
+                                            </m.div>
                                             {/* Separator line between games */}
                                             {gameIndex < games.length - 1 && (
                                                 <div className="mx-3 border-b border-gray-100"></div>
@@ -132,10 +132,10 @@ export default function ExpandableLeagueSection({
                                     ))
                                 )}
                             </div>
-                        </motion.div>
+                        </m.div>
                     )}
                 </AnimatePresence>
             </div>
-        </motion.section>
+        </m.section>
     )
 }

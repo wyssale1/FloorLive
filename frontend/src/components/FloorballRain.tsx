@@ -1,5 +1,5 @@
 import React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import FloorballBall from './FloorballBall'
 import { useFloorballRain } from '../hooks/useFloorballRain'
 
@@ -9,7 +9,7 @@ const FloorballRain: React.FC = () => {
   return (
     <AnimatePresence>
       {isActive && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -17,7 +17,7 @@ const FloorballRain: React.FC = () => {
           className="fixed inset-0 pointer-events-none z-50 overflow-hidden"
         >
           {particles.map((particle) => (
-            <motion.div
+            <m.div
               key={particle.id}
               className="absolute pointer-events-none"
               style={{
@@ -44,7 +44,7 @@ const FloorballRain: React.FC = () => {
                 }
               }}
             >
-              <motion.div
+              <m.div
                 animate={{
                   rotate: 360 * 2 // Fixed 2 rotations
                 }}
@@ -54,18 +54,16 @@ const FloorballRain: React.FC = () => {
                   ease: "linear",
                   repeat: 0
                 }}
-                style={{
-                  willChange: 'transform'
-                }}
+                style={{}}
               >
                 <FloorballBall
                   size={particle.size}
                   className="transform-gpu"
                 />
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   )

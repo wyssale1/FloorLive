@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
 import { useSearch } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -44,7 +44,7 @@ export default function TabsContainer({
     return firstEnabledTab
   }
   
-  const [activeTab, setActiveTab] = useState(getActiveTab())
+  const [activeTab, setActiveTab] = useState(() => getActiveTab())
 
   // Update active tab when URL changes
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function TabsContainer({
   }
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -101,16 +101,16 @@ export default function TabsContainer({
             key={tab.value}
             value={tab.value}
           >
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
               {tab.content}
-            </motion.div>
+            </m.div>
           </TabsContent>
         ))}
       </Tabs>
-    </motion.div>
+    </m.div>
   )
 }

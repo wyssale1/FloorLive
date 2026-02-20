@@ -14,7 +14,7 @@ import {
   endOfMonth,
   eachDayOfInterval,
 } from "date-fns";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 // Constants
 const WEEK_PICKER_CONSTANTS = {
@@ -438,7 +438,7 @@ const NavigationWrapper = memo(
     direction,
     ariaLabel,
   }: NavigationWrapperProps) => (
-    <motion.div
+    <m.div
       animate={{
         y: shouldShowMonthUI
           ? WEEK_PICKER_CONSTANTS.DIMENSIONS.NAVIGATION_OFFSET
@@ -451,7 +451,7 @@ const NavigationWrapper = memo(
         direction={direction}
         aria-label={ariaLabel}
       />
-    </motion.div>
+    </m.div>
   )
 );
 NavigationWrapper.displayName = "NavigationWrapper";
@@ -497,7 +497,7 @@ const DayNamesHeader = memo(
           };
 
           return (
-            <motion.div
+            <m.div
               initial={{ color: getInitialColor() }}
               animate={{
                 color: getDayNamesHeaderColor(
@@ -522,7 +522,7 @@ const DayNamesHeader = memo(
               className="text-center text-xs font-medium py-1 min-w-[36px]"
             >
               {dayName}
-            </motion.div>
+            </m.div>
           );
         })}
       </div>
@@ -646,7 +646,7 @@ export default function WeekPicker({
         />
 
         {/* Layered Animation Calendar */}
-        <motion.div
+        <m.div
           className="mx-2 flex flex-col items-center overflow-hidden"
           animate={{
             height: shouldShowMonthUI
@@ -687,7 +687,7 @@ export default function WeekPicker({
               if (!isMonthViewExpanded && !isCurrentWeekRow) return null;
 
               return (
-                <motion.div
+                <m.div
                   key={`row-${rowIndex}-${isMonthViewExpanded}`}
                   initial={
                     isCurrentWeekRow
@@ -723,7 +723,7 @@ export default function WeekPicker({
                     const dayName = WEEK_PICKER_CONSTANTS.DAY_NAMES[dayIndex];
 
                     return (
-                      <motion.button
+                      <m.button
                         key={`date-button-${date.getTime()}-${rowIndex}`}
                         onClick={() => onDateSelect(date)}
                         initial={
@@ -759,7 +759,7 @@ export default function WeekPicker({
                       >
                         {/* Week view: Show day name above date */}
                         {!isMonthViewExpanded && (
-                          <motion.span
+                          <m.span
                             animate={{
                               color: getDayNameColor(selected, today),
                             }}
@@ -770,11 +770,11 @@ export default function WeekPicker({
                             className="text-xs font-medium"
                           >
                             {dayName}
-                          </motion.span>
+                          </m.span>
                         )}
 
                         {/* Date number */}
-                        <motion.span
+                        <m.span
                           initial={
                             // Only animate in month view, week view uses CSS classes
                             // Skip animation if it's month navigation within expanded month view
@@ -822,15 +822,15 @@ export default function WeekPicker({
                           className="text-sm font-medium"
                         >
                           {dayNumber}
-                        </motion.span>
-                      </motion.button>
+                        </m.span>
+                      </m.button>
                     );
                   })}
-                </motion.div>
+                </m.div>
               );
             })}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Next Week/Month Button */}
         <NavigationWrapper

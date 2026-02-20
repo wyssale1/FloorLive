@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import type { LiveGameStatus } from '../lib/liveGameUtils'
 
 interface LiveBadgeProps {
@@ -16,7 +16,7 @@ export default function LiveBadge({ liveStatus, variant = 'default', showPulse =
       <div className="relative">
         <div className="w-2 h-2 bg-red-500 rounded-full"></div>
         {showPulse && (
-          <motion.div
+          <m.div
             className="absolute inset-0 w-2 h-2 bg-red-500 rounded-full opacity-75"
             animate={{
               scale: [1, 1.5, 1],
@@ -41,7 +41,7 @@ export default function LiveBadge({ liveStatus, variant = 'default', showPulse =
 
   return (
     <div className="relative">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         className={`
@@ -54,11 +54,11 @@ export default function LiveBadge({ liveStatus, variant = 'default', showPulse =
         <span className="font-semibold">
           LIVE
         </span>
-      </motion.div>
+      </m.div>
       
       {/* Pulsing animation */}
       {showPulse && (
-        <motion.div
+        <m.div
           className={`
             absolute inset-0 rounded-full bg-red-600 opacity-75 -z-10
             ${sizeClasses[variant]}
@@ -113,7 +113,7 @@ export function PeriodBadge({ period, isIntermission = false, variant = 'default
         <div className="relative flex items-center justify-center">
           <div className={`${circleSize[variant]} bg-red-600 rounded-full flex-shrink-0`} />
           {!isIntermission && (
-            <motion.div
+            <m.div
               className={`absolute ${circleSize[variant]} bg-red-600 rounded-full opacity-75`}
               animate={{
                 scale: [1, 1.4, 1],

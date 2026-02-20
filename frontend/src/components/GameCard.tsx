@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Shield } from 'lucide-react'
 import { memo, useMemo, useCallback } from 'react'
 import type { Game } from '../lib/mockData'
@@ -162,7 +162,7 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
 
   return (
     <Link to="/game/$gameId" params={{ gameId: game.id }} className="block">
-      <motion.div
+      <m.div
         whileTap={{ scale: 0.995 }}
         className={cn(
           "hover:bg-gray-50 transition-all duration-200 touch-manipulation rounded-lg relative",
@@ -231,7 +231,7 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
             )}
           </div>
         )}
-      </motion.div>
+      </m.div>
     </Link>
   )
 }

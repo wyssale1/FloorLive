@@ -1,5 +1,5 @@
 import { AlertCircle, Home, ArrowLeft, RefreshCcw, Wifi, WifiOff } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { useNavigate } from '@tanstack/react-router'
 
 export interface ErrorPageProps {
@@ -94,56 +94,56 @@ export default function ErrorPage({
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="text-center max-w-md mx-auto"
       >
         {/* Error Icon */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
+        <m.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
           className={`inline-flex items-center justify-center w-16 h-16 ${config.bgColor} rounded-full mb-6`}
         >
           <Icon className={`w-8 h-8 ${config.color}`} />
-        </motion.div>
+        </m.div>
 
         {/* Error Title */}
-        <motion.h1
+        <m.h1
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className="text-2xl font-semibold text-gray-900 mb-3"
         >
           {title || config.title}
-        </motion.h1>
+        </m.h1>
 
         {/* Error Message */}
-        <motion.p
+        <m.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           className="text-gray-600 mb-8 leading-relaxed"
         >
           {message || config.message}
-        </motion.p>
+        </m.p>
 
         {/* Error Details (Dev Mode) */}
         {details && process.env.NODE_ENV === 'development' && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
             className="mb-6 p-3 bg-gray-100 rounded-md text-left text-sm text-gray-700 font-mono"
           >
             {details}
-          </motion.div>
+          </m.div>
         )}
 
         {/* Action Buttons */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
@@ -181,11 +181,11 @@ export default function ErrorPage({
               Go Back
             </button>
           )}
-        </motion.div>
+        </m.div>
 
         {/* Additional Help Text */}
         {type === 'network' && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
@@ -202,9 +202,9 @@ export default function ErrorPage({
                 <span className="text-red-600">No internet connection</span>
               )}
             </div>
-          </motion.div>
+          </m.div>
         )}
-      </motion.div>
+      </m.div>
     </div>
   )
 }

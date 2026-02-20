@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import GameSection from '../components/GameSection'
 import GameCardSkeleton from '../components/GameCardSkeleton'
 import WeekPicker from '../components/WeekPicker'
@@ -171,7 +171,7 @@ export default function Home() {
   return (
     <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
       {/* Week Navigation */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -181,10 +181,10 @@ export default function Home() {
           selectedDate={selectedDate}
           onDateSelect={handleDateSelect}
         />
-      </motion.div>
+      </m.div>
 
       {/* Games Content */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.1 }}
@@ -205,7 +205,7 @@ export default function Home() {
 
               {/* Next Games Button - Integrated in empty state */}
               {nextGameData && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, filter: 'blur(10px)' }}
                   animate={{ opacity: 1, filter: 'blur(0px)' }}
                   transition={{ duration: 0.5, delay: 0.3 }}
@@ -216,7 +216,7 @@ export default function Home() {
                   >
                     Next Games on {format(nextGameData.date, 'd. MMMM')}
                   </button>
-                </motion.div>
+                </m.div>
               )}
             </div>
           </div>
@@ -224,7 +224,7 @@ export default function Home() {
           <div className="space-y-6">
             {/* Top-tier leagues (auto-expanded with games from API) */}
             {orderedLeagueNames.map((leagueName, index) => (
-              <motion.div
+              <m.div
                 key={leagueName}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -235,7 +235,7 @@ export default function Home() {
                   games={gamesByLeague[leagueName]}
                   index={index}
                 />
-              </motion.div>
+              </m.div>
             ))}
 
             {/* Lower-tier leagues (expandable, lazy-loaded) */}
@@ -266,7 +266,7 @@ export default function Home() {
             )}
           </div>
         )}
-      </motion.div>
+      </m.div>
     </div>
   )
 }

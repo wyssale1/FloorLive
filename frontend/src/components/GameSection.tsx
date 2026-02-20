@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import GameCard from './GameCard'
 import type { Game } from '../lib/mockData'
 
@@ -15,7 +15,7 @@ export default function GameSection({ title, games, gameCount, index = 0 }: Game
   const displayCount = gameCount || games.length
   
   return (
-    <motion.section
+    <m.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
@@ -33,13 +33,13 @@ export default function GameSection({ title, games, gameCount, index = 0 }: Game
       <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100">
         {games.map((game, gameIndex) => (
           <div key={game.id}>
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: (index * 0.1) + (gameIndex * 0.05) }}
             >
               <GameCard game={game} />
-            </motion.div>
+            </m.div>
             {/* Separator line between games (not after the last one) */}
             {gameIndex < games.length - 1 && (
               <div className="mx-3 border-b border-gray-100"></div>
@@ -47,6 +47,6 @@ export default function GameSection({ title, games, gameCount, index = 0 }: Game
           </div>
         ))}
       </div>
-    </motion.section>
+    </m.section>
   )
 }

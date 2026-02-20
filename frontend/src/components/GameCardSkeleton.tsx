@@ -7,7 +7,7 @@ interface GameCardSkeletonProps {
 
 export default function GameCardSkeleton({ count = 1, variant = 'individual' }: GameCardSkeletonProps) {
   const renderSkeleton = (index: number) => (
-    <div key={index} className={
+    <div key={`skeleton-${index}`} className={
       variant === 'individual' 
         ? "bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-100"
         : "p-3"
@@ -51,7 +51,7 @@ export default function GameCardSkeleton({ count = 1, variant = 'individual' }: 
         {/* Games in one box with separators - slightly more compact */}
         <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100">
           {Array(count).fill(0).map((_, index) => (
-            <div key={index}>
+            <div key={`skeleton-${index}`}>
               <div className="p-3">
                 <div className="flex items-center">
                   {/* Left side - Score or time */}
@@ -88,7 +88,7 @@ export default function GameCardSkeleton({ count = 1, variant = 'individual' }: 
     return (
       <>
         {Array(count).fill(0).map((_, index) => (
-          <div key={index}>
+          <div key={`skeleton-${index}`}>
             {renderSkeleton(index)}
             {/* Separator line between games (not after the last one) */}
             {index < count - 1 && (

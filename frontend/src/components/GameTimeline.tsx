@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Target, AlertTriangle, Pause, Crown, Clock, Play, Zap, X, Info } from 'lucide-react'
 import type { GameEvent } from '../lib/apiClient'
 import GameEventsLegend from './GameEventsLegend'
@@ -187,7 +187,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
           // Use backend's displayAs field to determine layout
           if (event.displayAs === 'badge') {
             return (
-              <motion.div
+              <m.div
                 key={event.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -199,7 +199,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                     {event.description}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )
           }
 
@@ -230,7 +230,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
               const awayBestPlayer = extendedEvent.bestPlayerEvents?.find((e: GameEvent) => e.teamSide === 'away')?.player || '';
               
               return (
-                <motion.div
+                <m.div
                   key={event.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -307,13 +307,13 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               )
             }
             
             // Default neutral event handling
             return (
-              <motion.div
+              <m.div
                 key={event.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -327,12 +327,12 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                     {event.player && <span className="font-bold">- {event.player}</span>}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )
           }
           
           return (
-            <motion.div
+            <m.div
               key={event.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -424,7 +424,7 @@ export default function GameTimeline({ events }: GameTimelineProps) {
                   </div>
                 </>
               )}
-            </motion.div>
+            </m.div>
           )
         })}
       </div>

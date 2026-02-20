@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import type { MatrixEntry, SoloGoalEntry } from '../hooks/useChemistryAnalysis'
 import PlayerLink from './PlayerLink'
 
@@ -53,7 +53,7 @@ function heatClass(value: number, max: number): string {
 // ─── Skeleton overlay ──────────────────────────────────────────
 function SkeletonOverlay({ delay }: { delay: number }) {
   return (
-    <motion.div
+    <m.div
       className="absolute inset-0 bg-gray-100 pointer-events-none"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
@@ -184,7 +184,7 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
             {scorers.map((scorer, colIdx) => {
               const [first, last] = splitName(scorer.displayName)
               return (
-                <motion.th
+                <m.th
                   key={scorer.rawName}
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -212,7 +212,7 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
                       <span className="block truncate">{last}</span>
                     </PlayerLink>
                   )}
-                </motion.th>
+                </m.th>
               )
             })}
 
@@ -234,7 +234,7 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
             return (
               <tr key={assister.rawName} className="group">
                 {/* Assist row header */}
-                <motion.td
+                <m.td
                   initial={{ opacity: 0, x: -5 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: rowIdx * 0.025, duration: 0.2, ease: 'easeOut' }}
@@ -261,7 +261,7 @@ export default function ChemistryMatrix({ matrix, soloGoals, splitHomeAway }: Ch
                       <span className="block truncate">{last}</span>
                     </PlayerLink>
                   )}
-                </motion.td>
+                </m.td>
 
                 {/* Data cells */}
                 {scorers.map((scorer, colIdx) => {
@@ -405,7 +405,7 @@ function SoloDiagonalCell({ entry, splitHomeAway, cellH, compact }: SoloDiagonal
       >
         {entry.total}
       </span>
-      <motion.span
+      <m.span
         className={`tabular-nums text-gray-400 leading-none overflow-hidden block ${detailSize}`}
         animate={{
           height: showDetail ? (compact ? 11 : 13) : 0,
@@ -415,7 +415,7 @@ function SoloDiagonalCell({ entry, splitHomeAway, cellH, compact }: SoloDiagonal
         transition={{ duration: 0.22, ease: 'easeInOut' }}
       >
         ({entry.homeGoals}/{entry.awayGoals})
-      </motion.span>
+      </m.span>
     </CellWrapper>
   )
 }
@@ -439,7 +439,7 @@ function ComboCellContent({ entry, splitHomeAway, cellH, compact }: ComboCellCon
       <span className={`font-semibold tabular-nums leading-none ${numSize}`}>
         {entry.total}
       </span>
-      <motion.span
+      <m.span
         className={`tabular-nums text-gray-400 leading-none overflow-hidden block ${detailSize}`}
         animate={{
           height: showDetail ? (compact ? 11 : 13) : 0,
@@ -449,7 +449,7 @@ function ComboCellContent({ entry, splitHomeAway, cellH, compact }: ComboCellCon
         transition={{ duration: 0.22, ease: 'easeInOut' }}
       >
         ({entry.homeGoals}/{entry.awayGoals})
-      </motion.span>
+      </m.span>
     </CellWrapper>
   )
 }

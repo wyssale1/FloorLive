@@ -85,6 +85,11 @@ export default function PlayerImage({
       <div
         className={`${containerClasses} ${centeringClasses}`}
         onClick={onClick}
+        {...(onClick ? {
+          role: 'button',
+          tabIndex: 0,
+          onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') onClick() }
+        } : {})}
       >
         {content}
       </div>

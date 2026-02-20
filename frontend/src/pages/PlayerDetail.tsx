@@ -1,5 +1,5 @@
 import { useParams, Link } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Trophy, Home, ArrowLeft } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { apiClient } from '../lib/apiClient'
@@ -153,7 +153,7 @@ export default function PlayerDetail() {
   return (
     <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 max-w-7xl">
       {/* Player Header */}
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -206,7 +206,7 @@ export default function PlayerDetail() {
           </div>
         </div>
 
-      </motion.div>
+      </m.div>
 
       {/* Player Content Tabs */}
       <div className="max-w-7xl mx-auto">
@@ -222,7 +222,7 @@ export default function PlayerDetail() {
                   
                   <div className="space-y-6">
                     {/* Basic Information */}
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ 
@@ -270,11 +270,11 @@ export default function PlayerDetail() {
                           </div>
                         )}
                       </div>
-                    </motion.div>
+                    </m.div>
 
                     {/* Current Season */}
                     {player.currentSeason && (
-                      <motion.div
+                      <m.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ 
@@ -294,13 +294,13 @@ export default function PlayerDetail() {
                             <div className="font-medium">{player.currentSeason.team}</div>
                           </div>
                         </div>
-                      </motion.div>
+                      </m.div>
                     )}
 
 
                     {/* Career Summary */}
                     {player.careerStats && (
-                      <motion.div
+                      <m.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ 
@@ -328,7 +328,7 @@ export default function PlayerDetail() {
                             <div className="font-bold text-lg text-blue-600">{player.careerStats.totalPoints}</div>
                           </div>
                         </div>
-                      </motion.div>
+                      </m.div>
                     )}
                   </div>
                 </div>
@@ -347,7 +347,7 @@ export default function PlayerDetail() {
                   {tabsLoading.statistics ? (
                     <div className="space-y-3">
                       {[...Array(3)].map((_, i) => (
-                        <Skeleton key={i} className="h-16 w-full" />
+                        <Skeleton key={`stat-skeleton-${i}`} className="h-16 w-full" />
                       ))}
                     </div>
                   ) : statistics.length > 0 ? (
@@ -367,8 +367,8 @@ export default function PlayerDetail() {
                         </thead>
                         <tbody>
                           {statistics.map((stat, index) => (
-                            <motion.tr 
-                              key={index} 
+                            <m.tr
+                              key={`${stat.season}-${stat.league}`}
                               className="border-b border-gray-100"
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -400,7 +400,7 @@ export default function PlayerDetail() {
                               <td className="py-3 px-1 text-center text-gray-600">
                                 {stat.penalties.twoMinute + stat.penalties.fiveMinute + stat.penalties.tenMinute}
                               </td>
-                            </motion.tr>
+                            </m.tr>
                           ))}
                         </tbody>
                       </table>

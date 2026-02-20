@@ -1,6 +1,6 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import { ChevronLeft, Menu, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { useEffect } from 'react'
 import { useEasterEggStore } from '../stores'
 import { useMenu } from '../contexts/MenuContext'
@@ -82,7 +82,7 @@ export default function Header() {
           <div className="flex items-center w-20">
             <AnimatePresence mode="wait">
               {shouldShow && !isOpen && (
-                <motion.button
+                <m.button
                   key="back-button"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -94,7 +94,7 @@ export default function Header() {
                 >
                   <ChevronLeft className="w-5 h-5" />
                   <span className="text-sm font-medium">Back</span>
-                </motion.button>
+                </m.button>
               )}
             </AnimatePresence>
           </div>
@@ -120,7 +120,7 @@ export default function Header() {
                       Live
                     </span>
                     {/* "King" text appearing directly over "Live" */}
-                    <motion.span
+                    <m.span
                       className="absolute -top-0.5 left-0 text-yellow-500 font-bold text-xl"
                       initial={{
                         opacity: 0,
@@ -143,7 +143,7 @@ export default function Header() {
                       }}
                     >
                       King
-                    </motion.span>
+                    </m.span>
                   </div>
                 </div>
               ) : (
@@ -154,7 +154,7 @@ export default function Header() {
 
           {/* Right Section - Menu Button */}
           <div className="w-20 flex justify-end">
-            <motion.button
+            <m.button
               onClick={toggleMenu}
               className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors p-2 -mr-2 rounded-lg hover:bg-gray-50"
               aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -162,7 +162,7 @@ export default function Header() {
             >
               <AnimatePresence mode="wait">
                 {isOpen ? (
-                  <motion.div
+                  <m.div
                     key="close-icon"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -170,9 +170,9 @@ export default function Header() {
                     transition={{ duration: 0.15, ease: "easeInOut" }}
                   >
                     <X className="w-5 h-5" />
-                  </motion.div>
+                  </m.div>
                 ) : (
-                  <motion.div
+                  <m.div
                     key="menu-icon"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -180,10 +180,10 @@ export default function Header() {
                     transition={{ duration: 0.15, ease: "easeInOut" }}
                   >
                     <Menu className="w-5 h-5" />
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
-            </motion.button>
+            </m.button>
           </div>
         </div>
       </header>
@@ -191,7 +191,7 @@ export default function Header() {
       {/* Full-Screen Menu Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -200,7 +200,7 @@ export default function Header() {
             style={{ touchAction: 'none' }}
           >
             {/* Menu Content */}
-            <motion.div
+            <m.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
@@ -208,8 +208,8 @@ export default function Header() {
               className="pt-20" // Space for fixed header
             >
               <GlobalMenu className="max-w-7xl mx-auto px-4" />
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>
