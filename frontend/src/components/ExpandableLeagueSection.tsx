@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
-import { ChevronRight, Loader2 } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
+import { Skeleton } from './ui/skeleton'
+import GameCardSkeleton from './GameCardSkeleton'
 import GameCard from './GameCard'
 import type { Game } from '../lib/mockData'
 import { apiClient } from '../lib/apiClient'
@@ -79,7 +81,13 @@ export default function ExpandableLeagueSection({
                     {/* Loading or game count indicator */}
                     <div className="flex items-center gap-2">
                         {isLoading && (
-                            <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+                            <m.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2, duration: 0.2 }}
+                            >
+                                <Skeleton className="w-16 h-5 rounded-full" />
+                            </m.div>
                         )}
                         {hasLoaded && !isLoading && (
                             <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
@@ -106,10 +114,15 @@ export default function ExpandableLeagueSection({
                         >
                             <div className="border-t border-gray-100">
                                 {isLoading ? (
-                                    <div className="p-6 flex items-center justify-center">
-                                        <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
-                                        <span className="ml-2 text-gray-500">Lade Spiele...</span>
-                                    </div>
+                                    <m.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ delay: 0.2, duration: 0.2 }}
+                                        className="p-4 bg-white/40"
+                                    >
+                                        <GameCardSkeleton variant="list" count={2} />
+                                    </m.div>
                                 ) : games.length === 0 ? (
                                     <div className="p-6 text-center text-gray-500">
                                         Keine Spiele an diesem Datum
