@@ -1,6 +1,6 @@
 import { useParams } from '@tanstack/react-router'
 import { m } from 'framer-motion'
-import { Users, Target, Globe, User, Hash, Calendar } from 'lucide-react'
+import { Globe } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
 import { getCurrentSeasonYear } from '../lib/seasonUtils'
 import { mapLeagueForRankings } from '../lib/utils'
@@ -8,44 +8,17 @@ import TeamLogo from '../components/TeamLogo'
 import PlayerListSkeleton from '../components/PlayerListSkeleton'
 import { Skeleton } from '../components/ui/skeleton'
 import TabsContainer from '../components/TabsContainer'
-import LeagueTable from '../components/LeagueTable'
-import GameList from '../components/GameList'
-import GameCardSkeleton from '../components/GameCardSkeleton'
-import PlayerLink from '../components/PlayerLink'
-import PlayerImage from '../components/PlayerImage'
-import TeamPlayersLegend from '../components/TeamPlayersLegend'
 import ChemistryAnalysisTab from '../components/ChemistryAnalysisTab'
+import TeamPlayersTab from '../components/team/TeamPlayersTab'
+import TeamLeagueTablesTab from '../components/team/TeamLeagueTablesTab'
+import TeamUpcomingGamesTab from '../components/team/TeamUpcomingGamesTab'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateTeamMeta } from '../hooks/useMetaTags'
-import { useTeamDetail, useTeamPlayers, useTeamUpcomingGames, useRankings } from '../hooks/useQueries'
+import { useTeamDetail, useTeamPlayers, useTeamUpcomingGames } from '../hooks/queries/useTeamQueries'
+import { useRankings } from '../hooks/queries/useRankingQueries'
 import { determineGameClass } from '../types/api'
 
-function groupPlayersByPosition(players: any[]) {
-  const categories = {
-    'Goalies': [] as any[],
-    'Defenders': [] as any[],
-    'Forwards': [] as any[],
-    'Additional Players': [] as any[]
-  }
 
-  players.forEach(player => {
-    const position = player.position?.toLowerCase() || ''
-    if (position.includes('goalie')) {
-      categories['Goalies'].push(player)
-    } else if (position.includes('verteidiger')) {
-      categories['Defenders'].push(player)
-    } else if (position.includes('stürmer')) {
-      categories['Forwards'].push(player)
-    } else {
-      categories['Additional Players'].push(player)
-    }
-  })
-
-  // Only return categories that have players
-  return Object.fromEntries(
-    Object.entries(categories).filter(([, players]) => players.length > 0)
-  )
-}
 
 export default function TeamDetail() {
   const { teamId } = useParams({ from: '/team/$teamId' })
@@ -235,165 +208,20 @@ export default function TeamDetail() {
             value: 'players',
             label: 'Players',
             content: (
-              <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-gray-600" />
-                    <h2 className="text-lg font-medium text-gray-800">Squad</h2>
-                    <span className="text-sm text-gray-500 ml-2">
-                      {players.length} {players.length === 1 ? 'player' : 'players'}
-                    </span>
-                  </div>
-                  {players.length > 0 && players.some(player => player.goals > 0 || player.assists > 0 || player.points > 0) && (
-                    <TeamPlayersLegend />
-                  )}
-                </div>
-
-                {playersLoading ? (
-                  <PlayerListSkeleton />
-                ) : players.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 text-sm mb-2">No player information available</div>
-                    <div className="text-gray-500 text-xs">
-                      Player roster may not be published yet.
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {Object.entries(groupPlayersByPosition(players)).map(([category, categoryPlayers], categoryIndex) => (
-                      <m.div
-                        key={category}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: categoryIndex * 0.1 }}
-                        className="space-y-3"
-                      >
-                        <h3 className="text-sm font-medium text-gray-700 border-b border-gray-200 pb-2">
-                          {category} ({categoryPlayers.length})
-                        </h3>
-                        <div className="space-y-0 divide-y divide-gray-100">
-                          {categoryPlayers.map((player, playerIndex) => (
-                            <m.div
-                              key={player.id || playerIndex}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: (categoryIndex * 0.1) + (playerIndex * 0.05) }}
-                              className="flex items-center justify-between py-3 first:pt-0"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <PlayerImage
-                                  player={{
-                                    id: player.id || '',
-                                    name: player.name || '',
-                                    profileImage: player.profileImage
-                                  }}
-                                  size="small"
-                                  className="flex-shrink-0"
-                                  jerseyNumber={player.number}
-                                  showNumberBadge={true}
-                                />
-                                <div className="min-w-0">
-                                  <div className="text-sm font-medium text-gray-800">
-                                    <PlayerLink
-                                      playerId={player.id && player.id.trim() ? player.id : ''}
-                                      playerName={player.name}
-                                    />
-                                  </div>
-                                  {player.yearOfBirth && (
-                                    <div className="text-xs text-gray-600">
-                                      Born {player.yearOfBirth}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {(player.goals > 0 || player.assists > 0 || player.points > 0) && (
-                                <div className="flex items-center space-x-3 text-xs text-gray-600 flex-shrink-0">
-                                  {player.goals > 0 && (
-                                    <div className="flex items-center space-x-1">
-                                      <Target className="w-3 h-3" />
-                                      <span>{player.goals}</span>
-                                    </div>
-                                  )}
-                                  {player.assists > 0 && (
-                                    <div className="flex items-center space-x-1">
-                                      <User className="w-3 h-3" />
-                                      <span>{player.assists}</span>
-                                    </div>
-                                  )}
-                                  {player.points > 0 && (
-                                    <div className="flex items-center space-x-1">
-                                      <Hash className="w-3 h-3" />
-                                      <span>{player.points}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </m.div>
-                          ))}
-                        </div>
-                      </m.div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <TeamPlayersTab players={players} isLoading={playersLoading} />
             )
           },
           {
             value: 'tables',
             label: 'League Tables',
             content: (
-              <div>
-                {rankingsLoading ? (
-                  <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
-                    <div className="space-y-4">
-                      <Skeleton className="h-6 w-48 mb-6" />
-                      {Array(12).fill(0).map((_, index) => (
-                        <div key={`skeleton-${index}`} className="flex items-center justify-between py-2 border-b border-gray-100">
-                          <div className="flex items-center space-x-3">
-                            <Skeleton className="w-6 h-6 rounded-full" />
-                            <Skeleton className="h-4 w-32" />
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <Skeleton className="h-4 w-8" />
-                            <Skeleton className="h-4 w-8" />
-                            <Skeleton className="h-4 w-8" />
-                            <Skeleton className="h-4 w-8" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : leagueTables.length === 0 ? (
-                  <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-6">
-                    <div className="text-center py-12">
-                      <div className="text-gray-400 text-sm mb-2">League table not yet available</div>
-                      <div className="text-gray-500 text-xs">
-                        Tables are published after the first games of the season. Check back once the season has started.
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {leagueTables.map((table, index) => (
-                      <m.div
-                        key={table?.leagueId || index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <LeagueTable
-                          table={table}
-                          currentTeamId={teamId}
-                          availableSeasons={availableSeasons()}
-                          onSeasonChange={handleSeasonChange}
-                          seasonSelectorDisabled={rankingsLoading}
-                        />
-                      </m.div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <TeamLeagueTablesTab
+                isLoading={rankingsLoading}
+                leagueTables={leagueTables}
+                teamId={teamId}
+                availableSeasons={availableSeasons()}
+                onSeasonChange={handleSeasonChange}
+              />
             )
           },
           {
@@ -408,28 +236,7 @@ export default function TeamDetail() {
             label: 'Upcoming Games',
             onTabSelect: () => loadUpcomingGames(),
             content: (
-              <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-4 sm:p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Calendar className="w-4 h-4 text-gray-600" />
-                  <h2 className="text-lg font-medium text-gray-800">Upcoming Games</h2>
-                  <span className="text-sm text-gray-500">
-                    {upcomingGames.length} {upcomingGames.length === 1 ? 'game' : 'games'}
-                  </span>
-                </div>
-
-                {gamesLoading ? (
-                  <GameCardSkeleton variant="list" count={3} />
-                ) : upcomingGames.length > 0 ? (
-                  <GameList games={upcomingGames} showSeparators={true} showDate={true} noPaddingOnMobile={true} />
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="text-gray-400 text-sm mb-1">No upcoming games scheduled</div>
-                    <div className="text-gray-500 text-xs">
-                      Check back later for future fixtures.
-                    </div>
-                  </div>
-                )}
-              </div>
+              <TeamUpcomingGamesTab games={upcomingGames} isLoading={gamesLoading} />
             )
           }
         ]}

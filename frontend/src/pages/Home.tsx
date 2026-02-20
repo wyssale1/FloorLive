@@ -9,9 +9,11 @@ import { Tabs, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { format, parseISO } from 'date-fns'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags } from '../hooks/useMetaTags'
-import { useGamesByDate, useLeagueConfig } from '../hooks/useQueries'
+import { useGamesByDate } from '../hooks/queries/useGameQueries'
+import { useLeagueConfig } from '../hooks/queries/useLeagueQueries'
 import { useNextGameFinder } from '../hooks/useNextGameFinder'
 import { useStructuredData, generateWebSiteData, generateOrganizationData, generateGamesListData } from '../hooks/useStructuredData'
+import { useLeagueProcessing } from '../hooks/useLeagueProcessing'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -40,18 +42,6 @@ export default function Home() {
   // Fetch league configuration for expandable lower tier sections
   const { data: leagueConfig } = useLeagueConfig()
 
-  // Gender filter for lower tier leagues (default: Herren)
-  const [genderFilter, setGenderFilter] = useState<'Herren' | 'Damen'>('Herren')
-
-  // Filter lower tier leagues by gender
-  const filteredLowerTierLeagues = useMemo(() => {
-    if (!leagueConfig?.lowerTier) return []
-
-    return leagueConfig.lowerTier.filter(league =>
-      league.displayName.includes(genderFilter)
-    )
-  }, [leagueConfig, genderFilter])
-
   // Find next date with games (only when no games for current date)
   const shouldSearchForNextGames = !isLoading && games.length === 0
   const { data: nextGameData } = useNextGameFinder(
@@ -59,47 +49,13 @@ export default function Home() {
     shouldSearchForNextGames
   )
 
-  // League ordering preferences (same as backend)
-  // Ordered from highest to lowest league level
-  const LEAGUE_ORDER_PREFERENCES = [
-    'Herren L-UPL',     // NLA Men (league 1)
-    'Damen L-UPL',      // NLA Women (league 1)
-    'Herren NLB',       // NLB Men (league 2)
-    'Damen NLB',        // NLB Women (league 2)
-    'Herren 1. Liga',   // 1. Liga Men (league 3)
-    'Damen 1. Liga',    // 1. Liga Women (league 3)
-    'Herren 2. Liga',   // 2. Liga Men (league 4)
-    'Damen 2. Liga',    // 2. Liga Women (league 4)
-    'Herren 3. Liga',   // 3. Liga Men (league 5)
-    'Damen 3. Liga'     // 3. Liga Women (league 5)
-  ]
-
-  // Group games by league (memoized)
-  const gamesByLeague = useMemo(() => {
-    const grouped: Record<string, any[]> = {}
-
-    games.forEach((game: { league?: { name?: string } }) => {
-      const leagueName = game.league?.name || 'Unknown League'
-      if (!grouped[leagueName]) {
-        grouped[leagueName] = []
-      }
-      grouped[leagueName].push(game)
-    })
-
-    return grouped
-  }, [games])
-
-  // Get ordered league names (memoized)
-  const orderedLeagueNames = useMemo(() => {
-    const leagueNames = Object.keys(gamesByLeague)
-
-    return [
-      // First, add leagues in preferred order (only if they have games)
-      ...LEAGUE_ORDER_PREFERENCES.filter(league => leagueNames.includes(league)),
-      // Then add remaining leagues alphabetically
-      ...leagueNames.filter(league => !LEAGUE_ORDER_PREFERENCES.includes(league)).sort()
-    ]
-  }, [gamesByLeague, LEAGUE_ORDER_PREFERENCES])
+  const {
+    genderFilter,
+    setGenderFilter,
+    filteredLowerTierLeagues,
+    gamesByLeague,
+    orderedLeagueNames
+  } = useLeagueProcessing(games, leagueConfig)
 
   // Set dynamic page title and meta tags
   usePageTitle(pageTitles.home(formattedDate))
@@ -254,7 +210,7 @@ export default function Home() {
                     </Tabs>
                   </div>
                 </div>
-                {filteredLowerTierLeagues.map((leagueGroup, index) => (
+                {filteredLowerTierLeagues.map((leagueGroup: any, index: number) => (
                   <ExpandableLeagueSection
                     key={`${leagueGroup.id}-${leagueGroup.gameClass}-${leagueGroup.group || 'all'}`}
                     leagueGroup={leagueGroup}

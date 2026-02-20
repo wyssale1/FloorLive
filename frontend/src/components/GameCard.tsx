@@ -5,7 +5,7 @@ import { memo, useMemo, useCallback } from 'react'
 import type { Game } from '../lib/mockData'
 import { cn, formatSwissDate } from '../lib/utils'
 import { determineGameLiveStatus, shouldPollGameForUpdates } from '../lib/liveGameUtils'
-import { useGameEvents, useLiveGameDetail } from '../hooks/useQueries'
+import { useGameEvents, useLiveGameDetail } from '../hooks/queries/useGameQueries'
 import { useGameLogos } from '../hooks/useGameLogos'
 import TeamLogo from './TeamLogo'
 import LiveBadge from './LiveBadge'
@@ -187,11 +187,10 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
 
           {/* Phase badge for playoff/cup games */}
           {(game.gamePhase === 'playoff' || game.gamePhase === 'cup') && (
-            <div className={`ml-2 flex-shrink-0 px-2 py-1 rounded text-xs font-medium ${
-              game.gamePhase === 'playoff'
+            <div className={`ml-2 flex-shrink-0 px-2 py-1 rounded text-xs font-medium ${game.gamePhase === 'playoff'
                 ? 'bg-orange-100 text-orange-600'
                 : 'bg-violet-100 text-violet-600'
-            }`}>
+              }`}>
               {game.gamePhase === 'playoff' ? 'Playoff' : 'Cup'}
             </div>
           )}
@@ -200,8 +199,8 @@ function GameCard({ game, className, showDate = false, noPaddingOnMobile = false
           {showDate && game.gameDate && (
             <div className="ml-3 flex-shrink-0">
               <div className={`px-2 py-1 rounded text-xs font-medium ${isCurrentGame
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-600'
+                ? 'bg-blue-100 text-blue-700'
+                : 'bg-gray-100 text-gray-600'
                 }`}>
                 {formatSwissDate(game.gameDate)}
               </div>

@@ -62,28 +62,25 @@ export default function CombinedLeagueSeasonSelector({
       <DropdownMenuTrigger asChild disabled={disabled || loading}>
         <m.button
           className={`
-            inline-flex items-center gap-3 px-4 py-2 text-sm font-medium
-            bg-gray-100/80 hover:bg-gray-200/80 border border-gray-200/50
-            rounded-full transition-all duration-200
-            ${disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-sm'}
-            ${isOpen ? 'bg-gray-200/80 shadow-sm' : ''}
+            inline-flex items-center gap-3 px-4 py-2 text-sm text-gray-600
+            bg-white/60 hover:bg-white border border-gray-100
+            rounded-lg transition-all duration-200 backdrop-blur-sm
+            ${disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+            ${isOpen ? 'bg-white ring-1 ring-gray-100' : ''}
           `}
-          whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
-          whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
         >
           <div className="flex items-center gap-2">
-            <span className="text-gray-700 font-medium">
+            <span className="text-gray-700">
               {currentLeague.label}
             </span>
-            <div className="w-px h-4 bg-gray-300" />
-            <span className="text-gray-600">
+            <div className="w-px h-3.5 bg-gray-200" />
+            <span className="text-gray-500">
               {formatSeasonDisplay(parseInt(currentSeason))}
             </span>
           </div>
           <ChevronDown
-            className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${
-              isOpen ? 'rotate-180' : ''
-            }`}
+            className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
+              }`}
           />
         </m.button>
       </DropdownMenuTrigger>

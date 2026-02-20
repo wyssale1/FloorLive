@@ -174,9 +174,9 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           {/* Game phase multi-select dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-gray-100/80 hover:bg-gray-200/80 border border-gray-200/50 rounded-full transition-all duration-200 cursor-pointer hover:shadow-sm ${filters.gamePhases.length > 0 ? 'text-blue-700 bg-blue-50/80 border-blue-200/50 hover:bg-blue-100/80' : 'text-gray-700'}`}>
+              <button className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs bg-white/60 hover:bg-white border border-gray-100 backdrop-blur-sm rounded-lg transition-all duration-200 cursor-pointer ${filters.gamePhases.length > 0 ? 'text-blue-600 bg-blue-50/50 border-blue-100/80 hover:bg-blue-50/80' : 'text-gray-600'}`}>
                 <span>{phaseLabel}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-gray-500 transition-transform duration-200" />
+                <ChevronDown className="w-3 h-3 text-gray-400 transition-transform duration-200" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-[140px] bg-white/95 backdrop-blur-sm border-gray-200/50">
@@ -196,11 +196,10 @@ export default function ChemistryAnalysisTab({ teamId }: ChemistryAnalysisTabPro
           {/* Home/Away toggle */}
           <button
             onClick={() => setFilters({ splitHomeAway: !filters.splitHomeAway })}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
-              filters.splitHomeAway
-                ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-                : 'text-gray-500 hover:bg-gray-100'
-            }`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${filters.splitHomeAway
+              ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+              : 'text-gray-500 hover:bg-gray-100'
+              }`}
             aria-pressed={filters.splitHomeAway}
           >
             Home / Away

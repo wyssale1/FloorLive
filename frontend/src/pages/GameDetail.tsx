@@ -3,7 +3,6 @@ import { m } from 'framer-motion'
 import { Clock } from 'lucide-react'
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { calculateSeasonYear, getCurrentSeasonYear } from '../lib/seasonUtils'
-import GameTimeline from '../components/GameTimeline'
 import GameHeaderSkeleton from '../components/GameHeaderSkeleton'
 import GameOverviewSkeleton from '../components/GameOverviewSkeleton'
 import TeamLogo from '../components/TeamLogo'
@@ -11,10 +10,13 @@ import TabsContainer from '../components/TabsContainer'
 import LeagueTable from '../components/LeagueTable'
 import GameOverview from '../components/GameOverview'
 import { PeriodBadge } from '../components/LiveBadge'
+import GameEventsTab from '../components/game/GameEventsTab'
 import { usePageTitle, pageTitles } from '../hooks/usePageTitle'
 import { useMetaTags, generateGameMeta } from '../hooks/useMetaTags'
 import { mapLeagueForRankings } from '../lib/utils'
-import { useLiveGamePolling, useRankings, useInvalidateQueries } from '../hooks/useQueries'
+import { useLiveGamePolling } from '../hooks/queries/useGameQueries'
+import { useRankings } from '../hooks/queries/useRankingQueries'
+import { useInvalidateQueries } from '../hooks/queries/useCoreQueries'
 import { determineGameLiveStatus } from '../lib/liveGameUtils'
 import { useGameWebSocket } from '../hooks/useWebSocket'
 
@@ -367,28 +369,7 @@ export default function GameDetail() {
               label: 'Events',
               disabled: game.status === 'upcoming',
               content: (
-                <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100 p-3 sm:p-6">
-                  <div className="flex items-center justify-between mb-3 sm:mb-6">
-                    <h2 className="text-lg font-medium text-gray-800">Game Timeline</h2>
-                    {game.status === 'live' && (
-                      <div className="flex items-center space-x-2">
-                        {wsConnected ? (
-                          <>
-                            <div className="w-2 h-2 bg-green-500 rounded-full" />
-                            <span className="text-sm text-green-600">Live connected</span>
-                          </>
-                        ) : (
-                          <>
-                            <Clock className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm text-gray-600">Live updates...</span>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <GameTimeline events={events} />
-                </div>
+                <GameEventsTab gameStatus={game.status} wsConnected={wsConnected} events={events} />
               )
             },
             {
